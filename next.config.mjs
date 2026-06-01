@@ -1,38 +1,26 @@
-import mdx from "@next/mdx";
+const cspHeader = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data:",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+  "worker-src 'self' blob:",
+].join('; ')
 
-const withMDX = mdx({
-  extension: /\.mdx?$/,
-  options: {},
-});
-
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  pageExtensions: ["ts", "tsx", "md", "mdx"],
-  transpilePackages: ["next-mdx-remote"],
-  images: {
-    remotePatterns: [
+export default {
+  pageExtensions: ['ts', 'tsx', 'mdx'],
+  async headers() {
+    return [
       {
-        protocol: "https",
-        hostname: "www.google.com",
-        pathname: "**",
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: cspHeader,
+          },
+        ],
       },
-      {
-        // Supabase storage - replace with your actual Supabase project URL
-        protocol: "https",
-        hostname: "*.supabase.co",
-        pathname: "/storage/v1/object/public/**",
-      },
-      {
-        protocol: "https",
-        hostname: "*.supabase.in",
-        pathname: "/storage/v1/object/public/**",
-      },
-    ],
+    ]
   },
-  sassOptions: {
-    compiler: "modern",
-    silenceDeprecations: ["legacy-js-api"],
-  },
-};
-
-export default withMDX(nextConfig);
+}
