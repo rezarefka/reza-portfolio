@@ -8,22 +8,20 @@
   mask-size: 100% 100%;
 }
 
-/* ── Glassmorphism navbar ────────────────────────────────────────── */
+/* ── Glassmorphism navbar — adaptive light & dark ─────────────────── */
 .glassNav {
-  background: rgba(var(--neutral-background-medium-rgb, 10, 10, 10), 0.55) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  /* Use Once UI CSS variables so it adapts automatically */
+  background: color-mix(in srgb, var(--page-background) 60%, transparent) !important;
+  backdrop-filter: blur(16px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+  border: 1px solid var(--neutral-alpha-weak) !important;
   box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+    0 2px 16px color-mix(in srgb, var(--neutral-on-background-strong) 6%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--neutral-on-background-strong) 4%, transparent) !important;
   transition: background 0.3s ease, box-shadow 0.3s ease !important;
 
   &:hover {
-    background: rgba(20, 20, 20, 0.7) !important;
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    background: color-mix(in srgb, var(--page-background) 75%, transparent) !important;
   }
 }
 
