@@ -37,6 +37,7 @@ const routes: RoutesConfig = {
   "/reza-control/projects": true,
   "/reza-control/projects/new": true,
   "/reza-control/settings": true,
+  "/reza-control/about": true,
 };
 
 
