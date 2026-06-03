@@ -67,6 +67,12 @@ const Icons = {
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
     </svg>
   ),
+  gallery: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+      <polyline points="21 15 16 10 5 21"/>
+    </svg>
+  ),
   more: (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
@@ -94,6 +100,7 @@ const allNavItems = [
   { href: "/reza-control/projects",     label: "Projects",     icon: Icons.projects },
   { href: "/reza-control/certificates", label: "Sertifikat",   icon: Icons.certificates },
   { href: "/reza-control/blogs",        label: "Blogs",        icon: Icons.blogs },
+  { href: "/reza-control/gallery",      label: "Gallery",      icon: Icons.gallery },
   { href: "/reza-control/media",        label: "Media",        icon: Icons.media },
   { href: "/reza-control/analytics",    label: "Analytics",    icon: Icons.analytics },
   { href: "/reza-control/about",        label: "About CMS",    icon: Icons.about },
@@ -309,98 +316,202 @@ export function AdminShell({ children, user }: AdminShellProps) {
 
   // ── Desktop layout ─────────────────────────────────────────────
   return (
-    <Row fillWidth style={{ minHeight: "100vh" }}>
-      {/* Sidebar */}
-      <Column
-        className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""}`}
-        background="surface"
-        border="neutral-alpha-weak"
-        paddingY="l"
-      >
-        {/* Header */}
-        <Row
-          paddingX="m"
-          paddingBottom="m"
-          vertical="center"
-          horizontal={collapsed ? "center" : "between"}
-        >
-          {!collapsed && (
-            <Column gap="2">
-              <Text variant="label-strong-m" onBackground="brand-medium">Reza Control</Text>
-              <Text variant="body-default-xs" onBackground="neutral-weak">CMS Dashboard</Text>
-            </Column>
-          )}
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className={styles.collapseBtn}
-            aria-label="Toggle sidebar"
-          >
-            {collapsed ? Icons.chevronRight : Icons.chevronLeft}
-          </button>
-        </Row>
+    <Row fillWidth style={{ minHeight: "100vh", background: "var(--page-background)" }}>
+      <style>{`
+        @keyframes sidebarSlideIn {
+          from { opacity: 0; transform: translateX(-12px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        .cms-sidebar-inner {
+          animation: sidebarSlideIn 0.32s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .cms-nav-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 9px 12px;
+          border-radius: 10px;
+          cursor: pointer;
+          background: none;
+          border: none;
+          color: var(--neutral-on-background-weak);
+          font-size: 13px;
+          font-weight: 500;
+          width: 100%;
+          text-align: left;
+          transition: background 0.14s, color 0.14s, transform 0.14s;
+          white-space: nowrap;
+          position: relative;
+          letter-spacing: -0.01em;
+        }
+        .cms-nav-item:hover {
+          background: color-mix(in srgb, var(--neutral-on-background-strong) 6%, transparent);
+          color: var(--neutral-on-background-strong);
+          transform: translateX(2px);
+        }
+        .cms-nav-item.active {
+          background: color-mix(in srgb, var(--brand-background-strong) 12%, transparent) !important;
+          color: var(--brand-on-background-strong) !important;
+          font-weight: 600;
+        }
+        .cms-nav-item.logout-btn {
+          color: var(--danger-on-background-weak);
+        }
+        .cms-nav-item.logout-btn:hover {
+          background: var(--danger-alpha-weak);
+          color: var(--danger-on-background-strong);
+          transform: none;
+        }
+      `}</style>
 
-        <Line background="neutral-alpha-weak" marginBottom="8" />
+      {/* ── Floating Liquid Glass Sidebar ─────────────────────── */}
+      <div style={{
+        position: "fixed",
+        left: 12,
+        top: 12,
+        bottom: 12,
+        width: collapsed ? 60 : 220,
+        transition: "width 0.26s cubic-bezier(0.4,0,0.2,1)",
+        zIndex: 100,
+        borderRadius: 20,
+        // Liquid glass effect
+        background: "color-mix(in srgb, var(--neutral-background-strong) 72%, transparent)",
+        backdropFilter: "blur(24px) saturate(180%)",
+        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+        border: "1px solid color-mix(in srgb, var(--neutral-on-background-strong) 9%, transparent)",
+        boxShadow: `
+          0 8px 40px color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent),
+          0 2px 8px color-mix(in srgb, var(--neutral-on-background-strong) 4%, transparent),
+          inset 0 1px 0 color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent)
+        `,
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}>
+        <div className="cms-sidebar-inner" style={{ display: "flex", flexDirection: "column", height: "100%", padding: "12px 8px" }}>
+          {/* Header */}
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: collapsed ? "center" : "space-between",
+            padding: "4px 8px 12px",
+            gap: 8,
+          }}>
+            {!collapsed && (
+              <div>
+                <div style={{
+                  fontSize: 13, fontWeight: 700, letterSpacing: "-0.02em",
+                  color: "var(--brand-on-background-strong)",
+                  display: "flex", alignItems: "center", gap: 6,
+                }}>
+                  <div style={{
+                    width: 20, height: 20, borderRadius: 6,
+                    background: "var(--brand-background-strong)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    color: "var(--brand-on-background-strong)",
+                    flexShrink: 0,
+                  }}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                      <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+                    </svg>
+                  </div>
+                  Reza Control
+                </div>
+                <div style={{ fontSize: 10, color: "var(--neutral-on-background-weak)", marginTop: 2, paddingLeft: 26, letterSpacing: "0.04em" }}>
+                  CMS Panel
+                </div>
+              </div>
+            )}
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "center",
+                width: 28, height: 28, borderRadius: 8,
+                background: "none",
+                border: "1px solid color-mix(in srgb, var(--neutral-on-background-strong) 10%, transparent)",
+                cursor: "pointer",
+                color: "var(--neutral-on-background-weak)",
+                transition: "background 0.15s, color 0.15s",
+                flexShrink: 0,
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--neutral-alpha-weak)"; e.currentTarget.style.color = "var(--neutral-on-background-strong)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "var(--neutral-on-background-weak)"; }}
+            >
+              {collapsed ? Icons.chevronRight : Icons.chevronLeft}
+            </button>
+          </div>
 
-        {/* Nav items */}
-        <Column flex={1} paddingY="4" gap="2" paddingX="8">
-          {allNavItems.map((item) => {
-            const active = isActive(item.href);
-            return (
-              <button
-                key={item.href}
-                onClick={() => navigate(item.href)}
-                className={`${styles.navItem} ${active ? styles.active : ""}`}
-                title={collapsed ? item.label : undefined}
-              >
-                <span className={styles.icon}>{item.icon}</span>
-                {!collapsed && <span className={styles.label}>{item.label}</span>}
-                {active && !collapsed && <span className={styles.activeIndicator} />}
-              </button>
-            );
-          })}
-        </Column>
+          {/* Divider */}
+          <div style={{ height: 1, background: "color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent)", margin: "0 4px 8px" }} />
 
-        <Line background="neutral-alpha-weak" marginTop="8" />
+          {/* Nav Items */}
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2, overflowY: "auto", overflowX: "hidden" }}>
+            {allNavItems.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <button
+                  key={item.href}
+                  onClick={() => navigate(item.href)}
+                  className={`cms-nav-item${active ? " active" : ""}`}
+                  title={collapsed ? item.label : undefined}
+                  style={{ justifyContent: collapsed ? "center" : "flex-start" }}
+                >
+                  <span style={{ flexShrink: 0, width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {item.icon}
+                  </span>
+                  {!collapsed && <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
+                  {active && !collapsed && (
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--brand-background-strong)", flexShrink: 0 }} />
+                  )}
+                </button>
+              );
+            })}
+          </div>
 
-        {/* Footer */}
-        <Column paddingX="8" paddingTop="m" gap="4">
-          {!collapsed && (
-            <div style={{
-              padding: "8px 12px", borderRadius: 8,
-              background: "var(--neutral-alpha-weak)", marginBottom: 4,
-            }}>
-              <Text
-                variant="body-default-xs"
-                onBackground="neutral-weak"
-                style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" }}
-              >
-                {user.email}
-              </Text>
-            </div>
-          )}
-          <button
-            onClick={handleLogout}
-            className={`${styles.navItem} ${styles.logout}`}
-            title={collapsed ? "Keluar" : undefined}
-          >
-            <span className={styles.icon}>{Icons.logout}</span>
-            {!collapsed && <span className={styles.label}>Keluar</span>}
-          </button>
-        </Column>
-      </Column>
+          {/* Divider */}
+          <div style={{ height: 1, background: "color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent)", margin: "8px 4px" }} />
 
-      {/* Main content */}
-      <Column
-        flex={1}
-        className={styles.mainContent}
-        style={{
-          marginLeft: collapsed ? "64px" : "224px",
-          transition: "margin-left 0.22s cubic-bezier(0.4,0,0.2,1)",
-        }}
-        padding="xl"
-      >
+          {/* Footer */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            {!collapsed && (
+              <div style={{
+                padding: "6px 12px", borderRadius: 8,
+                background: "color-mix(in srgb, var(--neutral-on-background-strong) 5%, transparent)",
+                marginBottom: 2,
+              }}>
+                <Text variant="body-default-xs" onBackground="neutral-weak"
+                  style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" }}>
+                  {user.email}
+                </Text>
+              </div>
+            )}
+            <button
+              onClick={handleLogout}
+              className="cms-nav-item logout-btn"
+              title={collapsed ? "Keluar" : undefined}
+              style={{ justifyContent: collapsed ? "center" : "flex-start" }}
+            >
+              <span style={{ flexShrink: 0, width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {Icons.logout}
+              </span>
+              {!collapsed && <span>Keluar</span>}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main content — offset sidebar */}
+      <div style={{
+        flex: 1,
+        marginLeft: collapsed ? 84 : 244,
+        transition: "margin-left 0.26s cubic-bezier(0.4,0,0.2,1)",
+        padding: "24px 24px 24px 0",
+        minHeight: "100vh",
+        maxWidth: `calc(100vw - ${collapsed ? 84 : 244}px)`,
+      }}>
         {children}
-      </Column>
+      </div>
     </Row>
   );
 }

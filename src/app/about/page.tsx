@@ -220,99 +220,149 @@ export default async function About() {
             </Row>
           </ScrollReveal>
 
-          <Column fillWidth gap="l" marginBottom="48">
+          <Column fillWidth gap="m" marginBottom="48">
+            <style>{`
+              @keyframes eduCardIn {
+                from { opacity: 0; transform: translateY(16px); }
+                to   { opacity: 1; transform: translateY(0); }
+              }
+              .edu-card {
+                display: flex;
+                border-radius: 20px;
+                overflow: hidden;
+                border: 1px solid var(--neutral-alpha-weak);
+                background: var(--neutral-background-medium);
+                transition: box-shadow 0.26s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1), border-color 0.22s;
+              }
+              .edu-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 12px 40px color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent);
+                border-color: var(--neutral-alpha-medium);
+              }
+              .edu-accent-bar {
+                width: 4px;
+                flex-shrink: 0;
+                background: linear-gradient(to bottom, var(--brand-background-strong), var(--accent-background-strong));
+                border-radius: 0;
+              }
+              .edu-logo-wrap {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 64px; height: 64px;
+                border-radius: 14px;
+                background: var(--neutral-alpha-weak);
+                flex-shrink: 0;
+                overflow: hidden;
+                border: 1px solid var(--neutral-alpha-weak);
+              }
+              .edu-logo-wrap img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+              .edu-badge {
+                display: inline-flex; align-items: center;
+                padding: 2px 10px; border-radius: 99px;
+                font-size: 11px; font-weight: 600;
+                letter-spacing: 0.03em;
+                white-space: nowrap;
+              }
+              .edu-detail-row {
+                display: flex; gap: 12px; align-items: flex-start;
+              }
+              .edu-detail-icon {
+                flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px;
+                background: var(--neutral-alpha-weak);
+                display: flex; align-items: center; justify-content: center;
+                color: var(--neutral-on-background-weak);
+                margin-top: 2px;
+              }
+              @media (max-width: 560px) {
+                .edu-card { flex-direction: column; }
+                .edu-accent-bar { width: 100%; height: 4px; }
+                .edu-inner { padding: 18px 16px !important; }
+              }
+            `}</style>
+
             {educations.length > 0 ? (
               educations.map((edu, i) => (
                 <ScrollReveal key={edu.id} delay={i * 80}>
-                  <div style={{
-                    borderRadius: 20,
-                    overflow: "hidden",
-                    border: "1px solid var(--neutral-alpha-weak)",
-                    background: "var(--neutral-background-medium)",
-                    position: "relative",
-                  }}>
-                    {/* Thin gradient accent line */}
-                    <div style={{
-                      height: 3,
-                      background: "linear-gradient(90deg, var(--brand-background-strong), var(--accent-background-strong), transparent)",
-                    }} />
+                  <div className="edu-card">
+                    {/* Left accent bar */}
+                    <div className="edu-accent-bar" />
 
-                    <div style={{ padding: "24px 28px" }}>
-                      {/* Header row: logo + name + badges */}
-                      <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
-                        {/* Logo — adaptive border-radius: round if circle logo, square if rect */}
-                        <div className="university-logo-wrap" style={{
-                          width: 72, height: 72,
-                          borderRadius: edu.logo ? "50%" : "16px",
-                        }}>
+                    {/* Main body */}
+                    <div className="edu-inner" style={{ flex: 1, padding: "24px 28px" }}>
+                      {/* Top: logo + name + badges */}
+                      <div style={{ display: "flex", gap: 18, alignItems: "flex-start", flexWrap: "wrap" }}>
+                        {/* Logo */}
+                        <div className="edu-logo-wrap">
                           {edu.logo ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={edu.logo} alt={edu.university_name}
-                              className="university-logo"
-                              style={{ width: 72, height: 72, borderRadius: "50%" }} />
+                            <img src={edu.logo} alt={edu.university_name} />
                           ) : (
-                            <div className="university-logo-placeholder" style={{
-                              width: 72, height: 72, borderRadius: 16,
-                            }}>
-                              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
-                              </svg>
-                            </div>
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--brand-on-background-weak)" strokeWidth="1.5">
+                              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                            </svg>
                           )}
                         </div>
 
-                        {/* Name + meta */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ marginBottom: 8 }}>
-                            <Text variant="heading-strong-l" style={{ lineHeight: 1.2 }}>
-                              {edu.university_name}
-                            </Text>
-                          </div>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 6 }}>
-                            <span style={{
-                              fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 99, letterSpacing: "0.04em",
+                        {/* Title + meta */}
+                        <div style={{ flex: 1, minWidth: 200 }}>
+                          <Text variant="heading-strong-l" style={{ lineHeight: 1.2, marginBottom: 10 }}>
+                            {edu.university_name}
+                          </Text>
+
+                          {/* Badges row */}
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
+                            <span className="edu-badge" style={{
                               background: "var(--brand-alpha-weak)", color: "var(--brand-on-background-strong)",
                               border: "1px solid var(--brand-alpha-medium)",
                             }}>{edu.degree}</span>
-                            <span style={{
-                              fontSize: 11, padding: "2px 10px", borderRadius: 99,
+
+                            <span className="edu-badge" style={{
                               background: "var(--neutral-alpha-weak)", color: "var(--neutral-on-background-weak)",
-                            }}>{edu.year_start} – {edu.year_end || "Sekarang"}</span>
+                            }}>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: 4 }}>
+                                <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+                              </svg>
+                              {edu.year_start} – {edu.year_end || "Sekarang"}
+                            </span>
+
                             {edu.gpa && (
-                              <span style={{
-                                fontSize: 11, fontWeight: 600, padding: "2px 10px", borderRadius: 99,
+                              <span className="edu-badge" style={{
                                 background: "var(--accent-alpha-weak)", color: "var(--accent-on-background-strong)",
                                 border: "1px solid var(--accent-alpha-medium)",
-                              }}>IPK {edu.gpa}</span>
+                              }}>
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: 4 }}>
+                                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                IPK {edu.gpa}
+                              </span>
                             )}
                           </div>
+
+                          {/* Major + faculty */}
                           <Text variant="body-default-s" onBackground="neutral-weak">
                             {edu.faculty && <>{edu.faculty} · </>}{edu.major}
                           </Text>
                         </div>
                       </div>
 
-                      {/* Detail rows */}
+                      {/* Divider + details */}
                       {(edu.field_of_study || edu.thesis_title) && (
                         <div style={{
                           marginTop: 20, paddingTop: 20,
                           borderTop: "1px solid var(--neutral-alpha-weak)",
-                          display: "flex", flexDirection: "column", gap: 12,
+                          display: "flex", flexDirection: "column", gap: 14,
                         }}>
                           {edu.field_of_study && (
-                            <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                              <div style={{
-                                flexShrink: 0, width: 32, height: 32, borderRadius: 8,
-                                background: "var(--neutral-alpha-weak)",
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                color: "var(--neutral-on-background-weak)",
-                              }}>
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <div className="edu-detail-row">
+                              <div className="edu-detail-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                   <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
                                 </svg>
                               </div>
                               <div>
-                                <Text variant="label-default-xs" onBackground="neutral-weak" style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                                <Text variant="label-default-xs" onBackground="neutral-weak" style={{ textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 2 }}>
                                   Rumpun Ilmu
                                 </Text>
                                 <Text variant="body-default-m">{edu.field_of_study}</Text>
@@ -321,26 +371,22 @@ export default async function About() {
                           )}
 
                           {edu.thesis_title && (
-                            <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                              <div style={{
-                                flexShrink: 0, width: 32, height: 32, borderRadius: 8,
-                                background: "var(--neutral-alpha-weak)",
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                color: "var(--neutral-on-background-weak)",
-                              }}>
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                            <div className="edu-detail-row">
+                              <div className="edu-detail-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                  <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
                                 </svg>
                               </div>
                               <div style={{ flex: 1 }}>
-                                <Text variant="label-default-xs" onBackground="neutral-weak" style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                                  Skripsi
+                                <Text variant="label-default-xs" onBackground="neutral-weak" style={{ textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 2 }}>
+                                  Skripsi / Tugas Akhir
                                 </Text>
-                                <Text variant="body-default-m" style={{ fontStyle: "italic", lineHeight: 1.5 }}>
+                                <Text variant="body-default-m" style={{ fontStyle: "italic", lineHeight: 1.55 }}>
                                   &ldquo;{edu.thesis_title}&rdquo;
                                 </Text>
                                 {edu.thesis_goal && (
-                                  <Text variant="body-default-s" onBackground="neutral-weak" style={{ marginTop: 4, lineHeight: 1.5 }}>
+                                  <Text variant="body-default-s" onBackground="neutral-weak" style={{ marginTop: 6, lineHeight: 1.55 }}>
                                     {edu.thesis_goal}
                                   </Text>
                                 )}
@@ -350,22 +396,40 @@ export default async function About() {
                         </div>
                       )}
                     </div>
+
+                    {/* Right: year pill (desktop only) */}
+                    <div style={{
+                      flexShrink: 0, width: 80,
+                      display: "flex", flexDirection: "column",
+                      alignItems: "center", justifyContent: "center",
+                      borderLeft: "1px solid var(--neutral-alpha-weak)",
+                      padding: "20px 0",
+                      gap: 4,
+                    }} className="edu-year-col">
+                      <Text variant="heading-strong-xl" style={{ fontSize: 28, lineHeight: 1, color: "var(--brand-on-background-strong)", opacity: 0.18, fontVariantNumeric: "tabular-nums" }}>
+                        {edu.year_start}
+                      </Text>
+                      <div style={{ width: 1, height: 16, background: "var(--neutral-alpha-medium)" }} />
+                      <Text variant="body-default-xs" onBackground="neutral-weak">
+                        {edu.year_end || "Skrg"}
+                      </Text>
+                    </div>
                   </div>
                 </ScrollReveal>
               ))
             ) : (
               about.studies.institutions.map((inst, i) => (
                 <ScrollReveal key={i} delay={i * 80}>
-                  <div style={{
-                    borderRadius: 16, overflow: "hidden",
-                    border: "1px solid var(--neutral-alpha-weak)",
-                    background: "var(--neutral-background-medium)",
-                  }}>
-                    <div style={{ height: 3, background: "linear-gradient(90deg, var(--brand-background-strong), var(--accent-background-strong))" }} />
-                    <div style={{ padding: 24 }}>
-                      <Row gap="12" vertical="center">
-                        <div style={{ width: 44, height: 44, borderRadius: 10, background: "var(--brand-alpha-weak)",
-                          display: "flex", alignItems: "center", justifyContent: "center", color: "var(--brand-on-background-medium)" }}>
+                  <div className="edu-card">
+                    <div className="edu-accent-bar" />
+                    <div style={{ flex: 1, padding: "20px 24px" }}>
+                      <Row gap="16" vertical="center">
+                        <div style={{
+                          width: 48, height: 48, borderRadius: 12,
+                          background: "var(--brand-alpha-weak)",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          color: "var(--brand-on-background-medium)", flexShrink: 0,
+                        }}>
                           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                             <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
                           </svg>

@@ -8,22 +8,29 @@
   mask-size: 100% 100%;
 }
 
-/* ── Glassmorphism navbar — adaptive light & dark ─────────────────── */
+/* ── True Liquid Glass navbar — iOS Dynamic Island style ────────── */
 .glassNav {
-  background: color-mix(in srgb, var(--page-background) 65%, transparent) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border: 1px solid var(--neutral-alpha-weak) !important;
+  /* Multi-layer glass */
+  background: color-mix(in srgb, var(--page-background) 58%, transparent) !important;
+  backdrop-filter: blur(28px) saturate(200%) brightness(1.02) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(200%) brightness(1.02) !important;
+  border: 1px solid color-mix(in srgb, var(--neutral-on-background-strong) 10%, transparent) !important;
   box-shadow:
-    0 2px 20px color-mix(in srgb, var(--neutral-on-background-strong) 5%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--neutral-on-background-strong) 6%, transparent) !important;
-  transition: background 0.3s ease, box-shadow 0.3s ease !important;
+    0 4px 32px color-mix(in srgb, var(--neutral-on-background-strong) 6%, transparent),
+    0 1px 4px color-mix(in srgb, var(--neutral-on-background-strong) 4%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--neutral-on-background-strong) 10%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--neutral-on-background-strong) 4%, transparent) !important;
+  transition: background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease !important;
   /* Bigger pill */
-  min-height: 48px;
-  padding-left: 6px !important;
-  padding-right: 6px !important;
+  min-height: 50px;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  border-radius: 9999px !important;
 
-  /* ToggleButton sizing — make them taller */
+  /* Subtle noise texture for glass depth */
+  position: relative;
+
+  /* ToggleButton sizing */
   :global([data-component="ToggleButton"]),
   :global(button[class*="toggleButton"]),
   :global(a[class*="toggleButton"]) {
@@ -33,10 +40,30 @@
     padding-left: 12px !important;
     padding-right: 12px !important;
     font-size: 14px !important;
+    border-radius: 9999px !important;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--neutral-on-background-strong) 4%, transparent) 0%,
+      transparent 50%,
+      color-mix(in srgb, var(--neutral-on-background-strong) 2%, transparent) 100%
+    );
+    pointer-events: none;
+    z-index: 0;
   }
 
   &:hover {
-    background: color-mix(in srgb, var(--page-background) 80%, transparent) !important;
+    background: color-mix(in srgb, var(--page-background) 72%, transparent) !important;
+    box-shadow:
+      0 6px 40px color-mix(in srgb, var(--neutral-on-background-strong) 10%, transparent),
+      0 2px 8px color-mix(in srgb, var(--neutral-on-background-strong) 6%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--neutral-on-background-strong) 14%, transparent) !important;
   }
 }
 
@@ -52,6 +79,6 @@
   }
 
   .glassNav {
-    min-height: 44px;
+    min-height: 48px;
   }
 }
