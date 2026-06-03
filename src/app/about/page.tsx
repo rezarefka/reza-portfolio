@@ -240,22 +240,21 @@ export default async function About() {
                     <div style={{ padding: "24px 28px" }}>
                       {/* Header row: logo + name + badges */}
                       <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
-                        {/* Logo */}
-                        <div style={{ flexShrink: 0 }}>
+                        {/* Logo — adaptive border-radius: round if circle logo, square if rect */}
+                        <div className="university-logo-wrap" style={{
+                          width: 72, height: 72,
+                          borderRadius: edu.logo ? "50%" : "16px",
+                        }}>
                           {edu.logo ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={edu.logo} alt={edu.university_name}
                               className="university-logo"
-                              style={{ width: 64, height: 64, objectFit: "contain", borderRadius: 12,
-                                background: "var(--neutral-alpha-weak)", padding: 8 }} />
+                              style={{ width: 72, height: 72, borderRadius: "50%" }} />
                           ) : (
-                            <div className="university-logo" style={{
-                              width: 64, height: 64, borderRadius: 12,
-                              background: "var(--brand-alpha-weak)",
-                              display: "flex", alignItems: "center", justifyContent: "center",
-                              fontSize: 28, color: "var(--brand-on-background-medium)",
+                            <div className="university-logo-placeholder" style={{
+                              width: 72, height: 72, borderRadius: 16,
                             }}>
-                              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                                 <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
                               </svg>
                             </div>

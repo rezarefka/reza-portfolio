@@ -12,6 +12,7 @@ import { Projects } from "@/components/work/Projects";
 import { Posts } from "@/components/blog/Posts";
 import { HeroSection } from "@/components/cms/HeroSection";
 import { StatisticsSection } from "@/components/cms/StatisticsSection";
+import { ContactSection } from "@/components/cms/ContactSection";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { getSettings } from "@/lib/db";
 
@@ -44,46 +45,61 @@ export default async function Home() {
         }}
       />
 
-      {/* ── Hero ─────────────────────────────────────────────────────── */}
+      {/* ── Hero — always first, no scroll reveal (already has RevealFx) ── */}
       <HeroSection settings={settings} />
 
-      {/* ── Work Preview ─────────────────────────────────────────────── */}
-      <ScrollReveal delay={0}>
+      {/* ── Work Preview — slide up ───────────────────────────────────── */}
+      <ScrollReveal delay={0} type="up" threshold={0.08}>
         <Projects range={[1, 1]} />
       </ScrollReveal>
 
-      {/* ── Blog Preview ─────────────────────────────────────────────── */}
+      {/* ── Blog Preview — stagger children ──────────────────────────── */}
       {routes["/blog"] && (
-        <ScrollReveal delay={60}>
+        <ScrollReveal delay={0} type="fade" threshold={0.08}>
           <Column fillWidth gap="24" marginBottom="l">
-            <Row fillWidth paddingRight="64">
-              <Line maxWidth={48} />
-            </Row>
+            <ScrollReveal type="left" delay={0}>
+              <Row fillWidth paddingRight="64">
+                <Line maxWidth={48} />
+              </Row>
+            </ScrollReveal>
+
             <Row fillWidth gap="24" marginTop="40" s={{ direction: "column" }}>
-              <Row flex={1} paddingLeft="l" paddingTop="24">
-                <Heading as="h2" variant="display-strong-xs" wrap="balance">
-                  Tulisan Terbaru
-                </Heading>
-              </Row>
-              <Row flex={3} paddingX="20">
-                <Posts range={[1, 2]} columns="2" />
-              </Row>
+              <ScrollReveal type="left" delay={80} style={{ flex: 1 }}>
+                <Row flex={1} paddingLeft="l" paddingTop="24">
+                  <Heading as="h2" variant="display-strong-xs" wrap="balance">
+                    Tulisan Terbaru
+                  </Heading>
+                </Row>
+              </ScrollReveal>
+              <ScrollReveal type="right" delay={160} style={{ flex: 3 }}>
+                <Row flex={3} paddingX="20">
+                  <Posts range={[1, 2]} columns="2" />
+                </Row>
+              </ScrollReveal>
             </Row>
-            <Row fillWidth paddingLeft="64" horizontal="end">
-              <Line maxWidth={48} />
-            </Row>
+
+            <ScrollReveal type="right" delay={0}>
+              <Row fillWidth paddingLeft="64" horizontal="end">
+                <Line maxWidth={48} />
+              </Row>
+            </ScrollReveal>
           </Column>
         </ScrollReveal>
       )}
 
       {/* ── More Projects ─────────────────────────────────────────────── */}
-      <ScrollReveal delay={80}>
+      <ScrollReveal delay={0} type="up" threshold={0.08}>
         <Projects range={[2]} />
       </ScrollReveal>
 
       {/* ── Statistics ───────────────────────────────────────────────── */}
-      <ScrollReveal delay={100}>
+      <ScrollReveal delay={0} type="scale" threshold={0.06}>
         <StatisticsSection settings={settings} />
+      </ScrollReveal>
+
+      {/* ── Contact ──────────────────────────────────────────────────── */}
+      <ScrollReveal delay={0} type="up" threshold={0.05}>
+        <ContactSection />
       </ScrollReveal>
     </Column>
   );
