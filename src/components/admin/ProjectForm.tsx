@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { generateSlug } from "@/lib/slug";
 import { TiptapEditor } from "@/components/admin/TiptapEditor";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { ToolsInput } from "@/components/admin/ToolsInput";
 import type { Project, ProjectCategory } from "@/lib/types";
 
 const CATEGORIES: ProjectCategory[] = [
@@ -38,6 +39,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
     attachment: project?.attachment ?? "",
     featured: project?.featured ?? false,
     published: project?.published ?? false,
+    tools: project?.tools ?? [],
   });
 
   const [loading, setLoading] = useState(false);
@@ -64,6 +66,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
     const payload = {
       ...form,
       gallery: [],
+      tools: form.tools,
       updated_at: new Date().toISOString(),
     };
 
@@ -296,6 +299,34 @@ export function ProjectForm({ project }: ProjectFormProps) {
             onChange={(html) => set("content_en", html)}
           />
         )}
+      </Column>
+
+      {/* Tools Used */}
+      <Column gap="m" border="neutral-alpha-weak" radius="m" padding="l" background="surface">
+        <Text variant="label-strong-m">Tools yang Digunakan</Text>
+        <Line background="neutral-alpha-weak" />
+        <Text variant="body-default-s" onBackground="neutral-weak">
+          Tambahkan teknologi / tools yang digunakan dalam proyek ini. Akan tampil sebagai chip di kartu proyek.
+        </Text>
+        <ToolsInput
+          value={form.tools}
+          onChange={(tools) => set("tools", tools)}
+        />
+      </Column>
+
+      {/* Attachment / File Karya */}
+      <Column gap="m" border="neutral-alpha-weak" radius="m" padding="l" background="surface">
+        <Text variant="label-strong-m">File Karya (Attachment)</Text>
+        <Line background="neutral-alpha-weak" />
+        <Text variant="body-default-s" onBackground="neutral-weak">
+          Upload file karya: PDF, video, atau gambar. Akan ditampilkan di halaman preview karya.
+        </Text>
+        <ImageUpload
+          bucket="projects"
+          value={form.attachment}
+          onChange={(url) => set("attachment", url)}
+          accept="image/*,video/*,.pdf"
+        />
       </Column>
 
       {/* Settings */}

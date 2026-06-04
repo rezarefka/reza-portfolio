@@ -25,19 +25,35 @@ export async function Projects({ range, exclude }: ProjectsProps) {
 
     return (
       <Column fillWidth gap="xl" marginBottom="40" paddingX="l">
-        {displayed.map((project, index) => (
-          <ProjectCard
-            priority={index < 2}
-            key={project.slug}
-            href={`/project/${project.slug}`}
-            images={project.gallery?.length > 0 ? project.gallery : project.thumbnail ? [project.thumbnail] : []}
-            title={project.title_id}
-            description={project.description_id}
-            content=""
-            avatars={[]}
-            link={project.live_demo_url || ""}
-          />
-        ))}
+        {displayed.map((project, index) => {
+          // Build images array: thumbnail first, then gallery extras
+          const thumbClean = project.thumbnail ? project.thumbnail.split("?")[0] : "";
+          const images: string[] = [];
+          if (thumbClean) images.push(thumbClean);
+          if (project.gallery?.length > 0) {
+            project.gallery.forEach((g) => {
+              const gc = g.split("?")[0];
+              if (gc && !images.includes(gc)) images.push(gc);
+            });
+          }
+
+          return (
+            <ProjectCard
+              priority={index < 2}
+              key={project.slug}
+              href={`/project/${project.slug}`}
+              images={images}
+              title={project.title_id}
+              description={project.description_id}
+              content=""
+              avatars={[]}
+              link={project.live_demo_url || ""}
+              tools={project.tools ?? []}
+              category={project.category}
+              attachment={project.attachment}
+            />
+          );
+        })}
       </Column>
     );
   }
@@ -70,6 +86,7 @@ export async function Projects({ range, exclude }: ProjectsProps) {
           content={post.content}
           avatars={post.metadata.team?.map((member) => ({ src: member.avatar })) || []}
           link={post.metadata.link || ""}
+          tools={[]}
         />
       ))}
     </Column>

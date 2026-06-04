@@ -22,6 +22,7 @@ export interface Project {
   live_demo_url: string | null;
   featured: boolean;
   published: boolean;
+  tools: string[];
   created_at: string;
   updated_at: string;
 }
