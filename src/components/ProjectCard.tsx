@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface ProjectCardProps {
@@ -45,14 +46,15 @@ function getToolStyle(tool: string) {
 
 function ThumbnailDisplay({ src, title, priority }: { src: string; title: string; priority?: boolean }) {
   const type = getMediaType(src);
-  // Jangan strip query string — Supabase public URLs kadang tidak butuh, tapi signed URLs butuh
-  const cleanSrc = src;
+  const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}`;
+  const [imgSrc, setImgSrc] = useState(src);
+  const [errored, setErrored] = useState(false);
 
   if (type === "video") {
     return (
       <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", background: "#000", borderRadius: "14px 14px 0 0", overflow: "hidden" }}>
         <video
-          src={cleanSrc}
+          src={src}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
           muted playsInline preload="metadata"
           onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play()}
@@ -88,24 +90,38 @@ function ThumbnailDisplay({ src, title, priority }: { src: string; title: string
     );
   }
 
+  // Fallback placeholder jika semua cara gagal
+  if (errored) {
+    return (
+      <div style={{
+        width: "100%", aspectRatio: "16/9", borderRadius: "14px 14px 0 0", overflow: "hidden",
+        background: "linear-gradient(135deg, var(--neutral-alpha-weak) 0%, var(--neutral-alpha-medium) 100%)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+      </div>
+    );
+  }
+
   return (
     <div style={{ width: "100%", aspectRatio: "16/9", borderRadius: "14px 14px 0 0", overflow: "hidden", background: "var(--neutral-alpha-weak)" }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={cleanSrc}
+        src={imgSrc}
         alt={title}
         style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.5s cubic-bezier(0.34,1.2,0.64,1)" }}
         loading={priority ? "eager" : "lazy"}
-        onError={(e) => {
-          const el = e.currentTarget.parentElement!;
-          el.style.background = "var(--neutral-alpha-medium)";
-          e.currentTarget.style.display = "none";
-          // inject fallback icon
-          el.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.2">
-              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
-            </svg>
-          </div>`;
+        onError={() => {
+          if (imgSrc !== proxyUrl) {
+            // Fallback ke proxy server-side jika URL langsung gagal
+            setImgSrc(proxyUrl);
+          } else {
+            // Kedua cara gagal — tampilkan placeholder
+            setErrored(true);
+          }
         }}
       />
     </div>

@@ -92,12 +92,12 @@ export function WorkPageClient({ projects }: WorkPageClientProps) {
       ) : (
         <Column fillWidth gap="xl" marginBottom="40" paddingX="l">
           {filtered.map((project, index) => {
-            // Strip all cache-buster query params from URLs
-            const thumbClean = project.thumbnail ? project.thumbnail.split("?")[0] : "";
-            const galleryClean = (project.gallery ?? []).map((g) => g.split("?")[0]).filter(Boolean);
+            // Keep full URL including cache-buster query param for proper loading
+            const thumbUrl = project.thumbnail ?? "";
+            const galleryUrls = (project.gallery ?? []).filter(Boolean);
             const images: string[] = [];
-            if (thumbClean) images.push(thumbClean);
-            galleryClean.forEach((g) => { if (!images.includes(g)) images.push(g); });
+            if (thumbUrl) images.push(thumbUrl);
+            galleryUrls.forEach((g) => { if (!images.includes(g)) images.push(g); });
 
             return (
               <ProjectCard
@@ -105,6 +105,7 @@ export function WorkPageClient({ projects }: WorkPageClientProps) {
                 key={project.slug}
                 href={`/project/${project.slug}`}
                 images={images}
+                thumbnail={thumbUrl}
                 title={lang === "en" ? project.title_en || project.title_id : project.title_id}
                 description={
                   lang === "en"
@@ -117,6 +118,7 @@ export function WorkPageClient({ projects }: WorkPageClientProps) {
                 tools={project.tools ?? []}
                 category={project.category}
                 attachment={project.attachment}
+                slug={project.slug}
               />
             );
           })}
