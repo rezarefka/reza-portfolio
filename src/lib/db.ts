@@ -16,10 +16,13 @@ export async function getSettings(): Promise<SiteSettings | null> {
 // ─── PROJECTS ─────────────────────────────────────────────────────────────────
 function normalizeProject(p: unknown): import("./types").Project {
   const proj = p as Record<string, unknown>;
+  // Kolom di DB bisa pakai underscore suffix (tools_, gallery_)
+  const tools = proj.tools ?? proj["tools_"];
+  const gallery = proj.gallery ?? proj["gallery_"];
   return {
     ...proj,
-    tools: Array.isArray(proj.tools) ? proj.tools : [],
-    gallery: Array.isArray(proj.gallery) ? proj.gallery : [],
+    tools: Array.isArray(tools) ? tools : [],
+    gallery: Array.isArray(gallery) ? gallery : [],
   } as import("./types").Project;
 }
 
