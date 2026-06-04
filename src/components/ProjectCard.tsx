@@ -42,9 +42,10 @@ function getToolStyle(tool: string) {
   return TOOL_COLORS[tool] ?? { bg: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.65)" };
 }
 
-function ThumbnailDisplay({ src, title }: { src: string; title: string }) {
+function ThumbnailDisplay({ src, title, priority }: { src: string; title: string; priority?: boolean }) {
   const type = getMediaType(src);
-  const cleanSrc = src.split("?")[0];
+  // Jangan strip query string — Supabase public URLs kadang tidak butuh, tapi signed URLs butuh
+  const cleanSrc = src;
 
   if (type === "video") {
     return (
@@ -93,8 +94,7 @@ function ThumbnailDisplay({ src, title }: { src: string; title: string }) {
         src={cleanSrc}
         alt={title}
         style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.5s cubic-bezier(0.34,1.2,0.64,1)" }}
-        loading="lazy"
-        referrerPolicy="no-referrer"
+        loading={priority ? "eager" : "lazy"}
         onError={(e) => {
           const el = e.currentTarget.parentElement!;
           el.style.background = "var(--neutral-alpha-medium)";
@@ -181,7 +181,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         {/* Thumbnail */}
         <div className="proj-thumb">
           {thumbnail ? (
-            <ThumbnailDisplay src={thumbnail} title={title} />
+            <ThumbnailDisplay src={thumbnail} title={title} priority={priority} />
           ) : (
             <div style={{
               width: "100%", aspectRatio: "16/9", borderRadius: "14px 14px 0 0",

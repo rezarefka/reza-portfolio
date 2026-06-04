@@ -27,12 +27,12 @@ export async function Projects({ range, exclude }: ProjectsProps) {
       <Column fillWidth gap="xl" marginBottom="40" paddingX="l">
         {displayed.map((project, index) => {
           // Build images array: thumbnail first, then gallery extras
-          const thumbClean = project.thumbnail ? project.thumbnail.split("?")[0] : "";
+          const thumbClean = project.thumbnail ?? "";
           const images: string[] = [];
           if (thumbClean) images.push(thumbClean);
           if (project.gallery?.length > 0) {
             project.gallery.forEach((g) => {
-              const gc = g.split("?")[0];
+              const gc = g ?? "";
               if (gc && !images.includes(gc)) images.push(gc);
             });
           }

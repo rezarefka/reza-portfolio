@@ -65,7 +65,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
     const supabase = createClient();
     const payload = {
       ...form,
-      gallery: [],
+      gallery: isEdit ? (project?.gallery ?? []) : [],
       tools: form.tools,
       updated_at: new Date().toISOString(),
     };
