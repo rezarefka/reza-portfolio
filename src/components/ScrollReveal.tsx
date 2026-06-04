@@ -1,22 +1,19 @@
 "use client";
 
-import { useEffect, useRef, ReactNode, CSSProperties, Children, cloneElement, isValidElement } from "react";
+import { useEffect, useRef, ReactNode, CSSProperties } from "react";
 
 interface ScrollRevealProps {
   children: ReactNode;
   className?: string;
-  delay?: number;          // ms — delay before reveal
-  type?: "up" | "left" | "right" | "scale" | "fade";
+  delay?: number;
+  type?: "up" | "left" | "right" | "scale" | "fade" | "blur-up" | "slide-up";
   style?: CSSProperties;
-  stagger?: boolean;       // stagger direct children one-by-one
-  staggerDelay?: number;   // ms between each staggered child (default 80)
-  threshold?: number;      // 0–1, how much of element must be visible (default 0.1)
+  stagger?: boolean;
+  staggerDelay?: number;
+  threshold?: number;
+  duration?: number; // ms
 }
 
-/**
- * Wraps children in a div that animates when scrolled into view.
- * When stagger=true, each direct child gets its own cascaded delay.
- */
 export function ScrollReveal({
   children,
   className = "",
@@ -24,8 +21,9 @@ export function ScrollReveal({
   type = "up",
   style,
   stagger = false,
-  staggerDelay = 80,
-  threshold = 0.1,
+  staggerDelay = 90,
+  threshold = 0.08,
+  duration,
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -34,59 +32,54 @@ export function ScrollReveal({
     if (!el) return;
 
     const revealClass =
-      type === "left"  ? "reveal-left"  :
-      type === "right" ? "reveal-right" :
-      type === "scale" ? "reveal-scale" :
-      type === "fade"  ? "reveal-fade"  :
+      type === "left"     ? "reveal-left"    :
+      type === "right"    ? "reveal-right"   :
+      type === "scale"    ? "reveal-scale"   :
+      type === "fade"     ? "reveal-fade"    :
+      type === "blur-up"  ? "reveal-blur-up" :
+      type === "slide-up" ? "reveal-slide-up":
       "reveal";
 
-    // Fallback: force visible after 1.5s jika observer tidak trigger
-    const fallbackTimer = setTimeout(() => {
+    if (duration) {
+      el.style.setProperty("--reveal-duration", `${duration}ms`);
+    }
+
+    const fallback = setTimeout(() => {
       if (stagger) {
-        const kids = Array.from(el.children) as HTMLElement[];
-        kids.forEach((kid) => kid.classList.add("visible"));
+        (Array.from(el.children) as HTMLElement[]).forEach((k) => k.classList.add("visible"));
       } else {
         el.classList.add("visible");
       }
-    }, 1500);
+    }, 2000);
 
     if (stagger) {
-      // Apply stagger to each direct child
       const kids = Array.from(el.children) as HTMLElement[];
       kids.forEach((kid, i) => {
         kid.classList.add(revealClass);
         kid.style.transitionDelay = `${delay + i * staggerDelay}ms`;
       });
-
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            clearTimeout(fallbackTimer);
-            kids.forEach((kid) => kid.classList.add("visible"));
-            observer.unobserve(el);
-          }
-        },
-        { threshold: Math.min(threshold, 0.05), rootMargin: "0px 0px 0px 0px" }
-      );
-      observer.observe(el);
-      return () => { observer.disconnect(); clearTimeout(fallbackTimer); };
+      const obs = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) {
+          clearTimeout(fallback);
+          kids.forEach((k) => k.classList.add("visible"));
+          obs.unobserve(el);
+        }
+      }, { threshold: Math.min(threshold, 0.04), rootMargin: "0px 0px -20px 0px" });
+      obs.observe(el);
+      return () => { obs.disconnect(); clearTimeout(fallback); };
     } else {
       el.classList.add(revealClass);
-
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            clearTimeout(fallbackTimer);
-            setTimeout(() => el.classList.add("visible"), delay);
-            observer.unobserve(el);
-          }
-        },
-        { threshold: Math.min(threshold, 0.05), rootMargin: "0px 0px 0px 0px" }
-      );
-      observer.observe(el);
-      return () => { observer.disconnect(); clearTimeout(fallbackTimer); };
+      const obs = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) {
+          clearTimeout(fallback);
+          setTimeout(() => el.classList.add("visible"), delay);
+          obs.unobserve(el);
+        }
+      }, { threshold: Math.min(threshold, 0.04), rootMargin: "0px 0px -20px 0px" });
+      obs.observe(el);
+      return () => { obs.disconnect(); clearTimeout(fallback); };
     }
-  }, [delay, type, stagger, staggerDelay, threshold]);
+  }, [delay, type, stagger, staggerDelay, threshold, duration]);
 
   return (
     <div ref={ref} className={className} style={style}>

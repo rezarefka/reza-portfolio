@@ -470,3 +470,67 @@ html {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* ─── Reveal Blur-Up ──────────────────────────────────────────────────────── */
+.reveal-blur-up {
+  opacity: 0;
+  transform: translateY(24px);
+  filter: blur(6px);
+  transition:
+    opacity  0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    filter   0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-blur-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* ─── Reveal Slide-Up (lebih jauh, lebih dramatis) ────────────────────────── */
+.reveal-slide-up {
+  opacity: 0;
+  transform: translateY(48px);
+  transition:
+    opacity  0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-slide-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Custom reveal duration override via CSS var ─────────────────────────── */
+[style*="--reveal-duration"] {
+  transition-duration: var(--reveal-duration) !important;
+}
+
+/* ─── Project Card — 3D perspective ──────────────────────────────────────── */
+.project-card {
+  perspective: 900px;
+}
+
+/* ─── Stagger reveal children — for Projects list ────────────────────────── */
+/* Tiap card project muncul dari bawah dengan blur, satu-satu */
+.reveal-blur-up > * {
+  transition:
+    opacity  0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    filter   0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ─── Page enter animation ────────────────────────────────────────────────── */
+@keyframes pageEnterFade {
+  0%   { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+main, [data-page-content] {
+  animation: pageEnterFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ─── Smooth hover lift untuk semua section beranda ──────────────────────── */
+@keyframes sectionGlow {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50%       { box-shadow: 0 0 32px 2px var(--brand-alpha-weak); }
+}

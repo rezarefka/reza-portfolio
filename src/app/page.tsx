@@ -6,7 +6,6 @@ import {
   Line,
   Meta,
   Schema,
-  RevealFx,
   Heading,
 } from "@once-ui-system/core";
 import { home, about, person, baseURL, routes } from "@/resources";
@@ -47,17 +46,19 @@ export default async function Home() {
         }}
       />
 
-      {/* ── Hero — always first, no scroll reveal (already has RevealFx) ── */}
-      <HeroSection settings={settings} />
+      {/* ── Hero — pakai RevealFx bawaan, tambah wrapper fade ── */}
+      <ScrollReveal type="fade" delay={0} duration={600}>
+        <HeroSection settings={settings} />
+      </ScrollReveal>
 
-      {/* ── Work Preview — slide up ───────────────────────────────────── */}
-      <ScrollReveal delay={0} type="up" threshold={0.08}>
+      {/* ── Project Pertama ── */}
+      <ScrollReveal type="blur-up" delay={80} threshold={0.06}>
         <Projects range={[1, 1]} />
       </ScrollReveal>
 
-      {/* ── Blog Preview — stagger children ──────────────────────────── */}
+      {/* ── Blog Preview ── */}
       {routes["/blog"] && (
-        <ScrollReveal delay={0} type="fade" threshold={0.08}>
+        <ScrollReveal type="fade" delay={0} threshold={0.06}>
           <Column fillWidth gap="24" marginBottom="l">
             <ScrollReveal type="left" delay={0}>
               <Row fillWidth paddingRight="64">
@@ -89,18 +90,18 @@ export default async function Home() {
         </ScrollReveal>
       )}
 
-      {/* ── More Projects ─────────────────────────────────────────────── */}
-      <ScrollReveal delay={0} type="up" threshold={0.08}>
+      {/* ── Proyek Lainnya — stagger satu per satu ── */}
+      <ScrollReveal type="blur-up" delay={0} threshold={0.05} stagger staggerDelay={120}>
         <Projects range={[2]} />
       </ScrollReveal>
 
-      {/* ── Statistics ───────────────────────────────────────────────── */}
-      <ScrollReveal delay={0} type="scale" threshold={0.06}>
+      {/* ── Statistik ── */}
+      <ScrollReveal type="slide-up" delay={60} threshold={0.05}>
         <StatisticsSection settings={settings} />
       </ScrollReveal>
 
-      {/* ── Contact ──────────────────────────────────────────────────── */}
-      <ScrollReveal delay={0} type="up" threshold={0.05}>
+      {/* ── Kontak ── */}
+      <ScrollReveal type="blur-up" delay={60} threshold={0.04}>
         <ContactSection settings={settings} />
       </ScrollReveal>
     </Column>
