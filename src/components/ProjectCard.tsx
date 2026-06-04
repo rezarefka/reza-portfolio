@@ -14,19 +14,17 @@ interface ProjectCardProps {
   tools?: string[];
   category?: string;
   attachment?: string | null;
+  slug?: string;
 }
 
-// Detect media type from URL
 function getMediaType(url: string): "image" | "video" | "pdf" | "unknown" {
   const clean = url.split("?")[0].toLowerCase();
   if (/\.(mp4|webm|mov|ogg)$/.test(clean)) return "video";
   if (/\.pdf$/.test(clean)) return "pdf";
   if (/\.(jpg|jpeg|png|gif|webp|avif|svg)$/.test(clean)) return "image";
-  // Supabase public URLs without extension — assume image
   return "image";
 }
 
-// Tool chip color map
 const TOOL_COLORS: Record<string, { bg: string; color: string }> = {
   "React":      { bg: "rgba(97,218,251,0.12)", color: "#61dafb" },
   "Next.js":    { bg: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.8)" },
@@ -46,7 +44,6 @@ function getToolStyle(tool: string) {
 
 function ThumbnailDisplay({ src, title }: { src: string; title: string }) {
   const type = getMediaType(src);
-  // Clean URL — strip all query params (cache busters, timestamps, etc.)
   const cleanSrc = src.split("?")[0];
 
   if (type === "video") {
@@ -55,13 +52,10 @@ function ThumbnailDisplay({ src, title }: { src: string; title: string }) {
         <video
           src={cleanSrc}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          muted
-          playsInline
-          preload="metadata"
+          muted playsInline preload="metadata"
           onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play()}
           onMouseLeave={(e) => { (e.currentTarget as HTMLVideoElement).pause(); (e.currentTarget as HTMLVideoElement).currentTime = 0; }}
         />
-        {/* Video badge */}
         <div style={{
           position: "absolute", bottom: 10, left: 10,
           display: "flex", alignItems: "center", gap: 5,
@@ -79,27 +73,19 @@ function ThumbnailDisplay({ src, title }: { src: string; title: string }) {
   if (type === "pdf") {
     return (
       <div style={{
-        width: "100%", aspectRatio: "16/9",
-        borderRadius: "14px 14px 0 0", overflow: "hidden",
+        width: "100%", aspectRatio: "16/9", borderRadius: "14px 14px 0 0", overflow: "hidden",
         background: "linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%)",
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12,
       }}>
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
           <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>
         </svg>
         <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, fontWeight: 500 }}>Dokumen PDF</span>
-        <div style={{
-          padding: "4px 12px", borderRadius: 99,
-          background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)",
-          color: "rgba(255,255,255,0.8)", fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
-        }}>PDF</div>
       </div>
     );
   }
 
-  // Image (default)
   return (
     <div style={{ width: "100%", aspectRatio: "16/9", borderRadius: "14px 14px 0 0", overflow: "hidden", background: "var(--neutral-alpha-weak)" }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -108,11 +94,17 @@ function ThumbnailDisplay({ src, title }: { src: string; title: string }) {
         alt={title}
         style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.5s cubic-bezier(0.34,1.2,0.64,1)" }}
         loading="lazy"
+        referrerPolicy="no-referrer"
         onError={(e) => {
-          // Fallback: grey placeholder
           const el = e.currentTarget.parentElement!;
           el.style.background = "var(--neutral-alpha-medium)";
           e.currentTarget.style.display = "none";
+          // inject fallback icon
+          el.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </div>`;
         }}
       />
     </div>
@@ -128,9 +120,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   tools = [],
   category,
   attachment,
+  slug,
 }) => {
   const router = useRouter();
   const thumbnail = images[0] ?? "";
+
+  // gallery page URL — derive slug from href if not passed directly
+  const derivedSlug = slug ?? href.split("/project/")[1] ?? "";
+  const galleryHref = derivedSlug ? `/project/${derivedSlug}/gallery` : href;
 
   return (
     <>
@@ -171,6 +168,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           border: 1px solid rgba(255,255,255,0.07);
           white-space: nowrap;
         }
+        .proj-btn {
+          display: flex; align-items: center; gap: 5px;
+          padding: 6px 14px; border-radius: 8px;
+          font-size: 12px; font-weight: 600; cursor: pointer;
+          transition: background 0.15s, color 0.15s;
+          text-decoration: none; border: none;
+        }
       `}</style>
 
       <div className="project-card" onClick={() => router.push(href)}>
@@ -180,8 +184,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             <ThumbnailDisplay src={thumbnail} title={title} />
           ) : (
             <div style={{
-              width: "100%", aspectRatio: "16/9",
-              borderRadius: "14px 14px 0 0",
+              width: "100%", aspectRatio: "16/9", borderRadius: "14px 14px 0 0",
               background: "linear-gradient(135deg, var(--neutral-alpha-weak) 0%, var(--neutral-alpha-medium) 100%)",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
@@ -192,7 +195,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             </div>
           )}
 
-          {/* Hover overlay — "Lihat Detail" */}
           <div className="proj-overlay">
             <div style={{
               display: "flex", alignItems: "center", gap: 6,
@@ -208,7 +210,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             </div>
           </div>
 
-          {/* Category badge */}
           {category && (
             <div style={{
               position: "absolute", top: 10, right: 10,
@@ -224,7 +225,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
         {/* Body */}
         <div style={{ padding: "18px 20px 20px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
-          {/* Title */}
           <h3 style={{
             fontSize: 18, fontWeight: 700, lineHeight: 1.3,
             color: "var(--neutral-on-background-strong)",
@@ -233,7 +233,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             {title}
           </h3>
 
-          {/* Description */}
           {description?.trim() && (
             <p style={{
               fontSize: 13, lineHeight: 1.6,
@@ -245,13 +244,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             </p>
           )}
 
-          {/* Tools */}
           {tools.length > 0 && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
               {tools.slice(0, 6).map((tool) => {
-                const style = getToolStyle(tool);
+                const s = getToolStyle(tool);
                 return (
-                  <span key={tool} className="tool-chip" style={{ background: style.bg, color: style.color }}>
+                  <span key={tool} className="tool-chip" style={{ background: s.bg, color: s.color }}>
                     {tool}
                   </span>
                 );
@@ -264,75 +262,50 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             </div>
           )}
 
-          {/* Footer links */}
-          <div style={{ display: "flex", gap: 12, marginTop: "auto", paddingTop: 8, flexWrap: "wrap", alignItems: "center" }}>
+          {/* Footer buttons */}
+          <div style={{ display: "flex", gap: 10, marginTop: "auto", paddingTop: 8, flexWrap: "wrap", alignItems: "center" }}>
+            {/* Detail Karya — navigasi ke halaman project detail */}
             <button
               onClick={(e) => { e.stopPropagation(); router.push(href); }}
+              className="proj-btn"
               style={{
-                display: "flex", alignItems: "center", gap: 5,
-                padding: "6px 14px", borderRadius: 8,
                 background: "var(--brand-alpha-weak)",
                 color: "var(--brand-on-background-strong)",
                 border: "1px solid var(--brand-alpha-medium)",
-                fontSize: 12, fontWeight: 600, cursor: "pointer",
-                transition: "background 0.15s",
               }}
               onMouseEnter={(e) => { e.currentTarget.style.background = "var(--brand-alpha-medium)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = "var(--brand-alpha-weak)"; }}
             >
-              Lihat Karya
+              Detail Karya
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
             </button>
 
-            {link && (
-              <a
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
+            {/* Lihat Karya — buka halaman gallery media */}
+            {(images.length > 0 || attachment) && (
+              <button
+                onClick={(e) => { e.stopPropagation(); router.push(galleryHref); }}
+                className="proj-btn"
                 style={{
-                  display: "flex", alignItems: "center", gap: 5,
-                  padding: "6px 14px", borderRadius: 8,
                   background: "var(--neutral-alpha-weak)",
                   color: "var(--neutral-on-background-weak)",
-                  border: "1px solid var(--neutral-alpha-weak)",
-                  fontSize: 12, fontWeight: 500,
-                  textDecoration: "none",
-                  transition: "background 0.15s, color 0.15s",
+                  border: "1px solid var(--neutral-alpha-medium)",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--neutral-alpha-medium)"; e.currentTarget.style.color = "var(--neutral-on-background-strong)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "var(--neutral-alpha-weak)"; e.currentTarget.style.color = "var(--neutral-on-background-weak)"; }}
-              >
-                Live Demo
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                </svg>
-              </a>
-            )}
-
-            {attachment && (
-              <a
-                href={attachment.split("?")[0]}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  display: "flex", alignItems: "center", gap: 5,
-                  padding: "6px 14px", borderRadius: 8,
-                  background: "var(--neutral-alpha-weak)",
-                  color: "var(--neutral-on-background-weak)",
-                  border: "1px solid var(--neutral-alpha-weak)",
-                  fontSize: 12, fontWeight: 500,
-                  textDecoration: "none",
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "var(--neutral-alpha-medium)";
+                  e.currentTarget.style.color = "var(--neutral-on-background-strong)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "var(--neutral-alpha-weak)";
+                  e.currentTarget.style.color = "var(--neutral-on-background-weak)";
                 }}
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                  <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
                 </svg>
-                Unduh
-              </a>
+                Lihat Karya
+              </button>
             )}
           </div>
         </div>

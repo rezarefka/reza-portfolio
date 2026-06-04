@@ -51,6 +51,7 @@ export async function Projects({ range, exclude }: ProjectsProps) {
               tools={project.tools ?? []}
               category={project.category}
               attachment={project.attachment}
+              slug={project.slug}
             />
           );
         })}
