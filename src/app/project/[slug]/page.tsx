@@ -20,6 +20,9 @@ import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import { ProjectMediaPreview } from "@/components/cms/ProjectMediaPreview";
 
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   try {
     const projects = await getPublishedProjects();
