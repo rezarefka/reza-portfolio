@@ -28,7 +28,7 @@ export async function generateMetadata() {
 }
 
 export default async function Home() {
-  const settings = await getSettings();
+  const settings = await getSettings().catch(() => null);
 
   return (
     <Column maxWidth="m" gap="xl" paddingY="12" horizontal="center">
@@ -46,19 +46,19 @@ export default async function Home() {
         }}
       />
 
-      {/* ── Hero — pakai RevealFx bawaan, tambah wrapper fade ── */}
-      <ScrollReveal type="fade" delay={0} duration={600}>
+      {/* ── 1. Hero ────────────────────────────────────────────────── */}
+      <ScrollReveal type="fade" delay={0} duration={700}>
         <HeroSection settings={settings} />
       </ScrollReveal>
 
-      {/* ── Project Pertama ── */}
-      <ScrollReveal type="blur-up" delay={80} threshold={0.06}>
-        <Projects range={[1, 1]} />
+      {/* ── 2. Semua Karya (stagger satu per satu) ─────────────────── */}
+      <ScrollReveal type="blur-up" delay={0} threshold={0.04} stagger staggerDelay={100}>
+        <Projects />
       </ScrollReveal>
 
-      {/* ── Blog Preview ── */}
+      {/* ── 3. Tulisan Terbaru ──────────────────────────────────────── */}
       {routes["/blog"] && (
-        <ScrollReveal type="fade" delay={0} threshold={0.06}>
+        <ScrollReveal type="fade" delay={0} threshold={0.05}>
           <Column fillWidth gap="24" marginBottom="l">
             <ScrollReveal type="left" delay={0}>
               <Row fillWidth paddingRight="64">
@@ -90,17 +90,12 @@ export default async function Home() {
         </ScrollReveal>
       )}
 
-      {/* ── Proyek Lainnya — stagger satu per satu ── */}
-      <ScrollReveal type="blur-up" delay={0} threshold={0.05} stagger staggerDelay={120}>
-        <Projects range={[2]} />
-      </ScrollReveal>
-
-      {/* ── Statistik ── */}
+      {/* ── 4. Statistik ───────────────────────────────────────────── */}
       <ScrollReveal type="slide-up" delay={60} threshold={0.05}>
         <StatisticsSection settings={settings} />
       </ScrollReveal>
 
-      {/* ── Kontak ── */}
+      {/* ── 5. Kontak ──────────────────────────────────────────────── */}
       <ScrollReveal type="blur-up" delay={60} threshold={0.04}>
         <ContactSection settings={settings} />
       </ScrollReveal>
