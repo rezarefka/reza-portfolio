@@ -1,24 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Text } from "@once-ui-system/core";
-
-const SUGGESTED_TOOLS = [
-  "React", "Next.js", "TypeScript", "JavaScript", "Python",
-  "Node.js", "Laravel", "Flutter", "Figma", "Supabase",
-  "Tailwind", "PostgreSQL", "MongoDB", "Firebase", "Docker",
-  "Framer", "Adobe XD", "Photoshop", "Illustrator", "Canva",
-  "TensorFlow", "PyTorch", "Pandas", "Tableau", "Power BI",
-  "Vue.js", "Angular", "Django", "FastAPI", "Go",
-];
 
 interface ToolsInputProps {
   value: string[];
   onChange: (tools: string[]) => void;
 }
 
+const SUGGESTIONS = [
+  "React", "Next.js", "TypeScript", "JavaScript", "Python",
+  "Node.js", "Laravel", "Flutter", "Figma", "Supabase",
+  "Tailwind CSS", "PostgreSQL", "MongoDB", "Firebase", "Docker",
+  "Framer", "Adobe XD", "Photoshop", "Illustrator", "Canva",
+  "TensorFlow", "PyTorch", "Pandas", "Tableau", "Power BI",
+  "Vue.js", "Angular", "Django", "FastAPI", "Go",
+  "Swift", "Kotlin", "Unity", "Blender", "After Effects",
+  "Prisma", "Redis", "GraphQL", "REST API", "Vercel",
+];
+
 export function ToolsInput({ value, onChange }: ToolsInputProps) {
   const [inputVal, setInputVal] = useState("");
+  const [focused, setFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const addTool = (tool: string) => {
     const trimmed = tool.trim();
@@ -41,27 +45,31 @@ export function ToolsInput({ value, onChange }: ToolsInputProps) {
     }
   };
 
-  const suggestions = SUGGESTED_TOOLS.filter(
-    (t) => !value.includes(t) && t.toLowerCase().includes(inputVal.toLowerCase())
-  ).slice(0, 8);
+  // Show suggestions only when typing, filtered by input
+  const filteredSuggestions = inputVal.length > 0
+    ? SUGGESTIONS.filter(
+        (t) => !value.includes(t) && t.toLowerCase().includes(inputVal.toLowerCase())
+      ).slice(0, 8)
+    : [];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      {/* Tags display + input */}
+      {/* Tags + input area */}
       <div
         style={{
           display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center",
-          minHeight: 44, padding: "8px 10px",
+          minHeight: 48, padding: "8px 10px",
           background: "var(--neutral-background-medium)",
-          border: "1px solid var(--neutral-alpha-medium)",
+          border: `1px solid ${focused ? "var(--brand-alpha-strong)" : "var(--neutral-alpha-medium)"}`,
           borderRadius: 10, cursor: "text",
+          transition: "border-color 0.15s",
         }}
-        onClick={() => document.getElementById("tools-input")?.focus()}
+        onClick={() => inputRef.current?.focus()}
       >
         {value.map((tool) => (
           <span key={tool} style={{
             display: "inline-flex", alignItems: "center", gap: 5,
-            padding: "3px 10px", borderRadius: 99,
+            padding: "4px 10px", borderRadius: 99,
             background: "var(--brand-alpha-weak)",
             color: "var(--brand-on-background-strong)",
             border: "1px solid var(--brand-alpha-medium)",
@@ -81,79 +89,69 @@ export function ToolsInput({ value, onChange }: ToolsInputProps) {
           </span>
         ))}
         <input
+          ref={inputRef}
           id="tools-input"
           value={inputVal}
           onChange={(e) => setInputVal(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={value.length === 0 ? "Ketik tool lalu Enter... (misal: React, Figma)" : ""}
+          onFocus={() => setFocused(true)}
+          onBlur={() => { setFocused(false); }}
+          placeholder={value.length === 0 ? "Type a tool name, then press Enter or comma..." : "Add more..."}
           style={{
             border: "none", outline: "none", background: "none",
             color: "var(--neutral-on-background-strong)",
-            fontSize: 13, fontFamily: "inherit", minWidth: 160, flex: 1,
+            fontSize: 13, fontFamily: "inherit", minWidth: 200, flex: 1,
           }}
         />
       </div>
 
-      {/* Quick suggestions */}
-      {inputVal.length > 0 && suggestions.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-          {suggestions.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => addTool(s)}
-              style={{
-                padding: "3px 10px", borderRadius: 99, fontSize: 11, fontWeight: 500,
-                background: "var(--neutral-alpha-weak)",
-                color: "var(--neutral-on-background-weak)",
-                border: "1px solid var(--neutral-alpha-medium)",
-                cursor: "pointer",
-                transition: "background 0.15s, color 0.15s",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--brand-alpha-weak)"; e.currentTarget.style.color = "var(--brand-on-background-strong)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "var(--neutral-alpha-weak)"; e.currentTarget.style.color = "var(--neutral-on-background-weak)"; }}
-            >
-              + {s}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Popular tools chips (when empty) */}
-      {value.length === 0 && inputVal.length === 0 && (
-        <div>
+      {/* Autocomplete dropdown */}
+      {filteredSuggestions.length > 0 && (
+        <div style={{
+          padding: "8px 10px",
+          background: "var(--neutral-background-strong)",
+          border: "1px solid var(--neutral-alpha-medium)",
+          borderRadius: 10,
+        }}>
           <Text variant="label-default-xs" onBackground="neutral-weak" style={{ marginBottom: 6, display: "block" }}>
-            Pilih cepat:
+            Suggestions
           </Text>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-            {SUGGESTED_TOOLS.slice(0, 12).map((s) => (
+            {filteredSuggestions.map((s) => (
               <button
                 key={s}
                 type="button"
-                onClick={() => addTool(s)}
+                onMouseDown={(e) => { e.preventDefault(); addTool(s); }}
                 style={{
-                  padding: "3px 10px", borderRadius: 99, fontSize: 11, fontWeight: 500,
+                  padding: "4px 10px", borderRadius: 99, fontSize: 11, fontWeight: 500,
                   background: "var(--neutral-alpha-weak)",
-                  color: "var(--neutral-on-background-weak)",
+                  color: "var(--neutral-on-background-medium)",
                   border: "1px solid var(--neutral-alpha-medium)",
                   cursor: "pointer",
-                  transition: "background 0.15s, color 0.15s",
+                  transition: "background 0.12s, color 0.12s",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--brand-alpha-weak)"; e.currentTarget.style.color = "var(--brand-on-background-strong)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "var(--neutral-alpha-weak)"; e.currentTarget.style.color = "var(--neutral-on-background-weak)"; }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "var(--brand-alpha-weak)";
+                  e.currentTarget.style.color = "var(--brand-on-background-strong)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "var(--neutral-alpha-weak)";
+                  e.currentTarget.style.color = "var(--neutral-on-background-medium)";
+                }}
               >
-                {s}
+                + {s}
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {value.length > 0 && (
-        <Text variant="body-default-xs" onBackground="neutral-weak">
-          {value.length} tool dipilih · Klik × untuk hapus · Enter atau koma untuk tambah
-        </Text>
-      )}
+      {/* Status hint */}
+      <Text variant="body-default-xs" onBackground="neutral-weak">
+        {value.length > 0
+          ? `${value.length} tool${value.length > 1 ? "s" : ""} added · Press × to remove · Enter or comma to add`
+          : "Type any tool name freely — not limited to suggestions"}
+      </Text>
     </div>
   );
 }

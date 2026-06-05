@@ -96,16 +96,16 @@ const Icons = {
 };
 
 const allNavItems = [
-  { href: "/reza-control",              label: "Dashboard",    icon: Icons.dashboard },
-  { href: "/reza-control/projects",     label: "Projects",     icon: Icons.projects },
-  { href: "/reza-control/certificates", label: "Sertifikat",   icon: Icons.certificates },
-  { href: "/reza-control/blogs",        label: "Blogs",        icon: Icons.blogs },
-  { href: "/reza-control/gallery",      label: "Gallery",      icon: Icons.gallery },
-  { href: "/reza-control/media",        label: "Media",        icon: Icons.media },
-  { href: "/reza-control/analytics",    label: "Analytics",    icon: Icons.analytics },
-  { href: "/reza-control/about",        label: "About CMS",    icon: Icons.about },
-  { href: "/reza-control/settings",     label: "Settings",     icon: Icons.settings },
-  { href: "/reza-control/account",      label: "Akun",         icon: Icons.account },
+  { href: "/reza-control",              label: "Dashboard",      icon: Icons.dashboard },
+  { href: "/reza-control/projects",     label: "Projects",       icon: Icons.projects },
+  { href: "/reza-control/certificates", label: "Certificates",   icon: Icons.certificates },
+  { href: "/reza-control/blogs",        label: "Blog Posts",     icon: Icons.blogs },
+  { href: "/reza-control/gallery",      label: "Gallery",        icon: Icons.gallery },
+  { href: "/reza-control/media",        label: "Media Library",  icon: Icons.media },
+  { href: "/reza-control/analytics",    label: "Analytics",      icon: Icons.analytics },
+  { href: "/reza-control/about",        label: "About Page",     icon: Icons.about },
+  { href: "/reza-control/settings",     label: "Site Settings",  icon: Icons.settings },
+  { href: "/reza-control/account",      label: "My Account",     icon: Icons.account },
 ];
 
 // Bottom nav shows only 4 primary items + "More" drawer
@@ -223,7 +223,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
               }}
             >
               {Icons.logout}
-              <span style={{ fontSize: 10, fontWeight: 600 }}>Keluar</span>
+              <span style={{ fontSize: 10, fontWeight: 600 }}>Sign Out</span>
             </button>
           </div>
         </div>
@@ -306,7 +306,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           >
             {moreOpen ? Icons.close : Icons.more}
             <span style={{ fontSize: 10, fontWeight: 500, lineHeight: 1 }}>
-              {moreOpen ? "Tutup" : "Lainnya"}
+              {moreOpen ? "Close" : "More"}
             </span>
           </button>
         </nav>
@@ -489,13 +489,13 @@ export function AdminShell({ children, user }: AdminShellProps) {
             <button
               onClick={handleLogout}
               className="cms-nav-item logout-btn"
-              title={collapsed ? "Keluar" : undefined}
+              title={collapsed ? "Sign Out" : undefined}
               style={{ justifyContent: collapsed ? "center" : "flex-start" }}
             >
               <span style={{ flexShrink: 0, width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {Icons.logout}
               </span>
-              {!collapsed && <span>Keluar</span>}
+              {!collapsed && <span>Sign Out</span>}
             </button>
           </div>
         </div>
