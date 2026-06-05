@@ -1,485 +1,60 @@
 /* ─── Page Load Fade-in ──────────────────────────────────────────────────── */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-/* Apply fade-in to main page content on load */
-body > * {
-  animation: fadeIn 0.5s ease both;
-}
-
-/* Staggered children fade-in for page sections */
-.page-section {
-  opacity: 0;
-  animation: fadeInUp 0.6s ease forwards;
-}
-.page-section:nth-child(1) { animation-delay: 0.05s; }
-.page-section:nth-child(2) { animation-delay: 0.15s; }
-.page-section:nth-child(3) { animation-delay: 0.25s; }
-.page-section:nth-child(4) { animation-delay: 0.35s; }
-.page-section:nth-child(5) { animation-delay: 0.45s; }
-
-/* ─── Scroll Reveal ──────────────────────────────────────────────────────── */
-.reveal {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.reveal-left {
-  opacity: 0;
-  transform: translateX(-24px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-.reveal-left.visible {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.reveal-scale {
-  opacity: 0;
-  transform: scale(0.96);
-  transition: opacity 0.55s ease, transform 0.55s ease;
-}
-.reveal-scale.visible {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* ─── Responsive Mobile Fixes ────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  /* Reduce hero font on small screens */
-  [data-variant="display-strong-l"] {
-    font-size: clamp(1.8rem, 7vw, 2.8rem) !important;
-  }
-  [data-variant="display-strong-m"] {
-    font-size: clamp(1.5rem, 6vw, 2.2rem) !important;
-  }
-
-  /* Full-width cards on mobile */
-  .project-card,
-  [class*="ProjectCard"] {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  /* Admin sidebar on mobile — collapse fully */
-  .admin-sidebar {
-    transform: translateX(-100%);
-  }
-
-  /* Statistics section — stack on mobile */
-  .stats-row {
-    flex-direction: column !important;
-    gap: 16px !important;
-  }
-
-  /* Prevent horizontal overflow */
-  body, html {
-    overflow-x: hidden;
-  }
-
-  /* Charts on mobile — full width */
-  .recharts-responsive-container {
-    min-width: 0 !important;
-  }
-}
-
-/* ─── CMS Content Styles ─────────────────────────────────────────────────── */
-.cms-content {
-  font-size: 1rem;
-  line-height: 1.75;
-  color: var(--neutral-on-background-strong);
-  word-break: break-word;
-}
-
-.cms-content h1 {
-  font-size: clamp(1.4rem, 4vw, 1.75rem);
-  font-weight: 700;
-  margin: 2rem 0 1rem;
-}
-.cms-content h2 {
-  font-size: clamp(1.2rem, 3.5vw, 1.4rem);
-  font-weight: 700;
-  margin: 1.75rem 0 0.875rem;
-}
-.cms-content h3 {
-  font-size: clamp(1.05rem, 3vw, 1.15rem);
-  font-weight: 700;
-  margin: 1.5rem 0 0.75rem;
-}
-.cms-content p { margin-bottom: 1.25rem; }
-.cms-content ul, .cms-content ol {
-  padding-left: 1.5rem;
-  margin-bottom: 1.25rem;
-}
-.cms-content li { margin-bottom: 0.5rem; }
-.cms-content blockquote {
-  border-left: 3px solid var(--brand-background-strong);
-  padding: 0.5rem 0 0.5rem 1.25rem;
-  margin: 1.5rem 0;
-  color: var(--neutral-on-background-weak);
-  font-style: italic;
-}
-.cms-content code {
-  background: var(--neutral-alpha-weak);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: var(--font-code), monospace;
-  font-size: 0.875em;
-  word-break: break-all;
-}
-.cms-content pre {
-  background: var(--neutral-background-strong);
-  padding: 1.25rem;
-  border-radius: 8px;
-  overflow-x: auto;
-  margin: 1.5rem 0;
-}
-.cms-content pre code { background: none; padding: 0; word-break: normal; }
-.cms-content img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin: 1.5rem 0;
-  display: block;
-}
-.cms-content a {
-  color: var(--brand-on-background-medium);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.cms-content a:hover { color: var(--brand-on-background-strong); }
-.cms-content hr {
-  border: none;
-  border-top: 1px solid var(--neutral-alpha-medium);
-  margin: 2rem 0;
-}
-
-/* ─── Smooth image loading ───────────────────────────────────────────────── */
-img {
-  transition: opacity 0.3s ease;
-}
-/* REMOVED: img[loading] { opacity: 0 } — caused all images to be permanently invisible
-   because no JS ever adds the .loaded class. Images are visible by default. */
-
-/* ─── Admin Layout Override ──────────────────────────────────────────────── */
-[data-admin-page] {
-  max-width: 100% !important;
-}
-
-/* ─── Card hover lift ────────────────────────────────────────────────────── */
-a[href] > [class*="Card"],
-[class*="Card"][href] {
-  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-}
-a[href] > [class*="Card"]:hover,
-[class*="Card"][href]:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-}
-
-/* ─── Shimmer / Kilau Button ─────────────────────────────────────────────── */
-@keyframes shimmer {
-  0%   { transform: translateX(-100%) skewX(-15deg); }
-  100% { transform: translateX(200%) skewX(-15deg); }
-}
-
-.shimmer-btn {
-  position: relative;
-  overflow: hidden;
-}
-
-.shimmer-btn::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 40%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.18) 50%,
-    transparent 100%
-  );
-  animation: shimmer 2.4s ease-in-out infinite;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* ─── University Logo — Elegant Shimmer Sweep Looping ───────────────────── */
-
-/* Shimmer sweep keyframe — beam glides across from left to right, loops */
-@keyframes logoShimmerSweep {
-  0%   { background-position: -200% center; }
-  100% { background-position: 300% center; }
-}
-
-/* Soft pulse glow — subtler, no floatLogo bounce */
-@keyframes logoBorderGlow {
-  0%, 100% {
-    box-shadow:
-      0 0 0px 0px transparent,
-      0 2px 16px rgba(99, 179, 237, 0.12);
-  }
-  50% {
-    box-shadow:
-      0 0 0px 3px rgba(99, 179, 237, 0.18),
-      0 4px 28px rgba(99, 179, 237, 0.28),
-      0 0 48px rgba(148, 163, 184, 0.08);
-  }
-}
-
-/* Wrapper — controls border-radius via CSS variable */
-.university-logo-wrap {
-  position: relative;
-  display: inline-block;
-  flex-shrink: 0;
-  animation: logoBorderGlow 4s ease-in-out infinite;
-  /* border-radius injected inline per-item */
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
-}
-
-.university-logo-wrap:hover {
-  transform: scale(1.07) translateY(-2px);
-  animation-play-state: paused;
-  box-shadow:
-    0 0 0px 2px rgba(99, 179, 237, 0.45),
-    0 6px 32px rgba(99, 179, 237, 0.35);
-}
-
-/* Shimmer overlay — pseudo-element sweeping shine */
-.university-logo-wrap::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(
-    105deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.22) 50%,
-    transparent 70%
-  );
-  background-size: 250% 100%;
-  animation: logoShimmerSweep 3.2s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* The actual image inside the wrapper */
-.university-logo {
-  display: block;
-  object-fit: contain;
-  background: var(--neutral-alpha-weak);
-  padding: 8px;
-  /* border-radius inherited from parent */
-}
-
-/* Fallback SVG icon container */
-.university-logo-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--brand-alpha-weak);
-  color: var(--brand-on-background-medium);
-}
-
-/* ─── Glassmorphism Loading Skeleton ────────────────────────────────────── */
-@keyframes skeletonShimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
-
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--neutral-alpha-weak) 25%,
-    rgba(255,255,255,0.07) 50%,
-    var(--neutral-alpha-weak) 75%
-  );
-  background-size: 800px 100%;
-  animation: skeletonShimmer 1.4s infinite linear;
-  border-radius: 8px;
-}
-
-/* ─── Page Transition Loader ─────────────────────────────────────────────── */
-@keyframes pageLoadBar {
-  0%   { width: 0%; opacity: 1; }
-  70%  { width: 85%; opacity: 1; }
-  100% { width: 100%; opacity: 0; }
-}
-
-.page-load-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--brand-background-strong), var(--accent-background-strong));
-  animation: pageLoadBar 0.8s ease forwards;
-  z-index: 9999;
-  pointer-events: none;
-}
-
-/* ─── Glassmorphism Card (for CMS admin) ─────────────────────────────────── */
-.glass-card {
-  background: rgba(255, 255, 255, 0.04) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-}
-
-/* ─── CMS Mobile Responsive ──────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  /* Admin content full width */
-  .admin-content {
-    padding: 16px !important;
-    margin-left: 0 !important;
-  }
-
-  /* Form fields full width on mobile */
-  .form-row-mobile {
-    flex-direction: column !important;
-  }
-
-  /* Tiptap editor smaller on mobile */
-  .tiptap-mobile .ProseMirror {
-    min-height: 180px !important;
-    font-size: 15px !important;
-  }
-
-  /* Tables scroll horizontal */
-  .table-scroll {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
-/* ─── Smooth scroll behavior ─────────────────────────────────────────────── */
-html {
-  scroll-behavior: smooth;
-}
-
-/* ─── Focus visible for accessibility ───────────────────────────────────── */
-:focus-visible {
-  outline: 2px solid var(--brand-background-strong);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* ─── Contact Section ────────────────────────────────────────────────────── */
-@keyframes contactBeamSweep {
-  0%   { transform: translateX(-100%) rotate(15deg); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { transform: translateX(200%) rotate(15deg); opacity: 0; }
-}
-
-@keyframes contactPulseRing {
-  0%   { transform: scale(0.95); opacity: 0.7; }
-  50%  { transform: scale(1.05); opacity: 0.35; }
-  100% { transform: scale(0.95); opacity: 0.7; }
-}
-
-.contact-card-beam {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  border-radius: inherit;
-  z-index: 0;
-}
-
-.contact-card-beam::before {
-  content: "";
-  position: absolute;
-  top: -20%;
-  left: -60%;
-  width: 40%;
-  height: 140%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255,255,255,0.06) 40%,
-    rgba(255,255,255,0.12) 50%,
-    rgba(255,255,255,0.06) 60%,
-    transparent
-  );
-  animation: contactBeamSweep 5s ease-in-out infinite;
-}
-
-.contact-item-hover {
-  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease, border-color 0.22s ease;
-}
-.contact-item-hover:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-  border-color: var(--brand-alpha-medium) !important;
-}
-
-/* ─── Additional Reveal Variants ────────────────────────────────────────── */
-.reveal-right {
-  opacity: 0;
-  transform: translateX(24px);
-  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.reveal-right.visible {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.reveal-fade {
-  opacity: 0;
-  transition: opacity 0.7s ease;
-}
-.reveal-fade.visible {
-  opacity: 1;
-}
-
-/* Smoother base reveal — improved easing */
+/* ─── Scroll Reveal — semua class HARUS opacity:0 agar animasi saat scroll ─ */
 .reveal {
   opacity: 0;
   transform: translateY(32px);
-  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1),
+              transform 0.7s cubic-bezier(0.22,1,0.36,1);
 }
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+.reveal.visible { opacity: 1; transform: translateY(0); }
 
-/* ─── Reveal Blur-Up ──────────────────────────────────────────────────────── */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-28px);
+  transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1),
+              transform 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(28px);
+  transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1),
+              transform 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.94);
+  transition: opacity 0.6s cubic-bezier(0.34,1.2,0.64,1),
+              transform 0.6s cubic-bezier(0.34,1.2,0.64,1);
+}
+.reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+.reveal-fade {
+  opacity: 0;
+  transition: opacity 0.75s ease;
+}
+.reveal-fade.visible { opacity: 1; }
+
+/* Blur-up — naik + blur hilang, elegan */
 .reveal-blur-up {
   opacity: 0;
-  transform: translateY(24px);
-  filter: blur(6px);
-  transition:
-    opacity  0.75s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
-    filter   0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(26px);
+  filter: blur(8px);
+  transition: opacity  0.8s cubic-bezier(0.22,1,0.36,1),
+              transform 0.8s cubic-bezier(0.22,1,0.36,1),
+              filter   0.7s cubic-bezier(0.22,1,0.36,1);
 }
 .reveal-blur-up.visible {
   opacity: 1;
@@ -487,50 +62,174 @@ html {
   filter: blur(0);
 }
 
-/* ─── Reveal Slide-Up (lebih jauh, lebih dramatis) ────────────────────────── */
+/* Slide-up dramatis untuk section besar */
 .reveal-slide-up {
   opacity: 0;
-  transform: translateY(48px);
-  transition:
-    opacity  0.9s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(52px);
+  transition: opacity  0.95s cubic-bezier(0.16,1,0.3,1),
+              transform 0.95s cubic-bezier(0.16,1,0.3,1);
 }
-.reveal-slide-up.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+.reveal-slide-up.visible { opacity: 1; transform: translateY(0); }
 
-/* ─── Custom reveal duration override via CSS var ─────────────────────────── */
-[style*="--reveal-duration"] {
-  transition-duration: var(--reveal-duration) !important;
-}
+/* Duration override via CSS var */
+[style*="--reveal-duration"] { transition-duration: var(--reveal-duration) !important; }
 
-/* ─── Project Card — 3D perspective ──────────────────────────────────────── */
-.project-card {
-  perspective: 900px;
-}
-
-/* ─── Stagger reveal children — for Projects list ────────────────────────── */
-/* Tiap card project muncul dari bawah dengan blur, satu-satu */
-.reveal-blur-up > * {
-  transition:
-    opacity  0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    filter   0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* ─── Page enter animation ────────────────────────────────────────────────── */
+/* ─── Page enter — hanya untuk wrapper utama ─────────────────────────────── */
 @keyframes pageEnterFade {
-  0%   { opacity: 0; transform: translateY(12px); }
-  100% { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
 main, [data-page-content] {
-  animation: pageEnterFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: pageEnterFade 0.55s cubic-bezier(0.22,1,0.36,1) both;
 }
 
-/* ─── Smooth hover lift untuk semua section beranda ──────────────────────── */
-@keyframes sectionGlow {
-  0%, 100% { box-shadow: 0 0 0 0 transparent; }
-  50%       { box-shadow: 0 0 32px 2px var(--brand-alpha-weak); }
+/* ─── Project Card ───────────────────────────────────────────────────────── */
+.project-card { perspective: 900px; }
+
+/* ─── Responsive Mobile ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  [data-variant="display-strong-l"] { font-size: clamp(1.8rem,7vw,2.8rem) !important; }
+  [data-variant="display-strong-m"] { font-size: clamp(1.5rem,6vw,2.2rem) !important; }
+  .project-card, [class*="ProjectCard"] { width:100% !important; max-width:100% !important; }
+  .stats-row { flex-direction:column !important; gap:16px !important; }
+  body, html { overflow-x: hidden; }
+}
+
+/* ─── CMS Content ────────────────────────────────────────────────────────── */
+.cms-content {
+  font-size:1rem; line-height:1.75;
+  color:var(--neutral-on-background-strong); word-break:break-word;
+}
+.cms-content h1 { font-size:clamp(1.4rem,4vw,1.75rem); font-weight:700; margin:2rem 0 1rem; }
+.cms-content h2 { font-size:clamp(1.2rem,3.5vw,1.4rem); font-weight:700; margin:1.75rem 0 .875rem; }
+.cms-content h3 { font-size:clamp(1.05rem,3vw,1.15rem); font-weight:700; margin:1.5rem 0 .75rem; }
+.cms-content p  { margin-bottom:1.25rem; }
+.cms-content ul,.cms-content ol { padding-left:1.5rem; margin-bottom:1.25rem; }
+.cms-content li { margin-bottom:.5rem; }
+.cms-content blockquote {
+  border-left:3px solid var(--brand-background-strong);
+  padding:.5rem 0 .5rem 1.25rem; margin:1.5rem 0;
+  color:var(--neutral-on-background-weak); font-style:italic;
+}
+.cms-content code {
+  background:var(--neutral-alpha-weak); padding:2px 6px;
+  border-radius:4px; font-size:.875em; word-break:break-all;
+}
+.cms-content pre {
+  background:var(--neutral-background-strong); padding:1.25rem;
+  border-radius:8px; overflow-x:auto; margin:1.5rem 0;
+}
+.cms-content pre code { background:none; padding:0; word-break:normal; }
+.cms-content img { max-width:100%; height:auto; border-radius:8px; margin:1.5rem 0; display:block; }
+.cms-content a { color:var(--brand-on-background-medium); text-decoration:underline; text-underline-offset:3px; }
+.cms-content a:hover { color:var(--brand-on-background-strong); }
+.cms-content hr { border:none; border-top:1px solid var(--neutral-alpha-medium); margin:2rem 0; }
+
+/* ─── Admin ──────────────────────────────────────────────────────────────── */
+[data-admin-page] { max-width:100% !important; }
+@media (max-width:768px) {
+  .admin-content { padding:16px !important; margin-left:0 !important; }
+  .tiptap-mobile .ProseMirror { min-height:180px !important; font-size:15px !important; }
+  .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+}
+
+/* ─── Card hover lift ────────────────────────────────────────────────────── */
+a[href] > [class*="Card"], [class*="Card"][href] {
+  transition: transform .2s ease, box-shadow .2s ease !important;
+}
+a[href] > [class*="Card"]:hover, [class*="Card"][href]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.15);
+}
+
+/* ─── Shimmer Button ─────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+.shimmer-btn { position:relative; overflow:hidden; }
+.shimmer-btn::before {
+  content:""; position:absolute; top:0; left:0; width:40%; height:100%;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.18) 50%,transparent 100%);
+  animation:shimmer 2.4s ease-in-out infinite;
+  border-radius:inherit; pointer-events:none; z-index:1;
+}
+
+/* ─── University Logo Shimmer ────────────────────────────────────────────── */
+@keyframes logoShimmerSweep {
+  0%   { background-position:-200% center; }
+  100% { background-position:300% center; }
+}
+@keyframes logoBorderGlow {
+  0%,100% { box-shadow:0 0 0px 0px transparent,0 2px 16px rgba(99,179,237,.12); }
+  50%      { box-shadow:0 0 0px 3px rgba(99,179,237,.18),0 4px 28px rgba(99,179,237,.28); }
+}
+.university-logo-wrap {
+  position:relative; display:inline-block; flex-shrink:0;
+  animation:logoBorderGlow 4s ease-in-out infinite;
+  transition:transform .35s cubic-bezier(0.34,1.56,0.64,1),box-shadow .35s ease;
+}
+.university-logo-wrap:hover {
+  transform:scale(1.07) translateY(-2px);
+  animation-play-state:paused;
+  box-shadow:0 0 0px 2px rgba(99,179,237,.45),0 6px 32px rgba(99,179,237,.35);
+}
+.university-logo-wrap::after {
+  content:""; position:absolute; inset:0; border-radius:inherit;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);
+  background-size:250% 100%;
+  animation:logoShimmerSweep 3.2s ease-in-out infinite;
+  pointer-events:none; z-index:2;
+}
+.university-logo { display:block; object-fit:contain; background:var(--neutral-alpha-weak); padding:8px; }
+
+/* ─── Skeleton ───────────────────────────────────────────────────────────── */
+@keyframes skeletonShimmer {
+  0%   { background-position:-400px 0; }
+  100% { background-position:400px 0; }
+}
+.skeleton {
+  background:linear-gradient(90deg,var(--neutral-alpha-weak) 25%,rgba(255,255,255,.07) 50%,var(--neutral-alpha-weak) 75%);
+  background-size:800px 100%; animation:skeletonShimmer 1.4s infinite linear; border-radius:8px;
+}
+
+/* ─── Contact Section ────────────────────────────────────────────────────── */
+@keyframes contactPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.5)} }
+.contact-item-hover {
+  transition:transform .22s cubic-bezier(0.34,1.56,0.64,1),box-shadow .22s ease,border-color .22s ease;
+}
+.contact-item-hover:hover {
+  transform:translateY(-3px);
+  box-shadow:0 8px 32px rgba(0,0,0,.12);
+  border-color:var(--brand-alpha-medium) !important;
+}
+
+/* ─── Smooth scroll & focus ──────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+:focus-visible { outline:2px solid var(--brand-background-strong); outline-offset:2px; border-radius:4px; }
+
+/* ─── Education Card ─────────────────────────────────────────────────────── */
+@keyframes eduCardIn {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.edu-card {
+  display:flex; border-radius:20px; overflow:hidden;
+  border:1px solid var(--neutral-alpha-weak);
+  background:var(--neutral-background-medium);
+  transition:box-shadow .26s ease,transform .26s cubic-bezier(0.34,1.56,0.64,1),border-color .22s;
+}
+.edu-card:hover {
+  transform:translateY(-3px);
+  box-shadow:0 12px 40px color-mix(in srgb,var(--neutral-on-background-strong) 8%,transparent);
+  border-color:var(--neutral-alpha-medium);
+}
+
+/* ─── Certificate Card Hover ─────────────────────────────────────────────── */
+.cert-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.cert-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15);
 }

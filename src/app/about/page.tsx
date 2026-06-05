@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import {
   Button,
   Column,
@@ -24,6 +26,15 @@ import {
   getAboutOrganizations,
 } from "@/lib/db";
 import { format } from "date-fns";
+function safeDate(d: string | null | undefined, fmt: string, opts?: Parameters<typeof format>[2]): string {
+  if (!d) return "—";
+  try {
+    const date = new Date(d);
+    if (isNaN(date.getTime())) return "—";
+    return format(date, fmt, opts);
+  } catch { return "—"; }
+}
+
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { AvatarFromCms } from "@/components/about/AvatarFromCms";
 import { SkillsMarquee } from "@/components/about/SkillsMarquee";
@@ -545,21 +556,12 @@ export default async function About() {
                 {certificates.map((cert, i) => (
                   <ScrollReveal key={cert.id} delay={i * 40}>
                     <a href={`/certificate/${cert.id}`} style={{ textDecoration: "none", display: "block" }}>
-                      <div style={{
+                      <div className="cert-card" style={{
                         borderRadius: 12, overflow: "hidden",
                         border: "1px solid var(--neutral-alpha-weak)",
                         background: "var(--neutral-background-medium)",
                         transition: "transform 0.2s, box-shadow 0.2s",
-                      }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = "translateY(-3px)";
-                          e.currentTarget.style.boxShadow = "0 8px 24px rgba(245,158,11,0.15)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = "translateY(0)";
-                          e.currentTarget.style.boxShadow = "none";
-                        }}
-                      >
+                      }}>
                         {cert.thumbnail && (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={cert.thumbnail} alt={cert.title_id}
@@ -583,7 +585,7 @@ export default async function About() {
                             {cert.issuer}
                           </span>
                           <div style={{ marginTop: 4, fontSize: 11, color: "var(--neutral-on-background-weak)" }}>
-                            {cert.issue_date ? format(new Date(cert.issue_date), "MMMM yyyy") : "—"}
+                            {safeDate(cert.issue_date, "MMMM yyyy")}
                           </div>
                         </div>
                       </div>
