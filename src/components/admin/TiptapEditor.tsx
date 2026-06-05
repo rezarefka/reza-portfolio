@@ -121,7 +121,7 @@ export function TiptapEditor({ value, onChange, placeholder }: TiptapEditorProps
       setRawHtml(editor.getHTML());
       setHtmlMode(true);
     } else {
-      editor.commands.setContent(rawHtml, true);
+      editor.commands.setContent(rawHtml, { emitUpdate: false });
       onChange(rawHtml);
       setHtmlMode(false);
     }
