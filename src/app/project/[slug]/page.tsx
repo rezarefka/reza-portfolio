@@ -13,12 +13,12 @@ import {
 import { baseURL, about, person } from "@/resources";
 import { getProjectBySlug, getPublishedProjects } from "@/lib/db";
 import { Metadata } from "next";
-import { Projects } from "@/components/work/Projects";
+import { RelatedProjectsCarousel } from "@/components/work/RelatedProjectsCarousel";
 import { ScrollToHash } from "@/components";
 import { ProjectContent } from "@/components/cms/ProjectContent";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
-import { ProjectMediaPreview } from "@/components/cms/ProjectMediaPreview";
+import { ProjectGalleryInline } from "@/components/cms/ProjectGalleryInline";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -167,26 +167,24 @@ export default async function ProjectPage({
         </Row>
       )}
 
-      {/* ── Media Preview ─────────────────────────────────────────
-          Priority: attachment (video/pdf/image) → thumbnail
-      ─────────────────────────────────────────────────────────── */}
-      <ProjectMediaPreview
+      {/* ── Media Gallery (semua format: gambar/video/pdf) ─────────── */}
+      <ProjectGalleryInline
         thumbnail={thumbClean}
         attachment={attachClean}
-        title={project.title_id}
         gallery={project.gallery?.map((g) => g.split("?")[0]).filter(Boolean) ?? []}
+        title={project.title_id}
       />
 
       {/* ── Content ──────────────────────────────────────────────── */}
       <ProjectContent project={project} />
 
       {/* ── Related projects ─────────────────────────────────────── */}
-      <Column fillWidth gap="40" horizontal="center" marginTop="40">
+      <Column fillWidth gap="32" horizontal="center" marginTop="40">
         <Line maxWidth="40" />
-        <Heading as="h2" variant="heading-strong-xl" marginBottom="24">
+        <Heading as="h2" variant="heading-strong-xl">
           Proyek Terkait
         </Heading>
-        <Projects exclude={[project.slug]} range={[1, 2]} />
+        <RelatedProjectsCarousel excludeSlug={project.slug} />
       </Column>
       <ScrollToHash />
     </Column>
