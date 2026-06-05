@@ -2,6 +2,7 @@ import { Column } from "@once-ui-system/core";
 import { ProjectCard } from "@/components";
 import { getPublishedProjects } from "@/lib/db";
 import { getPosts } from "@/utils/utils";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 interface ProjectsProps {
   range?: [number, number?];
@@ -26,7 +27,6 @@ export async function Projects({ range, exclude }: ProjectsProps) {
     return (
       <Column fillWidth gap="xl" marginBottom="40" paddingX="l">
         {displayed.map((project, index) => {
-          // Build images array: thumbnail first, then gallery extras
           const thumbClean = project.thumbnail ?? "";
           const images: string[] = [];
           if (thumbClean) images.push(thumbClean);
@@ -38,22 +38,28 @@ export async function Projects({ range, exclude }: ProjectsProps) {
           }
 
           return (
-            <ProjectCard
-              priority={index < 2}
+            <ScrollReveal
               key={project.slug}
-              href={`/project/${project.slug}`}
-              images={images}
-              thumbnail={thumbClean}
-              title={project.title_id}
-              description={project.description_id}
-              content=""
-              avatars={[]}
-              link={project.live_demo_url || ""}
-              tools={project.tools ?? []}
-              category={project.category}
-              attachment={project.attachment}
-              slug={project.slug}
-            />
+              type="blur-up"
+              delay={index * 120}
+              threshold={0.06}
+            >
+              <ProjectCard
+                priority={index < 2}
+                href={`/project/${project.slug}`}
+                images={images}
+                thumbnail={thumbClean}
+                title={project.title_id}
+                description={project.description_id}
+                content=""
+                avatars={[]}
+                link={project.live_demo_url || ""}
+                tools={project.tools ?? []}
+                category={project.category}
+                attachment={project.attachment}
+                slug={project.slug}
+              />
+            </ScrollReveal>
           );
         })}
       </Column>
@@ -78,18 +84,24 @@ export async function Projects({ range, exclude }: ProjectsProps) {
   return (
     <Column fillWidth gap="xl" marginBottom="40" paddingX="l">
       {displayedProjects.map((post, index) => (
-        <ProjectCard
-          priority={index < 2}
+        <ScrollReveal
           key={post.slug}
-          href={`/work/${post.slug}`}
-          images={post.metadata.images}
-          title={post.metadata.title}
-          description={post.metadata.summary}
-          content={post.content}
-          avatars={post.metadata.team?.map((member) => ({ src: member.avatar })) || []}
-          link={post.metadata.link || ""}
-          tools={[]}
-        />
+          type="blur-up"
+          delay={index * 120}
+          threshold={0.06}
+        >
+          <ProjectCard
+            priority={index < 2}
+            href={`/work/${post.slug}`}
+            images={post.metadata.images}
+            title={post.metadata.title}
+            description={post.metadata.summary}
+            content={post.content}
+            avatars={post.metadata.team?.map((member) => ({ src: member.avatar })) || []}
+            link={post.metadata.link || ""}
+            tools={[]}
+          />
+        </ScrollReveal>
       ))}
     </Column>
   );
