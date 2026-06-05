@@ -43,6 +43,10 @@ function VideoPlayer({ src, title }: { src: string; title: string }) {
 /* ── PDF viewer ────────────────────────────────────────────── */
 function PdfViewer({ src, title }: { src: string; title: string }) {
   const [expanded, setExpanded] = useState(false);
+  // Gunakan proxy agar iframe tidak diblokir oleh header X-Frame-Options / CSP
+  // yang dikirim langsung dari Supabase Storage
+  const proxySrc = `/api/pdf-proxy?url=${encodeURIComponent(src)}`;
+
   return (
     <div
       style={{
@@ -156,7 +160,7 @@ function PdfViewer({ src, title }: { src: string; title: string }) {
         </div>
       </div>
       <iframe
-        src={`${src}#toolbar=1&navpanes=0`}
+        src={`${proxySrc}#toolbar=1&navpanes=0`}
         title={title}
         style={{
           width: "100%",
