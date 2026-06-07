@@ -181,15 +181,19 @@ export default function GalleryView() {
   // Load photos from Supabase (gallery_photos table)
   useEffect(() => {
     const supabase = createClient();
-    supabase
-      .from("gallery_photos")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("gallery_photos")
+          .select("*")
+          .order("created_at", { ascending: false });
         if (data && data.length > 0) setDbPhotos(data);
+      } catch {
+        // silently fall through to static fallback
+      } finally {
         setIsLoading(false);
-      })
-      .catch(() => setIsLoading(false));
+      }
+    })();
   }, []);
 
   // Merge: DB photos first, then static fallback
