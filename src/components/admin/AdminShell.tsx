@@ -113,8 +113,173 @@ const allNavItems = [
   { href: "/reza-control/account",      label: "Account",      icon: Icons.account,      group: "system" },
 ];
 
-// Bottom nav: 4 utama + burger
 const bottomPrimary = allNavItems.slice(0, 4);
+
+/* ── Shared Liquid Glass CSS ─────────────────────────────────────────── */
+const LIQUID_GLASS_CSS = `
+  :root {
+    --glass-bg: rgba(10, 15, 30, 0.55);
+    --glass-border: rgba(120, 160, 255, 0.18);
+    --glass-shine: rgba(180, 210, 255, 0.10);
+    --glass-blur: 28px;
+    --glass-saturate: 180%;
+    --glass-shadow: 0 8px 40px rgba(0,0,0,0.45), 0 1px 0 rgba(180,210,255,0.12) inset;
+    --brand-glow: rgba(99, 102, 241, 0.35);
+    --teal-glow: rgba(20, 184, 166, 0.25);
+  }
+
+  @keyframes drawerIn {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  @keyframes overlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes adminTabPop {
+    0%   { transform: scale(0.88); }
+    60%  { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes sidebarIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  /* ── Bottom mobile nav ── */
+  .mob-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex: 1;
+    padding: 8px 4px 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.15s ease;
+  }
+  .mob-nav-btn.active {
+    color: #a5b4fc;
+    animation: adminTabPop 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .mob-nav-btn:not(.active) {
+    color: rgba(148,163,184,0.65);
+  }
+  .mob-nav-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    font-family: inherit;
+  }
+  .mob-nav-dot {
+    position: absolute;
+    top: 4px;
+    width: 20px; height: 3px;
+    border-radius: 0 0 4px 4px;
+    background: linear-gradient(90deg, #818cf8, #38bdf8);
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 8px rgba(129,140,248,0.6);
+  }
+
+  /* ── Drawer items ── */
+  .drawer-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 14px 8px;
+    border-radius: 16px;
+    border: 1px solid rgba(120,160,255,0.10);
+    cursor: pointer;
+    background: rgba(20,28,58,0.55);
+    color: rgba(148,163,184,0.8);
+    transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.15s, box-shadow 0.18s;
+    -webkit-tap-highlight-color: transparent;
+    font-family: inherit;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .drawer-item.active {
+    background: rgba(99,102,241,0.18);
+    color: #a5b4fc;
+    border-color: rgba(129,140,248,0.35);
+    box-shadow: 0 0 16px rgba(99,102,241,0.2), inset 0 1px 0 rgba(165,180,252,0.15);
+  }
+  .drawer-item:active { transform: scale(0.94); }
+  .drawer-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+    font-family: inherit;
+  }
+
+  /* ── Desktop sidebar nav items ── */
+  .cms-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: rgba(148,163,184,0.7);
+    font-size: 13px;
+    font-weight: 500;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    transition: background 0.16s, color 0.16s, transform 0.16s, box-shadow 0.16s;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+  }
+  .cms-nav-item:hover {
+    background: rgba(120,160,255,0.10);
+    color: rgba(226,232,240,0.95);
+    transform: translateX(2px);
+  }
+  .cms-nav-item.active {
+    background: rgba(99,102,241,0.18) !important;
+    color: #a5b4fc !important;
+    font-weight: 600;
+    box-shadow: 0 0 16px rgba(99,102,241,0.15), inset 0 1px 0 rgba(165,180,252,0.12);
+    border: 1px solid rgba(129,140,248,0.22);
+  }
+  .cms-nav-item.logout-btn { color: rgba(248,113,113,0.75); }
+  .cms-nav-item.logout-btn:hover {
+    background: rgba(239,68,68,0.12);
+    color: #fca5a5;
+    transform: none;
+  }
+  .cms-group-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(100,116,139,0.65);
+    padding: 8px 12px 4px;
+  }
+
+  /* ── Liquid glass scrollbar ── */
+  .cms-scroll::-webkit-scrollbar { width: 4px; }
+  .cms-scroll::-webkit-scrollbar-track { background: transparent; }
+  .cms-scroll::-webkit-scrollbar-thumb {
+    background: rgba(120,160,255,0.18);
+    border-radius: 4px;
+  }
+`;
 
 export function AdminShell({ children, user }: AdminShellProps) {
   const pathname = usePathname();
@@ -156,218 +321,178 @@ export function AdminShell({ children, user }: AdminShellProps) {
       : pathname.startsWith(i.href)
   );
 
-  /* ─────────────────────── MOBILE ─────────────────────────────── */
+  /* ═══════════════════════════ MOBILE ═══════════════════════════════ */
   if (isMobile) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", minHeight: "100dvh", background: "var(--page-background)" }}>
-        <style>{`
-          @keyframes drawerIn {
-            from { transform: translateY(100%); opacity: 0; }
-            to   { transform: translateY(0);    opacity: 1; }
-          }
-          @keyframes overlayIn {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-          }
-          @keyframes adminTabPop {
-            0%   { transform: scale(0.88); }
-            60%  { transform: scale(1.08); }
-            100% { transform: scale(1); }
-          }
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100dvh",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
+        background: "var(--page-background)",
+        position: "relative",
+      }}>
+        <style>{LIQUID_GLASS_CSS}</style>
 
-          /* Bottom nav item */
-          .mob-nav-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            flex: 1;
-            padding: 8px 4px 6px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            position: relative;
-            -webkit-tap-highlight-color: transparent;
-            transition: color 0.15s ease;
-          }
-          .mob-nav-btn.active {
-            color: var(--brand-on-background-strong);
-            animation: adminTabPop 0.25s cubic-bezier(0.34,1.56,0.64,1);
-          }
-          .mob-nav-btn:not(.active) {
-            color: var(--neutral-on-background-weak);
-          }
-          .mob-nav-label {
-            font-size: 9px;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-            line-height: 1;
-            font-family: inherit;
-          }
-          .mob-nav-dot {
-            position: absolute;
-            top: 6px;
-            width: 20px; height: 3px;
-            border-radius: 0 0 3px 3px;
-            background: var(--brand-solid-strong, #6366f1);
-            left: 50%;
-            transform: translateX(-50%);
-          }
-
-          /* Drawer grid items */
-          .drawer-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            padding: 14px 8px;
-            border-radius: 14px;
-            border: 1px solid transparent;
-            cursor: pointer;
-            background: var(--neutral-alpha-weak);
-            color: var(--neutral-on-background-medium);
-            transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.15s;
-            -webkit-tap-highlight-color: transparent;
-            font-family: inherit;
-          }
-          .drawer-item.active {
-            background: var(--brand-alpha-weak);
-            color: var(--brand-on-background-strong);
-            border-color: var(--brand-alpha-medium);
-          }
-          .drawer-item:active { transform: scale(0.94); }
-          .drawer-label {
-            font-size: 10px;
-            font-weight: 600;
-            text-align: center;
-            line-height: 1.2;
-            font-family: inherit;
-          }
-        `}</style>
-
-        {/* ── Top Header bar ── */}
+        {/* ── Top Header Bar – LIQUID GLASS ── */}
         <div style={{
           position: "sticky",
           top: 0,
           zIndex: 50,
-          height: 54,
+          width: "100%",
+          height: 56,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           padding: "0 16px",
-          background: "color-mix(in srgb, var(--neutral-background-strong) 85%, transparent)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderBottom: "1px solid var(--neutral-alpha-weak)",
+          /* Liquid glass effect */
+          background: "linear-gradient(135deg, rgba(10,15,40,0.70) 0%, rgba(20,25,60,0.65) 50%, rgba(10,20,50,0.70) 100%)",
+          backdropFilter: "blur(28px) saturate(180%)",
+          WebkitBackdropFilter: "blur(28px) saturate(180%)",
+          borderBottom: "1px solid rgba(120,160,255,0.15)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.35), 0 1px 0 rgba(180,210,255,0.08) inset",
         }}>
-          {/* Logo + title */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {/* Shine overlay */}
+          <div style={{
+            position: "absolute",
+            top: 0, left: 0, right: 0,
+            height: "50%",
+            background: "linear-gradient(180deg, rgba(180,210,255,0.07) 0%, transparent 100%)",
+            borderRadius: "inherit",
+            pointerEvents: "none",
+          }} />
+
+          {/* Logo + Title */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
             <div style={{
-              width: 28, height: 28, borderRadius: 8,
-              background: "var(--brand-background-strong)",
+              width: 32, height: 32, borderRadius: 10,
+              background: "linear-gradient(135deg, #6366f1, #38bdf8)",
               display: "flex", alignItems: "center", justifyContent: "center",
               color: "white", flexShrink: 0,
+              boxShadow: "0 0 16px rgba(99,102,241,0.45), 0 2px 8px rgba(0,0,0,0.3)",
             }}>
               {Icons.logo}
             </div>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--neutral-on-background-strong)", lineHeight: 1 }}>
+              <div style={{
+                fontSize: 13, fontWeight: 700, letterSpacing: "-0.02em",
+                color: "rgba(226,232,240,0.95)", lineHeight: 1,
+              }}>
                 Reza Control
               </div>
-              <div style={{ fontSize: 10, color: "var(--neutral-on-background-weak)", lineHeight: 1, marginTop: 2 }}>
+              <div style={{
+                fontSize: 10, lineHeight: 1, marginTop: 2,
+                color: "rgba(148,163,184,0.65)",
+                letterSpacing: "0.01em",
+              }}>
                 {currentPage?.label ?? "CMS"}
               </div>
             </div>
           </div>
 
-          {/* Hamburger → opens full drawer */}
+          {/* Hamburger */}
           <button
             onClick={() => setDrawerOpen((v) => !v)}
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
-              width: 36, height: 36, borderRadius: 10,
-              border: "1px solid var(--neutral-alpha-medium)",
-              background: drawerOpen ? "var(--neutral-alpha-medium)" : "transparent",
-              color: "var(--neutral-on-background-strong)",
+              width: 38, height: 38, borderRadius: 12,
+              border: "1px solid rgba(120,160,255,0.20)",
+              background: drawerOpen
+                ? "rgba(99,102,241,0.20)"
+                : "rgba(255,255,255,0.05)",
+              color: "rgba(226,232,240,0.9)",
               cursor: "pointer",
-              transition: "background 0.15s",
+              transition: "background 0.18s, box-shadow 0.18s",
+              boxShadow: drawerOpen ? "0 0 14px rgba(99,102,241,0.25)" : "none",
+              position: "relative",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
             }}
           >
             {drawerOpen ? Icons.close : Icons.menu}
           </button>
         </div>
 
-        {/* ── Full menu drawer (slide up) ── */}
+        {/* ── Full Menu Drawer (slide up) ── */}
         {drawerOpen && (
           <>
-            {/* Overlay */}
             <div
               style={{
                 position: "fixed", inset: 0,
-                background: "rgba(0,0,0,0.5)",
-                backdropFilter: "blur(4px)",
+                background: "rgba(0,0,0,0.55)",
+                backdropFilter: "blur(6px)",
+                WebkitBackdropFilter: "blur(6px)",
                 zIndex: 98,
                 animation: "overlayIn 0.2s ease",
               }}
               onClick={() => setDrawerOpen(false)}
             />
-
-            {/* Drawer panel */}
             <div style={{
               position: "fixed",
               bottom: 0, left: 0, right: 0,
               zIndex: 99,
-              background: "var(--neutral-background-strong)",
+              /* Liquid glass drawer */
+              background: "linear-gradient(170deg, rgba(10,15,40,0.92) 0%, rgba(15,22,55,0.95) 100%)",
+              backdropFilter: "blur(32px) saturate(200%)",
+              WebkitBackdropFilter: "blur(32px) saturate(200%)",
               borderRadius: "24px 24px 0 0",
-              paddingBottom: "max(env(safe-area-inset-bottom), 16px)",
+              borderTop: "1px solid rgba(120,160,255,0.18)",
+              borderLeft: "1px solid rgba(120,160,255,0.10)",
+              borderRight: "1px solid rgba(120,160,255,0.10)",
+              paddingBottom: "max(env(safe-area-inset-bottom), 24px)",
               animation: "drawerIn 0.28s cubic-bezier(0.16,1,0.3,1)",
-              boxShadow: "0 -20px 60px rgba(0,0,0,0.25)",
-              border: "1px solid var(--neutral-alpha-weak)",
-              borderBottom: "none",
+              boxShadow: "0 -20px 60px rgba(0,0,0,0.5), 0 -1px 0 rgba(180,210,255,0.10) inset",
             }}>
+              {/* Shine top */}
+              <div style={{
+                position: "absolute",
+                top: 0, left: 0, right: 0,
+                height: 60,
+                background: "linear-gradient(180deg, rgba(180,210,255,0.08) 0%, transparent 100%)",
+                borderRadius: "24px 24px 0 0",
+                pointerEvents: "none",
+              }} />
+
               {/* Drag handle */}
               <div style={{
-                width: 36, height: 4, borderRadius: 2,
-                background: "var(--neutral-alpha-medium)",
-                margin: "12px auto 16px",
+                width: 40, height: 4, borderRadius: 2,
+                background: "linear-gradient(90deg, #6366f1, #38bdf8)",
+                margin: "14px auto 18px",
+                boxShadow: "0 0 10px rgba(99,102,241,0.4)",
               }} />
 
               {/* User info */}
               <div style={{
-                margin: "0 16px 16px",
+                margin: "0 16px 18px",
                 padding: "12px 14px",
-                borderRadius: 14,
-                background: "var(--neutral-alpha-weak)",
-                border: "1px solid var(--neutral-alpha-weak)",
+                borderRadius: 16,
+                background: "rgba(30,40,80,0.60)",
+                border: "1px solid rgba(120,160,255,0.16)",
                 display: "flex", alignItems: "center", gap: 10,
               }}>
                 <div style={{
-                  width: 36, height: 36, borderRadius: "50%",
-                  background: "var(--brand-alpha-medium)",
+                  width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
+                  background: "linear-gradient(135deg, rgba(99,102,241,0.5), rgba(56,189,248,0.4))",
+                  border: "1px solid rgba(129,140,248,0.4)",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  color: "var(--brand-on-background-strong)",
-                  fontWeight: 700, fontSize: 14, flexShrink: 0,
+                  color: "#a5b4fc", fontWeight: 700, fontSize: 14,
+                  boxShadow: "0 0 12px rgba(99,102,241,0.3)",
                 }}>
                   {user.email?.[0]?.toUpperCase() ?? "R"}
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: "var(--neutral-on-background-strong)", lineHeight: 1.3 }}>
-                    Admin
-                  </div>
-                  <div style={{
-                    fontSize: 11, color: "var(--neutral-on-background-weak)",
-                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                  }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "rgba(226,232,240,0.9)", lineHeight: 1.3 }}>Admin</div>
+                  <div style={{ fontSize: 11, color: "rgba(100,116,139,0.8)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {user.email}
                   </div>
                 </div>
               </div>
 
-              {/* Group: Main */}
-              <div style={{ padding: "0 16px 8px" }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "var(--neutral-on-background-weak)", textTransform: "uppercase", marginBottom: 8, paddingLeft: 4 }}>
+              {/* Group: Konten */}
+              <div style={{ padding: "0 16px 10px" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "rgba(100,116,139,0.6)", textTransform: "uppercase", marginBottom: 8, paddingLeft: 4 }}>
                   Konten
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
@@ -380,9 +505,9 @@ export function AdminShell({ children, user }: AdminShellProps) {
                 </div>
               </div>
 
-              {/* Group: Content */}
-              <div style={{ padding: "0 16px 8px" }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "var(--neutral-on-background-weak)", textTransform: "uppercase", marginBottom: 8, paddingLeft: 4 }}>
+              {/* Group: Media & Data */}
+              <div style={{ padding: "0 16px 10px" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "rgba(100,116,139,0.6)", textTransform: "uppercase", marginBottom: 8, paddingLeft: 4 }}>
                   Media & Data
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
@@ -395,9 +520,9 @@ export function AdminShell({ children, user }: AdminShellProps) {
                 </div>
               </div>
 
-              {/* Group: System */}
-              <div style={{ padding: "0 16px 8px" }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "var(--neutral-on-background-weak)", textTransform: "uppercase", marginBottom: 8, paddingLeft: 4 }}>
+              {/* Group: Sistem */}
+              <div style={{ padding: "0 16px 10px" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "rgba(100,116,139,0.6)", textTransform: "uppercase", marginBottom: 8, paddingLeft: 4 }}>
                   Sistem
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
@@ -412,18 +537,20 @@ export function AdminShell({ children, user }: AdminShellProps) {
 
               {/* Logout */}
               <div style={{ padding: "8px 16px 0" }}>
-                <div style={{ height: 1, background: "var(--neutral-alpha-weak)", marginBottom: 12 }} />
+                <div style={{ height: 1, background: "rgba(120,160,255,0.10)", marginBottom: 12 }} />
                 <button
                   onClick={handleLogout}
                   style={{
                     width: "100%", display: "flex", alignItems: "center",
                     justifyContent: "center", gap: 8,
                     padding: "12px 16px", borderRadius: 14,
-                    border: "1px solid var(--danger-alpha-medium)",
-                    background: "var(--danger-alpha-weak)",
-                    color: "var(--danger-on-background-medium)",
+                    border: "1px solid rgba(239,68,68,0.25)",
+                    background: "rgba(239,68,68,0.10)",
+                    color: "#fca5a5",
                     fontSize: 13, fontWeight: 600, cursor: "pointer",
                     fontFamily: "inherit",
+                    backdropFilter: "blur(8px)",
+                    WebkitBackdropFilter: "blur(8px)",
                   }}
                 >
                   {Icons.logout}
@@ -437,27 +564,40 @@ export function AdminShell({ children, user }: AdminShellProps) {
         {/* ── Main Content ── */}
         <div style={{
           flex: 1,
-          padding: "16px 16px 96px", // 96px = bottom nav space
+          width: "100%",
+          maxWidth: "100vw",
+          padding: "16px 16px 96px",
           overflowX: "hidden",
+          boxSizing: "border-box",
         }}>
           {children}
         </div>
 
-        {/* ── Bottom Navigation Bar ── */}
+        {/* ── Bottom Navigation Bar – LIQUID GLASS ── */}
         <nav style={{
           position: "fixed",
           bottom: 0, left: 0, right: 0,
           zIndex: 50,
-          height: "calc(60px + env(safe-area-inset-bottom))",
+          height: "calc(62px + env(safe-area-inset-bottom))",
           paddingBottom: "env(safe-area-inset-bottom)",
-          background: "color-mix(in srgb, var(--neutral-background-strong) 90%, transparent)",
-          backdropFilter: "blur(20px) saturate(160%)",
-          WebkitBackdropFilter: "blur(20px) saturate(160%)",
-          borderTop: "1px solid var(--neutral-alpha-weak)",
+          /* Liquid glass */
+          background: "linear-gradient(135deg, rgba(10,15,40,0.78) 0%, rgba(15,20,55,0.80) 50%, rgba(10,15,45,0.78) 100%)",
+          backdropFilter: "blur(28px) saturate(180%)",
+          WebkitBackdropFilter: "blur(28px) saturate(180%)",
+          borderTop: "1px solid rgba(120,160,255,0.18)",
+          boxShadow: "0 -4px 32px rgba(0,0,0,0.4), 0 1px 0 rgba(180,210,255,0.08) inset",
           display: "flex",
           alignItems: "stretch",
-          boxShadow: "0 -4px 24px rgba(0,0,0,0.08)",
+          width: "100%",
         }}>
+          {/* Shine */}
+          <div style={{
+            position: "absolute",
+            top: 0, left: 0, right: 0, height: 1,
+            background: "linear-gradient(90deg, transparent, rgba(180,210,255,0.25), transparent)",
+            pointerEvents: "none",
+          }} />
+
           {bottomPrimary.map((item) => {
             const active = isActive(item.href);
             return (
@@ -473,11 +613,10 @@ export function AdminShell({ children, user }: AdminShellProps) {
             );
           })}
 
-          {/* Menu button */}
           <button
             className={`mob-nav-btn${drawerOpen ? " active" : ""}`}
             onClick={() => setDrawerOpen((v) => !v)}
-            style={{ color: drawerOpen ? "var(--brand-on-background-strong)" : "var(--neutral-on-background-weak)" }}
+            style={{ color: drawerOpen ? "#a5b4fc" : "rgba(148,163,184,0.65)" }}
           >
             {drawerOpen ? Icons.close : Icons.menu}
             <span className="mob-nav-label">Menu</span>
@@ -487,77 +626,35 @@ export function AdminShell({ children, user }: AdminShellProps) {
     );
   }
 
-  /* ─────────────────────── DESKTOP ────────────────────────────── */
+  /* ═══════════════════════════ DESKTOP ═══════════════════════════════ */
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "var(--page-background)" }}>
-      <style>{`
-        @keyframes sidebarIn {
-          from { opacity: 0; transform: translateX(-10px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        .cms-nav-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 9px 12px;
-          border-radius: 10px;
-          cursor: pointer;
-          background: none;
-          border: none;
-          color: var(--neutral-on-background-weak);
-          font-size: 13px;
-          font-weight: 500;
-          width: 100%;
-          text-align: left;
-          font-family: inherit;
-          transition: background 0.14s, color 0.14s, transform 0.14s;
-          white-space: nowrap;
-          letter-spacing: -0.01em;
-        }
-        .cms-nav-item:hover {
-          background: color-mix(in srgb, var(--neutral-on-background-strong) 6%, transparent);
-          color: var(--neutral-on-background-strong);
-          transform: translateX(2px);
-        }
-        .cms-nav-item.active {
-          background: color-mix(in srgb, var(--brand-background-strong) 12%, transparent) !important;
-          color: var(--brand-on-background-strong) !important;
-          font-weight: 600;
-        }
-        .cms-nav-item.logout-btn { color: var(--danger-on-background-weak); }
-        .cms-nav-item.logout-btn:hover {
-          background: var(--danger-alpha-weak);
-          color: var(--danger-on-background-strong);
-          transform: none;
-        }
-        .cms-group-label {
-          font-size: 9px;
-          font-weight: 700;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: var(--neutral-on-background-weak);
-          padding: 8px 12px 4px;
-          opacity: 0.55;
-        }
-      `}</style>
+    <div style={{
+      display: "flex",
+      minHeight: "100vh",
+      width: "100%",
+      background: "var(--page-background)",
+    }}>
+      <style>{LIQUID_GLASS_CSS}</style>
 
-      {/* ── Sidebar ── */}
+      {/* ── Sidebar – LIQUID GLASS ── */}
       <div
         style={{
           position: "fixed",
           left: 12, top: 12, bottom: 12,
-          width: collapsed ? 60 : 220,
+          width: collapsed ? 64 : 228,
           transition: "width 0.26s cubic-bezier(0.4,0,0.2,1)",
           zIndex: 100,
           borderRadius: 20,
-          background: "color-mix(in srgb, var(--neutral-background-strong) 72%, transparent)",
-          backdropFilter: "blur(24px) saturate(180%)",
-          WebkitBackdropFilter: "blur(24px) saturate(180%)",
-          border: "1px solid color-mix(in srgb, var(--neutral-on-background-strong) 9%, transparent)",
+          /* Liquid glass sidebar */
+          background: "linear-gradient(160deg, rgba(10,15,42,0.80) 0%, rgba(14,20,54,0.85) 50%, rgba(8,14,40,0.82) 100%)",
+          backdropFilter: "blur(32px) saturate(190%)",
+          WebkitBackdropFilter: "blur(32px) saturate(190%)",
+          border: "1px solid rgba(120,160,255,0.15)",
           boxShadow: `
-            0 8px 40px color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent),
-            0 2px 8px color-mix(in srgb, var(--neutral-on-background-strong) 4%, transparent),
-            inset 0 1px 0 color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent)
+            0 8px 48px rgba(0,0,0,0.5),
+            0 2px 8px rgba(0,0,0,0.3),
+            inset 0 1px 0 rgba(180,210,255,0.10),
+            inset 1px 0 0 rgba(180,210,255,0.05)
           `,
           display: "flex",
           flexDirection: "column",
@@ -565,7 +662,27 @@ export function AdminShell({ children, user }: AdminShellProps) {
           animation: "sidebarIn 0.32s cubic-bezier(0.34,1.56,0.64,1)",
         }}
       >
-        <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "12px 8px" }}>
+        {/* Shine top strip */}
+        <div style={{
+          position: "absolute",
+          top: 0, left: 0, right: 0,
+          height: 80,
+          background: "linear-gradient(180deg, rgba(180,210,255,0.07) 0%, transparent 100%)",
+          borderRadius: "20px 20px 0 0",
+          pointerEvents: "none",
+        }} />
+
+        {/* Orb glow behind */}
+        <div style={{
+          position: "absolute",
+          top: -20, left: -20,
+          width: 120, height: 120,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }} />
+
+        <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "12px 8px", position: "relative" }}>
 
           {/* Header */}
           <div style={{
@@ -578,18 +695,19 @@ export function AdminShell({ children, user }: AdminShellProps) {
             {!collapsed && (
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <div style={{
-                  width: 26, height: 26, borderRadius: 8,
-                  background: "var(--brand-background-strong)",
+                  width: 28, height: 28, borderRadius: 9,
+                  background: "linear-gradient(135deg, #6366f1, #38bdf8)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "white", flexShrink: 0,
+                  boxShadow: "0 0 14px rgba(99,102,241,0.4), 0 2px 6px rgba(0,0,0,0.4)",
                 }}>
                   {Icons.logo}
                 </div>
                 <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--brand-on-background-strong)", lineHeight: 1.1 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "-0.02em", color: "rgba(226,232,240,0.95)", lineHeight: 1.1 }}>
                     Reza Control
                   </div>
-                  <div style={{ fontSize: 9, color: "var(--neutral-on-background-weak)", letterSpacing: "0.04em" }}>
+                  <div style={{ fontSize: 9, color: "rgba(100,116,139,0.65)", letterSpacing: "0.04em" }}>
                     CMS Panel
                   </div>
                 </div>
@@ -600,25 +718,32 @@ export function AdminShell({ children, user }: AdminShellProps) {
               style={{
                 display: "flex", alignItems: "center", justifyContent: "center",
                 width: 28, height: 28, borderRadius: 8,
-                background: "none",
-                border: "1px solid color-mix(in srgb, var(--neutral-on-background-strong) 10%, transparent)",
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(120,160,255,0.16)",
                 cursor: "pointer",
-                color: "var(--neutral-on-background-weak)",
-                transition: "background 0.15s, color 0.15s",
+                color: "rgba(100,116,139,0.8)",
+                transition: "background 0.15s, color 0.15s, box-shadow 0.15s",
                 flexShrink: 0,
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--neutral-alpha-weak)"; e.currentTarget.style.color = "var(--neutral-on-background-strong)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "var(--neutral-on-background-weak)"; }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(99,102,241,0.15)";
+                e.currentTarget.style.color = "#a5b4fc";
+                e.currentTarget.style.boxShadow = "0 0 10px rgba(99,102,241,0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                e.currentTarget.style.color = "rgba(100,116,139,0.8)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
             >
               {collapsed ? Icons.chevronRight : Icons.chevronLeft}
             </button>
           </div>
 
-          <div style={{ height: 1, background: "color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent)", margin: "0 4px 6px" }} />
+          <div style={{ height: 1, background: "rgba(120,160,255,0.10)", margin: "0 4px 8px" }} />
 
           {/* Nav groups */}
-          <div style={{ flex: 1, overflowY: "auto", overflowX: "hidden", display: "flex", flexDirection: "column", gap: 0 }}>
-            {/* Group: Konten */}
+          <div className="cms-scroll" style={{ flex: 1, overflowY: "auto", overflowX: "hidden", display: "flex", flexDirection: "column", gap: 0 }}>
             {!collapsed && <div className="cms-group-label">Konten</div>}
             {allNavItems.filter(i => i.group === "main").map((item) => {
               const active = isActive(item.href);
@@ -635,15 +760,19 @@ export function AdminShell({ children, user }: AdminShellProps) {
                   </span>
                   {!collapsed && <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
                   {active && !collapsed && (
-                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--brand-background-strong)", flexShrink: 0 }} />
+                    <span style={{
+                      width: 6, height: 6, borderRadius: "50%",
+                      background: "linear-gradient(135deg, #818cf8, #38bdf8)",
+                      flexShrink: 0,
+                      boxShadow: "0 0 6px rgba(129,140,248,0.6)",
+                    }} />
                   )}
                 </button>
               );
             })}
 
-            {/* Group: Media */}
             {!collapsed && <div className="cms-group-label" style={{ marginTop: 6 }}>Media & Data</div>}
-            {collapsed && <div style={{ height: 6 }} />}
+            {collapsed && <div style={{ height: 8 }} />}
             {allNavItems.filter(i => i.group === "content").map((item) => {
               const active = isActive(item.href);
               return (
@@ -659,15 +788,19 @@ export function AdminShell({ children, user }: AdminShellProps) {
                   </span>
                   {!collapsed && <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
                   {active && !collapsed && (
-                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--brand-background-strong)", flexShrink: 0 }} />
+                    <span style={{
+                      width: 6, height: 6, borderRadius: "50%",
+                      background: "linear-gradient(135deg, #818cf8, #38bdf8)",
+                      flexShrink: 0,
+                      boxShadow: "0 0 6px rgba(129,140,248,0.6)",
+                    }} />
                   )}
                 </button>
               );
             })}
 
-            {/* Group: Sistem */}
             {!collapsed && <div className="cms-group-label" style={{ marginTop: 6 }}>Sistem</div>}
-            {collapsed && <div style={{ height: 6 }} />}
+            {collapsed && <div style={{ height: 8 }} />}
             {allNavItems.filter(i => i.group === "system").map((item) => {
               const active = isActive(item.href);
               return (
@@ -683,34 +816,42 @@ export function AdminShell({ children, user }: AdminShellProps) {
                   </span>
                   {!collapsed && <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
                   {active && !collapsed && (
-                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--brand-background-strong)", flexShrink: 0 }} />
+                    <span style={{
+                      width: 6, height: 6, borderRadius: "50%",
+                      background: "linear-gradient(135deg, #818cf8, #38bdf8)",
+                      flexShrink: 0,
+                      boxShadow: "0 0 6px rgba(129,140,248,0.6)",
+                    }} />
                   )}
                 </button>
               );
             })}
           </div>
 
-          <div style={{ height: 1, background: "color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent)", margin: "6px 4px" }} />
+          <div style={{ height: 1, background: "rgba(120,160,255,0.10)", margin: "8px 4px" }} />
 
           {/* Footer */}
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             {!collapsed && (
               <div style={{
-                padding: "7px 12px", borderRadius: 8, marginBottom: 2,
-                background: "color-mix(in srgb, var(--neutral-on-background-strong) 5%, transparent)",
+                padding: "8px 12px", borderRadius: 12, marginBottom: 2,
+                background: "rgba(30,40,80,0.50)",
+                border: "1px solid rgba(120,160,255,0.12)",
                 display: "flex", alignItems: "center", gap: 8,
               }}>
                 <div style={{
-                  width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
-                  background: "var(--brand-alpha-medium)",
+                  width: 24, height: 24, borderRadius: "50%", flexShrink: 0,
+                  background: "linear-gradient(135deg, rgba(99,102,241,0.45), rgba(56,189,248,0.35))",
+                  border: "1px solid rgba(129,140,248,0.35)",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  color: "var(--brand-on-background-strong)",
-                  fontSize: 10, fontWeight: 700,
+                  color: "#a5b4fc", fontSize: 10, fontWeight: 700,
                 }}>
                   {user.email?.[0]?.toUpperCase() ?? "R"}
                 </div>
-                <Text variant="body-default-xs" onBackground="neutral-weak"
-                  style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" }}>
+                <Text variant="body-default-xs" style={{
+                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                  display: "block", color: "rgba(100,116,139,0.75)",
+                }}>
                   {user.email}
                 </Text>
               </div>
@@ -727,18 +868,20 @@ export function AdminShell({ children, user }: AdminShellProps) {
               {!collapsed && <span>Sign Out</span>}
             </button>
           </div>
-
         </div>
       </div>
 
       {/* ── Main Content ── */}
       <div style={{
         flex: 1,
-        marginLeft: collapsed ? 84 : 244,
+        marginLeft: collapsed ? 88 : 252,
         transition: "margin-left 0.26s cubic-bezier(0.4,0,0.2,1)",
         padding: "24px 24px 24px 0",
         minHeight: "100vh",
-        maxWidth: `calc(100vw - ${collapsed ? 84 : 244}px)`,
+        width: `calc(100vw - ${collapsed ? 88 : 252}px)`,
+        maxWidth: `calc(100vw - ${collapsed ? 88 : 252}px)`,
+        overflowX: "hidden",
+        boxSizing: "border-box",
       }}>
         {children}
       </div>

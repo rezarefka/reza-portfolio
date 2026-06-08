@@ -1,6 +1,6 @@
 "use client";
 
-import { Column, Row, Text, Card, Heading, Button } from "@once-ui-system/core";
+import { Text, Button } from "@once-ui-system/core";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 
@@ -38,7 +38,7 @@ const ContentIcon = ({ type }: { type: string }) => {
       </svg>
     ),
   };
-  return <span style={{ color: "var(--brand-on-background-strong)", display: "flex" }}>{icons[type]}</span>;
+  return <span style={{ display: "flex" }}>{icons[type]}</span>;
 };
 
 const VisitorIcon = ({ type }: { type: string }) => {
@@ -60,179 +60,235 @@ const VisitorIcon = ({ type }: { type: string }) => {
       </svg>
     ),
   };
-  return <span style={{ color: "var(--accent-on-background-medium)", display: "flex" }}>{icons[type]}</span>;
+  return <span style={{ display: "flex" }}>{icons[type]}</span>;
+};
+
+/* Card color config */
+const CARD_COLORS: Record<string, { icon: string; glow: string; border: string; bg: string }> = {
+  projects:     { icon: "linear-gradient(135deg,#6366f1,#818cf8)", glow: "rgba(99,102,241,0.22)", border: "rgba(129,140,248,0.25)", bg: "rgba(99,102,241,0.08)" },
+  blogs:        { icon: "linear-gradient(135deg,#0ea5e9,#38bdf8)", glow: "rgba(14,165,233,0.22)", border: "rgba(56,189,248,0.25)", bg: "rgba(14,165,233,0.08)" },
+  certificates: { icon: "linear-gradient(135deg,#14b8a6,#2dd4bf)", glow: "rgba(20,184,166,0.22)", border: "rgba(45,212,191,0.25)", bg: "rgba(20,184,166,0.08)" },
+  media:        { icon: "linear-gradient(135deg,#f59e0b,#fbbf24)", glow: "rgba(245,158,11,0.22)", border: "rgba(251,191,36,0.25)", bg: "rgba(245,158,11,0.08)" },
+  today:        { icon: "linear-gradient(135deg,#8b5cf6,#a78bfa)", glow: "rgba(139,92,246,0.22)", border: "rgba(167,139,250,0.25)", bg: "rgba(139,92,246,0.08)" },
+  month:        { icon: "linear-gradient(135deg,#ec4899,#f472b6)", glow: "rgba(236,72,153,0.22)", border: "rgba(244,114,182,0.25)", bg: "rgba(236,72,153,0.08)" },
+  total:        { icon: "linear-gradient(135deg,#10b981,#34d399)", glow: "rgba(16,185,129,0.22)", border: "rgba(52,211,153,0.25)", bg: "rgba(16,185,129,0.08)" },
 };
 
 export function AdminDashboardClient({ stats }: { stats: DashboardStats }) {
   const router = useRouter();
 
   const contentCards = [
-    { key: "projects",     label: "Projects",      value: stats.counts.projects,     href: "/reza-control/projects",     desc: "Proyek aktif" },
-    { key: "blogs",        label: "Blog Posts",     value: stats.counts.blogs,        href: "/reza-control/blogs",        desc: "Artikel tersimpan" },
-    { key: "certificates", label: "Certificates",   value: stats.counts.certificates, href: "/reza-control/certificates", desc: "Sertifikat" },
-    { key: "media",        label: "Media Files",    value: stats.counts.media,        href: "/reza-control/media",        desc: "File media" },
+    { key: "projects",     label: "Projects",     value: stats.counts.projects,     href: "/reza-control/projects",     desc: "Proyek aktif" },
+    { key: "blogs",        label: "Blog Posts",   value: stats.counts.blogs,        href: "/reza-control/blogs",        desc: "Artikel tersimpan" },
+    { key: "certificates", label: "Certificates", value: stats.counts.certificates, href: "/reza-control/certificates", desc: "Sertifikat" },
+    { key: "media",        label: "Media Files",  value: stats.counts.media,        href: "/reza-control/media",        desc: "File media" },
   ];
 
   const visitorCards = [
-    { key: "today",  label: "Pengunjung Hari Ini", value: stats.visitors.today,  sub: "Sejak tengah malam" },
-    { key: "month",  label: "Bulan Ini",           value: stats.visitors.month,  sub: "30 hari terakhir" },
-    { key: "total",  label: "Total Pengunjung",    value: stats.visitors.total,  sub: "Sepanjang waktu" },
+    { key: "today",  label: "Hari Ini",        value: stats.visitors.today,  sub: "Sejak tengah malam" },
+    { key: "month",  label: "Bulan Ini",       value: stats.visitors.month,  sub: "30 hari terakhir" },
+    { key: "total",  label: "Total",           value: stats.visitors.total,  sub: "Sepanjang waktu" },
   ];
 
   return (
-    <Column fillWidth gap="xl">
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: 28,
+      width: "100%",
+      maxWidth: "100%",
+      boxSizing: "border-box",
+    }}>
 
-      {/* ── Content Stats ─────────────────────────── */}
-      <Column gap="m">
-        <Row fillWidth horizontal="between" vertical="center">
-          <Text variant="label-strong-s" onBackground="neutral-weak" style={{ letterSpacing: "0.08em" }}>
-            KONTEN
-          </Text>
-        </Row>
+      {/* ── Welcome ── */}
+      <div style={{
+        padding: "20px 24px",
+        borderRadius: 20,
+        background: "linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(56,189,248,0.08) 50%, rgba(20,184,166,0.06) 100%)",
+        border: "1px solid rgba(129,140,248,0.20)",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(180,210,255,0.08)",
+        position: "relative",
+        overflow: "hidden",
+      }}>
         <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-          gap: "12px",
-        }}>
-          {contentCards.map((card) => (
-            <button
-              key={card.key}
-              onClick={() => router.push(card.href)}
-              style={{
-                all: "unset",
-                display: "flex",
-                flexDirection: "column",
-                gap: "16px",
-                padding: "20px",
-                borderRadius: "16px",
-                border: "1px solid var(--neutral-alpha-weak)",
-                background: "var(--neutral-background-weak)",
-                cursor: "pointer",
-                transition: "background 0.15s, transform 0.15s, box-shadow 0.15s",
-                position: "relative",
-                overflow: "hidden",
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = "var(--neutral-alpha-weak)";
-                (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)";
-                (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 8px 24px rgba(0,0,0,0.1)";
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = "var(--neutral-background-weak)";
-                (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
-                (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
-              }}
-            >
-              {/* Icon box */}
-              <div style={{
-                width: 40, height: 40, borderRadius: 12,
-                background: "var(--brand-alpha-weak)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <ContentIcon type={card.key} />
-              </div>
-              {/* Number */}
-              <div>
-                <div style={{
-                  fontSize: "2rem", fontWeight: 700, lineHeight: 1,
-                  color: "var(--neutral-on-background-strong)",
-                  fontVariantNumeric: "tabular-nums",
-                }}>
-                  {card.value.toLocaleString()}
-                </div>
-                <div style={{
-                  fontSize: "13px", fontWeight: 600,
-                  color: "var(--neutral-on-background-medium)",
-                  marginTop: 4,
-                }}>
-                  {card.label}
-                </div>
-                <div style={{
-                  fontSize: "11px",
-                  color: "var(--neutral-on-background-weak)",
-                  marginTop: 2,
-                }}>
-                  {card.desc}
-                </div>
-              </div>
-              {/* Arrow */}
-              <div style={{
-                position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)",
-                color: "var(--neutral-on-background-weak)", opacity: 0.5,
-              }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-            </button>
-          ))}
+          position: "absolute", top: -30, right: -30,
+          width: 160, height: 160, borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }} />
+        <div style={{ fontSize: 22, fontWeight: 700, color: "var(--neutral-on-background-strong)", letterSpacing: "-0.03em", lineHeight: 1.2 }}>
+          Dashboard
         </div>
-      </Column>
+        <div style={{ fontSize: 13, color: "var(--neutral-on-background-weak)", marginTop: 4 }}>
+          Selamat datang di Reza Control Panel.
+        </div>
+      </div>
 
-      {/* ── Visitor Stats ─────────────────────────── */}
-      <Column gap="m">
-        <Text variant="label-strong-s" onBackground="neutral-weak" style={{ letterSpacing: "0.08em" }}>
-          STATISTIK PENGUNJUNG
-        </Text>
+      {/* ── Content Stats ── */}
+      <div>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--neutral-on-background-weak)", marginBottom: 12, opacity: 0.6 }}>
+          Konten
+        </div>
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
-          gap: "12px",
+          gap: 12,
+          width: "100%",
         }}>
-          {visitorCards.map((card) => (
-            <div
-              key={card.key}
-              style={{
-                padding: "20px",
-                borderRadius: "16px",
-                border: "1px solid var(--neutral-alpha-weak)",
-                background: "var(--neutral-background-weak)",
-                display: "flex",
-                flexDirection: "column",
-                gap: "12px",
-              }}
-            >
-              <div style={{
-                width: 36, height: 36, borderRadius: 10,
-                background: "var(--accent-alpha-weak)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <VisitorIcon type={card.key} />
-              </div>
-              <div>
+          {contentCards.map((card) => {
+            const col = CARD_COLORS[card.key];
+            return (
+              <button
+                key={card.key}
+                onClick={() => router.push(card.href)}
+                style={{
+                  all: "unset",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 14,
+                  padding: "18px 18px",
+                  borderRadius: 18,
+                  border: `1px solid ${col.border}`,
+                  background: col.bg,
+                  cursor: "pointer",
+                  transition: "transform 0.18s, box-shadow 0.18s, background 0.18s",
+                  position: "relative",
+                  overflow: "hidden",
+                  boxSizing: "border-box",
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-3px)";
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 12px 32px ${col.glow}`;
+                  (e.currentTarget as HTMLButtonElement).style.background = `${col.bg.replace("0.08", "0.14")}`;
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
+                  (e.currentTarget as HTMLButtonElement).style.background = col.bg;
+                }}
+              >
+                {/* Subtle shine */}
                 <div style={{
-                  fontSize: "1.75rem", fontWeight: 700, lineHeight: 1,
-                  color: "var(--neutral-on-background-strong)",
-                  fontVariantNumeric: "tabular-nums",
+                  position: "absolute", top: 0, left: 0, right: 0, height: "50%",
+                  background: "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 100%)",
+                  borderRadius: "inherit", pointerEvents: "none",
+                }} />
+                <div style={{
+                  width: 42, height: 42, borderRadius: 13,
+                  background: col.icon,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: "white",
+                  boxShadow: `0 4px 16px ${col.glow}`,
                 }}>
-                  {card.value.toLocaleString()}
+                  <ContentIcon type={card.key} />
                 </div>
-                <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--neutral-on-background-medium)", marginTop: 4 }}>
-                  {card.label}
+                <div>
+                  <div style={{
+                    fontSize: "2rem", fontWeight: 700, lineHeight: 1,
+                    color: "var(--neutral-on-background-strong)",
+                    fontVariantNumeric: "tabular-nums",
+                  }}>
+                    {card.value.toLocaleString()}
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--neutral-on-background-medium)", marginTop: 4 }}>
+                    {card.label}
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--neutral-on-background-weak)", marginTop: 2 }}>
+                    {card.desc}
+                  </div>
                 </div>
-                <div style={{ fontSize: "11px", color: "var(--neutral-on-background-weak)", marginTop: 2 }}>
-                  {card.sub}
+                <div style={{
+                  position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
+                  color: "var(--neutral-on-background-weak)", opacity: 0.4,
+                }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Visitor Stats ── */}
+      <div>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--neutral-on-background-weak)", marginBottom: 12, opacity: 0.6 }}>
+          Statistik Pengunjung
+        </div>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+          gap: 12,
+          width: "100%",
+        }}>
+          {visitorCards.map((card) => {
+            const col = CARD_COLORS[card.key];
+            return (
+              <div
+                key={card.key}
+                style={{
+                  padding: "18px 18px",
+                  borderRadius: 18,
+                  border: `1px solid ${col.border}`,
+                  background: col.bg,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 12,
+                  boxSizing: "border-box",
+                }}
+              >
+                <div style={{
+                  width: 38, height: 38, borderRadius: 11,
+                  background: col.icon,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: "white",
+                  boxShadow: `0 4px 14px ${col.glow}`,
+                }}>
+                  <VisitorIcon type={card.key} />
+                </div>
+                <div>
+                  <div style={{
+                    fontSize: "1.75rem", fontWeight: 700, lineHeight: 1,
+                    color: "var(--neutral-on-background-strong)",
+                    fontVariantNumeric: "tabular-nums",
+                  }}>
+                    {card.value.toLocaleString()}
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--neutral-on-background-medium)", marginTop: 4 }}>
+                    {card.label}
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--neutral-on-background-weak)", marginTop: 2 }}>
+                    {card.sub}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
-      </Column>
+      </div>
 
-      {/* ── Recent Content ─────────────────────────── */}
-      <Row gap="xl" s={{ direction: "column" }}>
+      {/* ── Recent Content ── */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+        gap: 20,
+        width: "100%",
+      }}>
         {/* Recent Projects */}
-        <Column flex={1} gap="m">
-          <Row fillWidth horizontal="between" vertical="center">
-            <Text variant="label-strong-s" onBackground="neutral-weak" style={{ letterSpacing: "0.08em" }}>
-              PROYEK TERBARU
-            </Text>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--neutral-on-background-weak)", opacity: 0.6 }}>
+              Proyek Terbaru
+            </div>
             <Button href="/reza-control/projects" variant="tertiary" size="s" arrowIcon>
               Lihat semua
             </Button>
-          </Row>
-          <Column gap="8" style={{
-            background: "var(--neutral-background-weak)",
-            borderRadius: 16, border: "1px solid var(--neutral-alpha-weak)",
+          </div>
+          <div style={{
+            background: "rgba(255,255,255,0.02)",
+            borderRadius: 16,
+            border: "1px solid rgba(120,160,255,0.12)",
             overflow: "hidden",
+            width: "100%",
           }}>
             {stats.recentProjects.length === 0 ? (
               <div style={{ padding: "24px 20px", textAlign: "center" }}>
@@ -248,54 +304,59 @@ export function AdminDashboardClient({ stats }: { stats: DashboardStats }) {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    padding: "14px 20px",
+                    padding: "14px 18px",
                     cursor: "pointer",
-                    borderBottom: i < stats.recentProjects.length - 1 ? "1px solid var(--neutral-alpha-weak)" : "none",
+                    borderBottom: i < stats.recentProjects.length - 1 ? "1px solid rgba(120,160,255,0.08)" : "none",
                     transition: "background 0.12s",
                     gap: 12,
+                    width: "100%",
+                    boxSizing: "border-box",
                   }}
-                  onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "var(--neutral-alpha-weak)"}
+                  onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "rgba(120,160,255,0.06)"}
                   onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "transparent"}
                 >
                   <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, minWidth: 0 }}>
                     <span style={{
-                      fontSize: "13.5px", fontWeight: 500,
+                      fontSize: 13, fontWeight: 500,
                       color: "var(--neutral-on-background-strong)",
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                     }}>
                       {p.title_id}
                     </span>
-                    <span style={{ fontSize: "11px", color: "var(--neutral-on-background-weak)" }}>
+                    <span style={{ fontSize: 11, color: "var(--neutral-on-background-weak)" }}>
                       {format(new Date(p.created_at), "d MMM yyyy")}
                     </span>
                   </div>
                   <span style={{
-                    fontSize: "11px", fontWeight: 600, padding: "3px 10px", borderRadius: 20, flexShrink: 0,
-                    background: p.published ? "var(--brand-alpha-weak)" : "var(--neutral-alpha-weak)",
-                    color: p.published ? "var(--brand-on-background-strong)" : "var(--neutral-on-background-weak)",
+                    fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 20, flexShrink: 0,
+                    background: p.published ? "rgba(99,102,241,0.15)" : "rgba(100,116,139,0.12)",
+                    color: p.published ? "#a5b4fc" : "var(--neutral-on-background-weak)",
+                    border: `1px solid ${p.published ? "rgba(129,140,248,0.25)" : "transparent"}`,
                   }}>
                     {p.published ? "Tayang" : "Draft"}
                   </span>
                 </button>
               ))
             )}
-          </Column>
-        </Column>
+          </div>
+        </div>
 
         {/* Recent Blogs */}
-        <Column flex={1} gap="m">
-          <Row fillWidth horizontal="between" vertical="center">
-            <Text variant="label-strong-s" onBackground="neutral-weak" style={{ letterSpacing: "0.08em" }}>
-              BLOG TERBARU
-            </Text>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--neutral-on-background-weak)", opacity: 0.6 }}>
+              Blog Terbaru
+            </div>
             <Button href="/reza-control/blogs" variant="tertiary" size="s" arrowIcon>
               Lihat semua
             </Button>
-          </Row>
-          <Column gap="8" style={{
-            background: "var(--neutral-background-weak)",
-            borderRadius: 16, border: "1px solid var(--neutral-alpha-weak)",
+          </div>
+          <div style={{
+            background: "rgba(255,255,255,0.02)",
+            borderRadius: 16,
+            border: "1px solid rgba(120,160,255,0.12)",
             overflow: "hidden",
+            width: "100%",
           }}>
             {stats.recentBlogs.length === 0 ? (
               <div style={{ padding: "24px 20px", textAlign: "center" }}>
@@ -311,86 +372,100 @@ export function AdminDashboardClient({ stats }: { stats: DashboardStats }) {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    padding: "14px 20px",
+                    padding: "14px 18px",
                     cursor: "pointer",
-                    borderBottom: i < stats.recentBlogs.length - 1 ? "1px solid var(--neutral-alpha-weak)" : "none",
+                    borderBottom: i < stats.recentBlogs.length - 1 ? "1px solid rgba(120,160,255,0.08)" : "none",
                     transition: "background 0.12s",
                     gap: 12,
+                    width: "100%",
+                    boxSizing: "border-box",
                   }}
-                  onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "var(--neutral-alpha-weak)"}
+                  onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "rgba(120,160,255,0.06)"}
                   onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "transparent"}
                 >
                   <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, minWidth: 0 }}>
                     <span style={{
-                      fontSize: "13.5px", fontWeight: 500,
+                      fontSize: 13, fontWeight: 500,
                       color: "var(--neutral-on-background-strong)",
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                     }}>
                       {b.title_id}
                     </span>
-                    <span style={{ fontSize: "11px", color: "var(--neutral-on-background-weak)" }}>
+                    <span style={{ fontSize: 11, color: "var(--neutral-on-background-weak)" }}>
                       {format(new Date(b.created_at), "d MMM yyyy")}
                     </span>
                   </div>
                   <span style={{
-                    fontSize: "11px", fontWeight: 600, padding: "3px 10px", borderRadius: 20, flexShrink: 0,
-                    background: b.published ? "var(--brand-alpha-weak)" : "var(--neutral-alpha-weak)",
-                    color: b.published ? "var(--brand-on-background-strong)" : "var(--neutral-on-background-weak)",
+                    fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 20, flexShrink: 0,
+                    background: b.published ? "rgba(99,102,241,0.15)" : "rgba(100,116,139,0.12)",
+                    color: b.published ? "#a5b4fc" : "var(--neutral-on-background-weak)",
+                    border: `1px solid ${b.published ? "rgba(129,140,248,0.25)" : "transparent"}`,
                   }}>
                     {b.published ? "Tayang" : "Draft"}
                   </span>
                 </button>
               ))
             )}
-          </Column>
-        </Column>
-      </Row>
+          </div>
+        </div>
+      </div>
 
-      {/* ── Quick Actions ─────────────────────────── */}
-      <Column gap="m">
-        <Text variant="label-strong-s" onBackground="neutral-weak" style={{ letterSpacing: "0.08em" }}>
-          AKSI CEPAT
-        </Text>
-        <Row gap="m" wrap>
+      {/* ── Quick Actions ── */}
+      <div>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--neutral-on-background-weak)", marginBottom: 12, opacity: 0.6 }}>
+          Aksi Cepat
+        </div>
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 10,
+          width: "100%",
+        }}>
           {[
-            { label: "Proyek Baru",      href: "/reza-control/projects/new",      color: "var(--brand-alpha-weak)",  textColor: "var(--brand-on-background-strong)" },
-            { label: "Blog Baru",        href: "/reza-control/blogs/new",         color: "var(--accent-alpha-weak)", textColor: "var(--accent-on-background-strong)" },
-            { label: "Sertifikat Baru",  href: "/reza-control/certificates/new",  color: "var(--success-alpha-weak)", textColor: "var(--success-on-background-strong)" },
-            { label: "Edit Profil",      href: "/reza-control/about",             color: "var(--neutral-alpha-weak)", textColor: "var(--neutral-on-background-strong)" },
+            { label: "Proyek Baru",     href: "/reza-control/projects/new",      bg: "linear-gradient(135deg,rgba(99,102,241,0.15),rgba(99,102,241,0.08))", border: "rgba(129,140,248,0.25)", color: "#a5b4fc",  glow: "rgba(99,102,241,0.25)" },
+            { label: "Blog Baru",       href: "/reza-control/blogs/new",         bg: "linear-gradient(135deg,rgba(14,165,233,0.15),rgba(14,165,233,0.08))",  border: "rgba(56,189,248,0.25)",  color: "#7dd3fc",  glow: "rgba(14,165,233,0.25)" },
+            { label: "Sertifikat Baru", href: "/reza-control/certificates/new",  bg: "linear-gradient(135deg,rgba(20,184,166,0.15),rgba(20,184,166,0.08))",  border: "rgba(45,212,191,0.25)",  color: "#5eead4",  glow: "rgba(20,184,166,0.25)" },
+            { label: "Edit Profil",     href: "/reza-control/about",             bg: "linear-gradient(135deg,rgba(100,116,139,0.15),rgba(100,116,139,0.08))", border: "rgba(100,116,139,0.20)", color: "#94a3b8", glow: "rgba(100,116,139,0.2)" },
           ].map((action) => (
             <button
               key={action.href}
               onClick={() => router.push(action.href)}
               style={{
                 all: "unset",
-                padding: "12px 20px",
+                padding: "11px 18px",
                 borderRadius: 12,
-                background: action.color,
-                color: action.textColor,
-                fontSize: "13px",
+                background: action.bg,
+                border: `1px solid ${action.border}`,
+                color: action.color,
+                fontSize: 13,
                 fontWeight: 600,
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                gap: 8,
-                transition: "opacity 0.15s, transform 0.15s",
+                gap: 7,
+                transition: "opacity 0.18s, transform 0.18s, box-shadow 0.18s",
+                boxSizing: "border-box",
               }}
               onMouseEnter={e => {
                 (e.currentTarget as HTMLButtonElement).style.opacity = "0.85";
-                (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)";
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 8px 24px ${action.glow}`;
               }}
               onMouseLeave={e => {
                 (e.currentTarget as HTMLButtonElement).style.opacity = "1";
                 (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
               }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
               {action.label}
             </button>
           ))}
-        </Row>
-      </Column>
+        </div>
+      </div>
 
-    </Column>
+    </div>
   );
 }
