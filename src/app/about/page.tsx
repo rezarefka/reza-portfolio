@@ -82,7 +82,7 @@ export default async function About() {
         </Column>
       )}
 
-      <Row fillWidth s={{ direction: "column" }} horizontal="center">
+      <Row fillWidth s={{ direction: "column" }} horizontal="center" gap="0">
 
         {/* ── Avatar Sidebar ──────────────────────────────────────────── */}
         {about.avatar.display && (
@@ -90,7 +90,7 @@ export default async function About() {
             className={styles.avatar}
             s={{ position: "relative", style: { top: "auto" } }}
             xs={{ style: { top: "auto" } }}
-            minWidth={160} paddingX="l" paddingBottom="xl" flex={3} horizontal="center"
+            minWidth={160} paddingX="l" paddingBottom="l" flex={3} horizontal="center"
             style={{ position: "sticky", top: 80, alignSelf: "flex-start", height: "fit-content" }}>
             <ScrollReveal type="scale">
               <AvatarFromCms />
@@ -240,15 +240,15 @@ export default async function About() {
               }
               .edu-card {
                 display: flex;
-                border-radius: 20px;
+                border-radius: 16px;
                 overflow: hidden;
                 border: 1px solid var(--neutral-alpha-weak);
                 background: var(--neutral-background-medium);
                 transition: box-shadow 0.26s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1), border-color 0.22s;
               }
               .edu-card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 12px 40px color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 32px color-mix(in srgb, var(--neutral-on-background-strong) 7%, transparent);
                 border-color: var(--neutral-alpha-medium);
               }
               .edu-accent-bar {
@@ -274,10 +274,15 @@ export default async function About() {
                 color: var(--neutral-on-background-weak);
                 margin-top: 2px;
               }
-              @media (max-width: 560px) {
-                .edu-card { flex-direction: column; }
+              .edu-year-col {
+                display: flex;
+              }
+              @media (max-width: 640px) {
+                .edu-card { flex-direction: column; border-radius: 14px; }
                 .edu-accent-bar { width: 100%; height: 4px; }
-                .edu-inner { padding: 18px 16px !important; }
+                .edu-inner { padding: 16px 16px !important; }
+                .edu-year-col { display: none !important; }
+                .edu-logo-wrap { width: 44px !important; height: 44px !important; border-radius: 10px !important; }
               }
             `}</style>
 
@@ -315,7 +320,7 @@ export default async function About() {
                         )}
 
                         {/* Title + meta */}
-                        <div style={{ flex: 1, minWidth: 200 }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
                           <Text variant="heading-strong-l" style={{ lineHeight: 1.2, marginBottom: 10 }}>
                             {edu.university_name}
                           </Text>

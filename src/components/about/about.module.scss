@@ -22,14 +22,16 @@
         align-self: center;
     }
 
-    /* Mobile: non-sticky, centered */
+    /* Mobile: non-sticky, centered, compact */
     .avatar {
         position: relative !important;
         top: auto !important;
         width: 100% !important;
         max-width: 100% !important;
         flex: none !important;
-        padding-bottom: 8px !important;
+        padding-bottom: 4px !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
         height: auto !important;
         align-self: center !important;
     }

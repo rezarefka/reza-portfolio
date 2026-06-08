@@ -13,7 +13,7 @@ interface HeroSectionProps {
   settings: SiteSettings | null;
 }
 
-/* ── Download CV Button — Elegant Minimal ───────────────────────────────── */
+/* ── Download CV Button — Minimal ───────────────────────────────────────── */
 function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
   const [clicked, setClicked] = useState(false);
 
@@ -32,209 +32,61 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
   return (
     <>
       <style>{`
-        @keyframes cv-shimmer {
-          0%   { transform: translateX(-130%) skewX(-18deg); }
-          100% { transform: translateX(280%)  skewX(-18deg); }
-        }
         @keyframes cv-check-draw {
           from { stroke-dashoffset: 20; }
           to   { stroke-dashoffset: 0; }
         }
-        @keyframes cv-float {
-          0%, 100% { transform: translateY(0px); }
-          50%       { transform: translateY(-1.5px); }
-        }
-
-        .cv-elegant-btn {
-          position: relative;
+        .cv-min-btn {
           display: inline-flex;
           align-items: center;
-          gap: 0;
-          border: none;
-          background: none;
-          padding: 0;
-          cursor: pointer;
-          text-decoration: none;
-          font-family: inherit;
-          outline: none;
-          -webkit-tap-highlight-color: transparent;
-        }
-
-        .cv-ring {
-          position: absolute;
-          inset: -5px;
-          border-radius: 999px;
-          border: 1px solid transparent;
-          background:
-            linear-gradient(var(--neutral-background-weak, #0a0a0a), var(--neutral-background-weak, #0a0a0a)) padding-box,
-            linear-gradient(135deg,
-              rgba(255,255,255,0.08) 0%,
-              rgba(255,255,255,0.22) 40%,
-              rgba(255,255,255,0.04) 60%,
-              rgba(255,255,255,0.18) 100%
-            ) border-box;
-          opacity: 0;
-          transition: opacity 0.35s ease;
-          pointer-events: none;
-        }
-        .cv-elegant-btn:hover .cv-ring,
-        .cv-elegant-btn:focus-visible .cv-ring { opacity: 1; }
-
-        .cv-pill {
-          position: relative;
-          overflow: hidden;
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          padding: 9px 18px 9px 10px;
-          border-radius: 999px;
-          border: 1px solid rgba(255,255,255,0.1);
-          background: rgba(255,255,255,0.04);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          transition:
-            background 0.3s ease,
-            border-color 0.3s ease,
-            transform 0.35s cubic-bezier(0.34,1.56,0.64,1),
-            box-shadow 0.3s ease;
-          animation: cv-float 4s ease-in-out infinite;
-        }
-        .cv-elegant-btn:hover .cv-pill {
-          background: rgba(255,255,255,0.08);
-          border-color: rgba(255,255,255,0.22);
-          transform: translateY(-2px) scale(1.02);
-          box-shadow:
-            0 8px 32px rgba(0,0,0,0.25),
-            0 2px 8px rgba(0,0,0,0.15),
-            inset 0 1px 0 rgba(255,255,255,0.12);
-          animation: none;
-        }
-        .cv-elegant-btn:active .cv-pill {
-          transform: translateY(0) scale(0.97);
-          box-shadow: none;
-        }
-
-        .cv-pill::before {
-          content: "";
-          position: absolute;
-          top: 0; left: 0;
-          width: 40%; height: 100%;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255,255,255,0.07) 40%,
-            rgba(255,255,255,0.14) 50%,
-            rgba(255,255,255,0.07) 60%,
-            transparent
-          );
-          animation: cv-shimmer 4.5s ease-in-out infinite 1s;
-          pointer-events: none;
-        }
-        .cv-elegant-btn:hover .cv-pill::before {
-          animation: cv-shimmer 1.8s ease-in-out infinite;
-        }
-        .cv-pill::after {
-          content: "";
-          position: absolute;
-          top: 0; left: 15%; right: 15%;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35) 50%, transparent);
-          pointer-events: none;
-        }
-
-        .cv-icon-wrap {
-          position: relative;
-          z-index: 2;
-          width: 28px; height: 28px;
-          border-radius: 8px;
-          background: rgba(255,255,255,0.08);
-          border: 1px solid rgba(255,255,255,0.1);
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0;
-          transition: background 0.25s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-        }
-        .cv-elegant-btn:hover .cv-icon-wrap {
-          background: rgba(255,255,255,0.14);
-          transform: translateY(1px);
-        }
-
-        .cv-text-group {
-          position: relative;
-          z-index: 2;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          line-height: 1;
-        }
-        .cv-sublabel {
-          font-size: 9px;
-          font-weight: 700;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.35);
-          margin-bottom: 2px;
-        }
-        .cv-mainlabel {
+          gap: 7px;
+          padding: 10px 18px;
+          border-radius: 10px;
+          border: 1px solid var(--neutral-alpha-medium);
+          background: transparent;
+          color: var(--neutral-on-background-strong);
           font-size: 13px;
-          font-weight: 600;
-          color: rgba(255,255,255,0.82);
-          letter-spacing: -0.01em;
-          transition: color 0.2s ease;
+          font-weight: 500;
+          font-family: inherit;
+          cursor: pointer;
+          letter-spacing: 0.01em;
+          transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+          -webkit-tap-highlight-color: transparent;
+          outline: none;
+          text-decoration: none;
         }
-        .cv-elegant-btn:hover .cv-mainlabel { color: rgba(255,255,255,0.95); }
-
-        .cv-badge {
-          position: relative;
-          z-index: 2;
-          font-size: 9px;
-          font-weight: 800;
-          letter-spacing: 0.1em;
-          padding: 2px 6px;
-          border-radius: 4px;
-          background: rgba(255,255,255,0.07);
-          color: rgba(255,255,255,0.4);
-          border: 1px solid rgba(255,255,255,0.08);
-          transition: background 0.2s, color 0.2s;
+        .cv-min-btn:hover {
+          background: var(--neutral-alpha-weak);
+          border-color: var(--neutral-alpha-strong);
         }
-        .cv-elegant-btn:hover .cv-badge {
-          background: rgba(255,255,255,0.12);
-          color: rgba(255,255,255,0.65);
+        .cv-min-btn:active {
+          background: var(--neutral-alpha-medium);
         }
-
         .cv-check {
           stroke-dasharray: 20;
           stroke-dashoffset: 20;
-          animation: cv-check-draw 0.4s ease forwards;
+          animation: cv-check-draw 0.35s ease forwards;
         }
       `}</style>
 
       <button
-        className="cv-elegant-btn"
+        className="cv-min-btn"
         onClick={handleDownload}
         type="button"
         aria-label={label}
       >
-        <div className="cv-ring" />
-        <div className="cv-pill">
-          <div className="cv-icon-wrap">
-            {clicked ? (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline className="cv-check" points="20 6 9 17 4 12"/>
-              </svg>
-            ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-            )}
-          </div>
-          <div className="cv-text-group">
-            <span className="cv-sublabel">Curriculum Vitae</span>
-            <span className="cv-mainlabel">{clicked ? "Mengunduh…" : label}</span>
-          </div>
-          <span className="cv-badge">PDF</span>
-        </div>
+        {clicked ? (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline className="cv-check" points="20 6 9 17 4 12" />
+          </svg>
+        ) : (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        )}
+        {clicked ? "Mengunduh…" : label}
       </button>
     </>
   );
