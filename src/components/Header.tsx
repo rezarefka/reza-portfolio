@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { Fade, Flex, Line, Row, ToggleButton } from "@once-ui-system/core";
+import { Fade, Row, ToggleButton } from "@once-ui-system/core";
 
 import { routes, display, person, about, blog, work, gallery } from "@/resources";
 import { ThemeToggle } from "./ThemeToggle";
@@ -28,14 +28,11 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ timeZone, locale = "en-GB" })
         second: "2-digit",
         hour12: false,
       };
-      const timeString = new Intl.DateTimeFormat(locale, options).format(now);
-      setCurrentTime(timeString);
+      setCurrentTime(new Intl.DateTimeFormat(locale, options).format(now));
     };
-
     updateTime();
-    const intervalId = setInterval(updateTime, 1000);
-
-    return () => clearInterval(intervalId);
+    const id = setInterval(updateTime, 1000);
+    return () => clearInterval(id);
   }, [timeZone, locale]);
 
   return <>{currentTime}</>;
@@ -45,13 +42,24 @@ export default TimeDisplay;
 
 export const Header = () => {
   const pathname = usePathname() ?? "";
+  const [scrolled, setScrolled] = useState(false);
 
-  // Hide header entirely inside CMS
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   if (pathname.startsWith("/reza-control")) return null;
+
+  const isActive = (path: string, exact = false) =>
+    exact ? pathname === path : pathname.startsWith(path);
 
   return (
     <>
+      {/* Desktop: top fade mask */}
       <Fade s={{ hide: true }} fillWidth position="fixed" height="80" zIndex={9} />
+      {/* Mobile: bottom fade mask */}
       <Fade
         hide
         s={{ hide: false }}
@@ -62,114 +70,93 @@ export const Header = () => {
         height="80"
         zIndex={9}
       />
-      <Row
-        fitHeight
-        className={styles.position}
-        position="sticky"
-        as="header"
-        zIndex={9}
-        fillWidth
-        padding="8"
-        horizontal="center"
+
+      {/* Header shell — full width, centers the pill */}
+      <header
+        className={`${styles.headerShell} ${scrolled ? styles.scrolled : ""}`}
         data-border="rounded"
-        s={{
-          position: "fixed",
-        }}
       >
-        <Row paddingLeft="12" fillWidth vertical="center" textVariant="body-default-s">
-          {display.location && <Row s={{ hide: true }}>{person.location}</Row>}
-        </Row>
-        <Row fillWidth horizontal="center">
-          <Row
-            radius="m-4"
-            zIndex={1}
-            className={styles.glassNav}
-          >
-            <Row gap="2" vertical="center" textVariant="body-default-s" suppressHydrationWarning className={styles.navInner}>
-              {routes["/"] && (
-                <ToggleButton
-                  prefixIcon="home"
-                  href="/"
-                  selected={pathname === "/"}
-                  className={`${styles.navBtn} ${pathname === "/" ? styles.navBtnActive : ""}`}
-                >
-                  <span className={styles.navLabel}>Home</span>
-                </ToggleButton>
-              )}
+        <nav className={styles.glassNav} suppressHydrationWarning>
+          {/* ── Nav links ── */}
+          {routes["/"] && (
+            <ToggleButton
+              prefixIcon="home"
+              href="/"
+              selected={isActive("/", true)}
+              className={`${styles.navBtn} ${isActive("/", true) ? styles.active : ""}`}
+            >
+              <span className={styles.label}>Home</span>
+            </ToggleButton>
+          )}
 
-              {(routes["/"] && (routes["/about"] || routes["/work"] || routes["/blog"] || routes["/gallery"])) && (
-                <div className={styles.divider} />
-              )}
+          {routes["/about"] && (
+            <>
+              <span className={styles.sep} />
+              <ToggleButton
+                prefixIcon="person"
+                href="/about"
+                selected={isActive("/about", true)}
+                className={`${styles.navBtn} ${isActive("/about", true) ? styles.active : ""}`}
+              >
+                <span className={styles.label}>{about.label}</span>
+              </ToggleButton>
+            </>
+          )}
 
-              {routes["/about"] && (
-                <ToggleButton
-                  prefixIcon="person"
-                  href="/about"
-                  selected={pathname === "/about"}
-                  className={`${styles.navBtn} ${pathname === "/about" ? styles.navBtnActive : ""}`}
-                >
-                  <span className={styles.navLabel}>{about.label}</span>
-                </ToggleButton>
-              )}
+          {routes["/work"] && (
+            <>
+              <span className={styles.sep} />
+              <ToggleButton
+                prefixIcon="grid"
+                href="/work"
+                selected={isActive("/work")}
+                className={`${styles.navBtn} ${isActive("/work") ? styles.active : ""}`}
+              >
+                <span className={styles.label}>{work.label}</span>
+              </ToggleButton>
+            </>
+          )}
 
-              {routes["/work"] && (
-                <ToggleButton
-                  prefixIcon="grid"
-                  href="/work"
-                  selected={pathname.startsWith("/work")}
-                  className={`${styles.navBtn} ${pathname.startsWith("/work") ? styles.navBtnActive : ""}`}
-                >
-                  <span className={styles.navLabel}>{work.label}</span>
-                </ToggleButton>
-              )}
+          {routes["/blog"] && (
+            <>
+              <span className={styles.sep} />
+              <ToggleButton
+                prefixIcon="book"
+                href="/blog"
+                selected={isActive("/blog")}
+                className={`${styles.navBtn} ${isActive("/blog") ? styles.active : ""}`}
+              >
+                <span className={styles.label}>{blog.label}</span>
+              </ToggleButton>
+            </>
+          )}
 
-              {routes["/blog"] && (
-                <ToggleButton
-                  prefixIcon="book"
-                  href="/blog"
-                  selected={pathname.startsWith("/blog")}
-                  className={`${styles.navBtn} ${pathname.startsWith("/blog") ? styles.navBtnActive : ""}`}
-                >
-                  <span className={styles.navLabel}>{blog.label}</span>
-                </ToggleButton>
-              )}
+          {routes["/gallery"] && (
+            <>
+              <span className={styles.sep} />
+              <ToggleButton
+                prefixIcon="gallery"
+                href="/gallery"
+                selected={isActive("/gallery")}
+                className={`${styles.navBtn} ${isActive("/gallery") ? styles.active : ""}`}
+              >
+                <span className={styles.label}>{gallery.label}</span>
+              </ToggleButton>
+            </>
+          )}
 
-              {routes["/gallery"] && (
-                <ToggleButton
-                  prefixIcon="gallery"
-                  href="/gallery"
-                  selected={pathname.startsWith("/gallery")}
-                  className={`${styles.navBtn} ${pathname.startsWith("/gallery") ? styles.navBtnActive : ""}`}
-                >
-                  <span className={styles.navLabel}>{gallery.label}</span>
-                </ToggleButton>
-              )}
+          {/* ── Utilities ── */}
+          {display.themeSwitcher && (
+            <>
+              <span className={styles.sep} />
+              <ThemeToggle />
+            </>
+          )}
 
-              {display.themeSwitcher && (
-                <>
-                  <div className={styles.divider} />
-                  <ThemeToggle />
-                </>
-              )}
-              <div className={styles.divider} />
-              <LangToggle />
-            </Row>
-          </Row>
-        </Row>
-        <Flex fillWidth horizontal="end" vertical="center">
-          <Flex
-            paddingRight="12"
-            horizontal="end"
-            vertical="center"
-            textVariant="body-default-s"
-            gap="20"
-          >
-            <Flex s={{ hide: true }}>
-              {display.time && <TimeDisplay timeZone={person.location} />}
-            </Flex>
-          </Flex>
-        </Flex>
-      </Row>
+          <span className={styles.sep} />
+          <LangToggle />
+        </nav>
+      </header>
     </>
   );
 };

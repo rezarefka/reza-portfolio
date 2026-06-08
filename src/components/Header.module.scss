@@ -1,154 +1,225 @@
-@use "./breakpoints.scss" as breakpoints;
+@use "./breakpoints.scss" as bp;
 
-/* ── Position: desktop sticky top, mobile fixed bottom ─────────────── */
-.position {
+/* ═══════════════════════════════════════════════════════════
+   HEADER SHELL — full-width bar that positions the pill
+═══════════════════════════════════════════════════════════ */
+.headerShell {
+  position: sticky;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px;
+  pointer-events: none;          /* let clicks pass through the empty shell */
+
+  /* Scroll-aware transition */
+  transition: padding 0.3s ease;
 }
 
-@media (max-width: breakpoints.$s) {
-  .position {
-    top: auto;
-    bottom: var(--static-space-24);
+/* Desktop: pill floats down a little when scrolled */
+.headerShell.scrolled {
+  padding: 8px 16px;
+}
+
+/* Mobile: shell sticks to bottom */
+@media (max-width: bp.$s) {
+  .headerShell {
+    position: fixed;
+    top: auto !important;
+    bottom: 24px;
+    padding: 0 16px;
+  }
+
+  .headerShell.scrolled {
+    padding: 0 16px;
   }
 }
 
-/* ── Liquid Glass pill navbar ───────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   GLASS PILL
+═══════════════════════════════════════════════════════════ */
 .glassNav {
+  pointer-events: auto;          /* re-enable clicks on the pill */
+
   display: inline-flex;
+  flex-wrap: nowrap;
   align-items: center;
-  padding: 6px 8px;
+  gap: 0;
+
+  /* Size */
+  padding: 5px 8px;
+  height: 48px;
   border-radius: 9999px;
 
-  /* Glass layers */
-  background: color-mix(in srgb, var(--page-background) 55%, transparent);
+  /* Multi-layer glass */
+  background: color-mix(in srgb, var(--page-background) 56%, transparent);
   backdrop-filter: blur(32px) saturate(180%) brightness(1.04);
   -webkit-backdrop-filter: blur(32px) saturate(180%) brightness(1.04);
 
-  /* Single-color (cyan) tinted border */
-  border: 1px solid color-mix(in srgb, var(--brand-background-strong) 22%, transparent);
+  /* Cyan-tinted border */
+  border: 1px solid color-mix(in srgb, var(--brand-background-strong) 24%, transparent);
 
-  /* Layered shadow with cyan glow */
+  /* Shadow + cyan glow */
   box-shadow:
-    0 2px 20px color-mix(in srgb, var(--brand-background-strong) 12%, transparent),
-    0 1px 4px color-mix(in srgb, var(--neutral-on-background-strong) 6%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--neutral-on-background-strong) 10%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--brand-background-strong) 8%, transparent);
+    0 2px 24px color-mix(in srgb, var(--brand-background-strong) 14%, transparent),
+    0 1px 4px  color-mix(in srgb, var(--neutral-on-background-strong) 6%, transparent),
+    inset 0  1px 0 color-mix(in srgb, var(--neutral-on-background-strong) 10%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--brand-background-strong)   6%, transparent);
 
-  transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition:
+    background   0.3s ease,
+    box-shadow   0.3s ease,
+    border-color 0.3s ease,
+    height       0.3s ease;
+
+  /* Specular top-left highlight */
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 
-  /* Top-left specular highlight */
   &::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
     background: linear-gradient(
-      135deg,
+      130deg,
       color-mix(in srgb, var(--neutral-on-background-strong) 5%, transparent) 0%,
       transparent 45%,
       color-mix(in srgb, var(--brand-background-strong) 3%, transparent) 100%
     );
     pointer-events: none;
-    z-index: 0;
   }
 
   &:hover {
-    background: color-mix(in srgb, var(--page-background) 70%, transparent);
-    border-color: color-mix(in srgb, var(--brand-background-strong) 35%, transparent);
+    background: color-mix(in srgb, var(--page-background) 72%, transparent);
+    border-color: color-mix(in srgb, var(--brand-background-strong) 38%, transparent);
     box-shadow:
-      0 4px 28px color-mix(in srgb, var(--brand-background-strong) 20%, transparent),
-      0 2px 8px color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent),
+      0 4px 32px color-mix(in srgb, var(--brand-background-strong) 22%, transparent),
+      0 2px 8px  color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent),
       inset 0 1px 0 color-mix(in srgb, var(--neutral-on-background-strong) 14%, transparent);
   }
 }
 
-/* ── Nav row inside pill ─────────────────────────────────────────────── */
-.navInner {
-  position: relative;
-  z-index: 1;
-  flex-wrap: nowrap;
+/* Scrolled: slightly more opaque */
+.headerShell.scrolled .glassNav {
+  background: color-mix(in srgb, var(--page-background) 72%, transparent);
+  box-shadow:
+    0 4px 32px color-mix(in srgb, var(--brand-background-strong) 18%, transparent),
+    0 1px 6px  color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--neutral-on-background-strong) 12%, transparent);
 }
 
-/* ── Divider ─────────────────────────────────────────────────────────── */
-.divider {
+/* ═══════════════════════════════════════════════════════════
+   SEPARATOR
+═══════════════════════════════════════════════════════════ */
+.sep {
+  display: inline-block;
   width: 1px;
-  height: 20px;
+  height: 18px;
   flex-shrink: 0;
-  background: color-mix(in srgb, var(--neutral-alpha-medium) 60%, transparent);
-  margin: 0 2px;
+  background: color-mix(in srgb, var(--neutral-alpha-medium) 55%, transparent);
+  margin: 0 3px;
+  border-radius: 1px;
 }
 
-/* ── Nav buttons ─────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   NAV BUTTONS
+═══════════════════════════════════════════════════════════ */
 .navBtn {
+  /* Layout */
   display: inline-flex !important;
   align-items: center !important;
-  gap: 6px !important;
-  min-height: 36px !important;
-  padding: 6px 10px !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+
+  /* Size */
+  height: 36px !important;
+  padding: 0 11px !important;
   border-radius: 9999px !important;
+
+  /* Typography */
   font-size: 13px !important;
   font-weight: 500 !important;
   letter-spacing: 0.01em !important;
-  white-space: nowrap !important;
+
+  /* Color */
   color: var(--neutral-on-background-medium) !important;
+
+  /* Transitions */
   transition: color 0.2s ease, background 0.2s ease !important;
 
-  /* Icon sizing */
+  /* Icon */
   svg,
-  :global([data-component="Icon"]),
-  :global(i) {
-    width: 16px !important;
-    height: 16px !important;
+  i,
+  [data-component="Icon"] {
+    width: 15px !important;
+    height: 15px !important;
     flex-shrink: 0 !important;
     color: inherit !important;
+    opacity: 0.85;
   }
 
   &:hover {
     color: var(--brand-on-background-strong) !important;
-    background: color-mix(in srgb, var(--brand-background-weak) 30%, transparent) !important;
+    background: color-mix(in srgb, var(--brand-background-weak) 28%, transparent) !important;
+
+    svg, i { opacity: 1; }
   }
 }
 
-/* ── Active / selected state — cyan accent ───────────────────────────── */
-.navBtnActive,
+/* Active / selected */
+.navBtn.active,
 .navBtn[aria-current="page"],
-:global([data-component="ToggleButton"][data-selected="true"]).navBtn,
-:global(a[class*="toggleButton"][aria-current]).navBtn {
+.navBtn[data-selected="true"] {
   color: var(--brand-on-background-strong) !important;
-  background: color-mix(in srgb, var(--brand-background-medium) 28%, transparent) !important;
+  background: color-mix(in srgb, var(--brand-background-medium) 30%, transparent) !important;
   font-weight: 600 !important;
+
+  svg, i { opacity: 1; }
 }
 
-/* ── Label: visible desktop, hidden mobile ───────────────────────────── */
-.navLabel {
+/* ═══════════════════════════════════════════════════════════
+   LABEL — shown desktop, hidden mobile
+═══════════════════════════════════════════════════════════ */
+.label {
   display: inline;
-  font-size: 13px;
-  font-weight: inherit;
   line-height: 1;
 }
 
-@media (max-width: breakpoints.$s) {
+/* ═══════════════════════════════════════════════════════════
+   MOBILE OVERRIDES (≤768 px)
+═══════════════════════════════════════════════════════════ */
+@media (max-width: bp.$s) {
   .glassNav {
+    height: 52px;
     padding: 5px 6px;
   }
 
   .navBtn {
-    padding: 7px 9px !important;
-    min-height: 38px !important;
+    height: 40px !important;
+    padding: 0 10px !important;
     gap: 0 !important;
 
-    svg,
-    :global([data-component="Icon"]),
-    :global(i) {
-      width: 18px !important;
-      height: 18px !important;
+    svg, i {
+      width: 19px !important;
+      height: 19px !important;
+      opacity: 1;
     }
   }
 
-  /* Hide text labels on mobile — keep icons */
-  .navLabel {
+  /* Hide text labels — keep icons */
+  .label {
     display: none;
+  }
+
+  .sep {
+    height: 16px;
+    margin: 0 2px;
   }
 }
