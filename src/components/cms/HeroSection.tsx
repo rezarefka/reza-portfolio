@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { SiteSettings } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { ShimmerButton } from "./ShimmerButton";
+import { HeroSkeleton } from "@/components/Skeletons";
 
 interface HeroSectionProps {
   settings: SiteSettings | null;
@@ -14,7 +15,6 @@ interface HeroSectionProps {
 
 /* ── Download CV Button — Elegant Minimal ───────────────────────────────── */
 function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
-  const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
 
   const handleDownload = () => {
@@ -35,10 +35,6 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
         @keyframes cv-shimmer {
           0%   { transform: translateX(-130%) skewX(-18deg); }
           100% { transform: translateX(280%)  skewX(-18deg); }
-        }
-        @keyframes cv-spin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
         }
         @keyframes cv-check-draw {
           from { stroke-dashoffset: 20; }
@@ -64,7 +60,6 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
           -webkit-tap-highlight-color: transparent;
         }
 
-        /* Outer ring — thin orbit */
         .cv-ring {
           position: absolute;
           inset: -5px;
@@ -85,7 +80,6 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
         .cv-elegant-btn:hover .cv-ring,
         .cv-elegant-btn:focus-visible .cv-ring { opacity: 1; }
 
-        /* Main pill */
         .cv-pill {
           position: relative;
           overflow: hidden;
@@ -120,7 +114,6 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
           box-shadow: none;
         }
 
-        /* Shimmer sweep */
         .cv-pill::before {
           content: "";
           position: absolute;
@@ -140,8 +133,6 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
         .cv-elegant-btn:hover .cv-pill::before {
           animation: cv-shimmer 1.8s ease-in-out infinite;
         }
-
-        /* Top rim highlight */
         .cv-pill::after {
           content: "";
           position: absolute;
@@ -151,7 +142,6 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
           pointer-events: none;
         }
 
-        /* Icon wrapper */
         .cv-icon-wrap {
           position: relative;
           z-index: 2;
@@ -168,7 +158,6 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
           transform: translateY(1px);
         }
 
-        /* Text group */
         .cv-text-group {
           position: relative;
           z-index: 2;
@@ -194,7 +183,6 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
         }
         .cv-elegant-btn:hover .cv-mainlabel { color: rgba(255,255,255,0.95); }
 
-        /* Badge */
         .cv-badge {
           position: relative;
           z-index: 2;
@@ -213,7 +201,6 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
           color: rgba(255,255,255,0.65);
         }
 
-        /* Success state */
         .cv-check {
           stroke-dasharray: 20;
           stroke-dashoffset: 20;
@@ -225,13 +212,10 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
         className="cv-elegant-btn"
         onClick={handleDownload}
         type="button"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
         aria-label={label}
       >
         <div className="cv-ring" />
         <div className="cv-pill">
-          {/* Icon box */}
           <div className="cv-icon-wrap">
             {clicked ? (
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -245,16 +229,10 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
               </svg>
             )}
           </div>
-
-          {/* Text */}
           <div className="cv-text-group">
             <span className="cv-sublabel">Curriculum Vitae</span>
-            <span className="cv-mainlabel">
-              {clicked ? "Mengunduh…" : label}
-            </span>
+            <span className="cv-mainlabel">{clicked ? "Mengunduh…" : label}</span>
           </div>
-
-          {/* PDF badge */}
           <span className="cv-badge">PDF</span>
         </div>
       </button>
@@ -267,6 +245,8 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
   const { lang } = useLang();
   const [settings, setSettings] = useState<SiteSettings | null>(initialSettings);
   const [avatarSrc, setAvatarSrc] = useState<string>(person.avatar);
+  // Skeleton hanya muncul jika tidak ada data dari server (SSR kosong)
+  const [isLoading, setIsLoading] = useState<boolean>(!initialSettings);
 
   useEffect(() => {
     const supabase = createClient();
@@ -281,8 +261,17 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
           setSettings(data);
           if (data.avatar) setAvatarSrc(data.avatar.split("?")[0]);
         }
+        setIsLoading(false);
       });
   }, []);
+
+  if (isLoading) {
+    return (
+      <Column fillWidth horizontal="center" gap="m">
+        <HeroSkeleton />
+      </Column>
+    );
+  }
 
   const heroHeadline = settings
     ? lang === "en" ? settings.hero_headline_en : settings.hero_headline_id
@@ -291,6 +280,10 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
   const heroDescription = settings
     ? lang === "en" ? settings.hero_description_en : settings.hero_description_id
     : "Saya Reza, seorang developer yang bersemangat membangun solusi digital.";
+
+  const heroMotto = settings
+    ? lang === "en" ? settings.hero_motto_en : settings.hero_motto_id
+    : "";
 
   const ctaText = settings
     ? lang === "en" ? settings.hero_cta_text_en : settings.hero_cta_text_id
@@ -303,16 +296,57 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
   return (
     <Column fillWidth horizontal="center" gap="m">
       <Column maxWidth="s" horizontal="center" align="center">
+
+        {/* ── Motto pill ── */}
+        {heroMotto?.trim() && (
+          <RevealFx translateY="4" fillWidth horizontal="center" paddingBottom="20">
+            <div style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "5px 14px 5px 8px",
+              borderRadius: 999,
+              border: "1px solid var(--neutral-alpha-weak)",
+              background: "var(--neutral-alpha-weak)",
+              backdropFilter: "blur(8px)",
+            }}>
+              <span style={{
+                width: 6, height: 6, borderRadius: "50%",
+                background: "var(--brand-solid-strong, #6366f1)",
+                flexShrink: 0,
+                animation: "heroDotPulse 2.4s ease-in-out infinite",
+                display: "inline-block",
+              }} />
+              <style>{`
+                @keyframes heroDotPulse {
+                  0%,100% { opacity:1; transform:scale(1); }
+                  50% { opacity:.45; transform:scale(1.5); }
+                }
+              `}</style>
+              <span style={{
+                fontSize: 12, fontWeight: 600,
+                letterSpacing: "0.06em",
+                color: "var(--neutral-on-background-weak)",
+                fontFamily: "inherit",
+              }}>
+                {heroMotto}
+              </span>
+            </div>
+          </RevealFx>
+        )}
+
         <RevealFx translateY="4" fillWidth horizontal="center" paddingBottom="16">
           <Heading wrap="balance" variant="display-strong-l">
             {heroHeadline}
           </Heading>
         </RevealFx>
+
         <RevealFx translateY="8" delay={0.2} fillWidth horizontal="center" paddingBottom="32">
           <Text wrap="balance" onBackground="neutral-weak" variant="heading-default-xl">
             {heroDescription}
           </Text>
         </RevealFx>
+
         <RevealFx paddingTop="12" delay={0.4} horizontal="center">
           <Row gap="12" horizontal="center" wrap>
             <ShimmerButton
@@ -326,6 +360,7 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
             )}
           </Row>
         </RevealFx>
+
       </Column>
     </Column>
   );

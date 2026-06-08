@@ -182,3 +182,114 @@ export function GallerySkeletonGrid({ count = 8 }: { count?: number }) {
     </div>
   );
 }
+
+// ─── HeroSkeleton ─────────────────────────────────────────────────────────────
+export function HeroSkeleton() {
+  return (
+    <>
+      <style>{SKELETON_STYLE}</style>
+      <div style={{
+        display: "flex", flexDirection: "column", alignItems: "center",
+        gap: 20, width: "100%", maxWidth: 560, margin: "0 auto",
+        paddingBottom: 16,
+      }}>
+        {/* Motto pill */}
+        <div className="sk-pulse" style={{ height: 26, width: 160, borderRadius: 99 }} />
+        {/* Headline — 2 lines */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "center", width: "100%" }}>
+          <div className="sk-pulse" style={{ height: 44, width: "85%", borderRadius: 10 }} />
+          <div className="sk-pulse" style={{ height: 44, width: "65%", borderRadius: 10 }} />
+        </div>
+        {/* Description */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center", width: "100%" }}>
+          <div className="sk-pulse-slow" style={{ height: 20, width: "75%", borderRadius: 5 }} />
+          <div className="sk-pulse-slow" style={{ height: 20, width: "55%", borderRadius: 5 }} />
+        </div>
+        {/* CTA buttons */}
+        <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+          <div className="sk-pulse" style={{ height: 46, width: 140, borderRadius: 999 }} />
+          <div className="sk-pulse-slow" style={{ height: 46, width: 130, borderRadius: 999 }} />
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── StatsSkeleton ────────────────────────────────────────────────────────────
+export function StatsSkeleton() {
+  return (
+    <>
+      <style>{SKELETON_STYLE}</style>
+      <div style={{
+        width: "100%", maxWidth: 860, margin: "0 auto",
+        padding: "48px 0",
+      }}>
+        {/* Header */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, marginBottom: 36 }}>
+          <div className="sk-pulse" style={{ height: 24, width: 110, borderRadius: 99 }} />
+          <div className="sk-pulse" style={{ height: 36, width: 240, borderRadius: 8 }} />
+          <div className="sk-pulse-slow" style={{ height: 16, width: 320, borderRadius: 5 }} />
+        </div>
+        {/* Cards row */}
+        <div style={{
+          display: "flex", width: "100%",
+          border: "1px solid var(--neutral-alpha-weak)",
+          borderRadius: 22, overflow: "hidden",
+        }}>
+          {[0, 1, 2].map((i) => (
+            <div key={i} style={{ flex: 1, display: "flex", alignItems: "center", gap: 16, padding: "28px 24px" }}>
+              <div className="sk-pulse" style={{ width: 48, height: 48, borderRadius: 14, flexShrink: 0 }} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
+                <div className="sk-pulse" style={{ height: 38, width: "50%", borderRadius: 6 }} />
+                <div className="sk-pulse-slow" style={{ height: 13, width: "80%", borderRadius: 4 }} />
+                <div className="sk-pulse-slow" style={{ height: 11, width: "65%", borderRadius: 4 }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── ContactSkeleton ──────────────────────────────────────────────────────────
+export function ContactSkeleton() {
+  return (
+    <>
+      <style>{SKELETON_STYLE}</style>
+      <div style={{
+        width: "100%", maxWidth: 680, margin: "0 auto",
+        padding: "80px 0", display: "flex", flexDirection: "column", gap: 32,
+      }}>
+        {/* Header */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+          <div className="sk-pulse" style={{ height: 22, width: 150, borderRadius: 99 }} />
+          <div className="sk-pulse" style={{ height: 40, width: 200, borderRadius: 8 }} />
+          <div className="sk-pulse-slow" style={{ height: 16, width: 320, borderRadius: 5 }} />
+        </div>
+        {/* Form card */}
+        <div style={{
+          border: "1px solid var(--neutral-alpha-weak)",
+          borderRadius: 16, padding: 24,
+          display: "flex", flexDirection: "column", gap: 16,
+        }}>
+          <div style={{ display: "flex", gap: 16 }}>
+            <div className="sk-pulse" style={{ flex: 1, height: 44, borderRadius: 10 }} />
+            <div className="sk-pulse" style={{ flex: 1, height: 44, borderRadius: 10 }} />
+          </div>
+          <div className="sk-pulse" style={{ height: 44, width: "100%", borderRadius: 10 }} />
+          <div className="sk-pulse-slow" style={{ height: 120, width: "100%", borderRadius: 10 }} />
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <div className="sk-pulse" style={{ height: 46, width: 130, borderRadius: 12 }} />
+          </div>
+        </div>
+        {/* Social links */}
+        <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+          {[80, 90, 90].map((w, i) => (
+            <div key={i} className="sk-pulse-slow" style={{ height: 36, width: w, borderRadius: 10 }} />
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
