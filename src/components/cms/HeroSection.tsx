@@ -13,13 +13,14 @@ interface HeroSectionProps {
   settings: SiteSettings | null;
 }
 
-/* ── Download CV Button — Accent CTA ────────────────────────────────────── */
+/* ── Download CV Button — Liquid Glass CTA ─────────────────────────────── */
 function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
   const [clicked, setClicked] = useState(false);
+  const [hovering, setHovering] = useState(false);
 
   const handleDownload = () => {
     setClicked(true);
-    setTimeout(() => setClicked(false), 2000);
+    setTimeout(() => setClicked(false), 2200);
     const link = document.createElement("a");
     link.href = cvUrl;
     link.download = "CV-Reza-Refka.pdf";
@@ -32,106 +33,238 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
   return (
     <>
       <style>{`
-        @keyframes cv-shimmer {
-          0%   { transform: translateX(-130%) rotate(-15deg); opacity: 0; }
-          12%  { opacity: 1; }
-          88%  { opacity: 1; }
-          100% { transform: translateX(230%)  rotate(-15deg); opacity: 0; }
+        /* ── Keyframes ── */
+        @keyframes cv-scan {
+          0%   { transform: translateX(-130%) rotate(-20deg); opacity: 0; }
+          10%  { opacity: 1; }
+          90%  { opacity: 1; }
+          100% { transform: translateX(220%)  rotate(-20deg); opacity: 0; }
+        }
+        @keyframes cv-ring-pulse {
+          0%, 100% { opacity: 0.55; transform: scale(1); }
+          50%       { opacity: 1;    transform: scale(1.06); }
+        }
+        @keyframes cv-dot-blink {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.25; }
         }
         @keyframes cv-check-draw {
           from { stroke-dashoffset: 22; }
           to   { stroke-dashoffset: 0; }
         }
-        @keyframes cv-breathe {
-          0%, 100% { box-shadow: 0 2px 16px var(--brand-alpha-medium); }
-          50%       { box-shadow: 0 4px 26px var(--brand-alpha-strong); }
+        @keyframes cv-arrow-bounce {
+          0%, 100% { transform: translateY(0); }
+          50%       { transform: translateY(2px); }
         }
-        .cv-cta-btn {
+        @keyframes cv-success-pop {
+          0%   { transform: scale(0.7); opacity: 0; }
+          60%  { transform: scale(1.15); }
+          100% { transform: scale(1);   opacity: 1; }
+        }
+
+        /* ── Base button ── */
+        .cv-glass-btn {
           position: relative;
           overflow: hidden;
           isolation: isolate;
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 10px 20px;
+          padding: 10px 20px 10px 12px;
           border-radius: 999px;
-          border: 1px solid var(--brand-alpha-strong);
-          background: var(--brand-background-strong);
-          color: var(--brand-on-solid-strong);
-          font-size: 13px;
-          font-weight: 600;
+          border: 1px solid rgba(255,255,255,0.18);
+          background: rgba(255,255,255,0.07);
+          backdrop-filter: blur(20px) saturate(160%);
+          -webkit-backdrop-filter: blur(20px) saturate(160%);
+          color: var(--neutral-on-background-strong);
+          font-size: 14px;
+          font-weight: 500;
           font-family: inherit;
           cursor: pointer;
-          letter-spacing: 0.02em;
-          transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), opacity 0.15s;
-          animation: cv-breathe 4s ease-in-out infinite;
+          letter-spacing: 0.01em;
+          transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1),
+                      box-shadow 0.25s ease,
+                      background 0.25s ease,
+                      border-color 0.25s ease;
           -webkit-tap-highlight-color: transparent;
           outline: none;
           text-decoration: none;
           white-space: nowrap;
+          /* soft glow ring on idle */
+          box-shadow:
+            0 0 0 1.5px rgba(99,102,241,0.18),
+            0 2px 14px rgba(99,102,241,0.10),
+            inset 0 1px 0 rgba(255,255,255,0.12);
+          animation: cv-ring-pulse 3.6s ease-in-out infinite;
         }
-        .cv-cta-btn::before {
+
+        /* ── Scan shimmer ── */
+        .cv-glass-btn::before {
           content: "";
           position: absolute;
           top: -40%; left: 0;
-          width: 30%; height: 180%;
+          width: 28%; height: 180%;
           background: linear-gradient(
             105deg,
             transparent 0%,
-            rgba(255,255,255,0.06) 25%,
-            rgba(255,255,255,0.22) 50%,
-            rgba(255,255,255,0.06) 75%,
+            rgba(255,255,255,0.04) 20%,
+            rgba(255,255,255,0.20) 50%,
+            rgba(255,255,255,0.04) 80%,
             transparent 100%
           );
-          animation: cv-shimmer 4.4s cubic-bezier(0.45,0,0.55,1) infinite;
+          animation: cv-scan 4.6s cubic-bezier(0.45,0,0.55,1) infinite;
           pointer-events: none;
           filter: blur(0.5px);
         }
-        .cv-cta-btn::after {
+
+        /* ── Top rim light ── */
+        .cv-glass-btn::after {
           content: "";
           position: absolute;
-          top: 0; left: 12%; right: 12%;
+          top: 0; left: 10%; right: 10%;
           height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5) 50%, transparent);
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.50) 50%, transparent);
           pointer-events: none;
+          opacity: 0.6;
+          transition: opacity 0.25s;
         }
-        .cv-cta-btn:hover {
+
+        /* ── Hover ── */
+        .cv-glass-btn:hover {
           transform: translateY(-2px) scale(1.04);
-          opacity: 0.92;
+          background: rgba(255,255,255,0.11);
+          border-color: rgba(255,255,255,0.28);
+          box-shadow:
+            0 0 0 2px rgba(99,102,241,0.35),
+            0 6px 24px rgba(99,102,241,0.20),
+            inset 0 1px 0 rgba(255,255,255,0.18);
           animation: none;
         }
-        .cv-cta-btn:active {
-          transform: scale(0.97);
+        .cv-glass-btn:hover::after { opacity: 1; }
+        .cv-glass-btn:hover .cv-arrow-icon {
+          animation: cv-arrow-bounce 0.6s ease-in-out infinite;
+        }
+
+        /* ── Active / click ── */
+        .cv-glass-btn:active { transform: scale(0.97); }
+
+        /* ── Success state ── */
+        .cv-glass-btn.cv-success {
+          border-color: rgba(52,211,153,0.4);
+          box-shadow:
+            0 0 0 2px rgba(52,211,153,0.25),
+            0 4px 20px rgba(52,211,153,0.15),
+            inset 0 1px 0 rgba(255,255,255,0.15);
+          animation: none;
+        }
+
+        /* ── CTA pulse dot ── */
+        .cv-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: var(--brand-solid-strong, #6366f1);
+          flex-shrink: 0;
+          position: relative;
+          z-index: 2;
+          animation: cv-dot-blink 2.4s ease-in-out infinite;
+          transition: background 0.3s;
+        }
+        .cv-glass-btn.cv-success .cv-dot {
+          background: rgb(52,211,153);
+          animation: none;
+        }
+
+        /* ── Icons ── */
+        .cv-icon-wrap {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 18px;
+          height: 18px;
+        }
+        .cv-arrow-icon {
+          position: relative;
+          z-index: 2;
+          opacity: 0.65;
+          transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+          flex-shrink: 0;
+        }
+        .cv-success-icon {
+          animation: cv-success-pop 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
         }
         .cv-check {
           stroke-dasharray: 22;
           stroke-dashoffset: 22;
-          animation: cv-check-draw 0.35s ease forwards;
+          animation: cv-check-draw 0.4s ease forwards;
         }
-        .cv-icon { position: relative; z-index: 2; }
-        .cv-label { position: relative; z-index: 2; }
+
+        /* ── Label ── */
+        .cv-label {
+          position: relative;
+          z-index: 2;
+          transition: opacity 0.15s;
+        }
+
+        /* ── Light mode override — keep glass readable ── */
+        @media (prefers-color-scheme: light) {
+          .cv-glass-btn {
+            border-color: rgba(0,0,0,0.12);
+            background: rgba(255,255,255,0.55);
+            color: var(--neutral-on-background-strong);
+            box-shadow:
+              0 0 0 1.5px rgba(99,102,241,0.20),
+              0 2px 14px rgba(99,102,241,0.08),
+              inset 0 1px 0 rgba(255,255,255,0.90);
+          }
+          .cv-glass-btn:hover {
+            background: rgba(255,255,255,0.80);
+            border-color: rgba(99,102,241,0.30);
+            box-shadow:
+              0 0 0 2px rgba(99,102,241,0.28),
+              0 6px 24px rgba(99,102,241,0.12),
+              inset 0 1px 0 rgba(255,255,255,1);
+          }
+          .cv-glass-btn::after {
+            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.06) 50%, transparent);
+          }
+        }
       `}</style>
 
       <button
-        className="cv-cta-btn"
+        className={`cv-glass-btn${clicked ? " cv-success" : ""}`}
         onClick={handleDownload}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
         type="button"
         aria-label={label}
       >
-        <span className="cv-icon">
+        {/* CTA blink dot */}
+        <span className="cv-dot" />
+
+        {/* Icon area */}
+        <span className="cv-icon-wrap">
           {clicked ? (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="cv-success-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgb(52,211,153)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
               <polyline className="cv-check" points="20 6 9 17 4 12" />
             </svg>
           ) : (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="cv-arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="7 10 12 15 17 10"/>
               <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
           )}
         </span>
-        <span className="cv-label">{clicked ? (label === "Download CV" ? "Downloading…" : "Mengunduh…") : label}</span>
+
+        {/* Label */}
+        <span className="cv-label">
+          {clicked
+            ? (label === "Download CV" ? "Downloading…" : "Mengunduh…")
+            : label}
+        </span>
       </button>
     </>
   );
