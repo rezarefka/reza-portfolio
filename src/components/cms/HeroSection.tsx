@@ -13,13 +13,13 @@ interface HeroSectionProps {
   settings: SiteSettings | null;
 }
 
-/* ── Download CV Button — Minimal ───────────────────────────────────────── */
+/* ── Download CV Button — Accent CTA ────────────────────────────────────── */
 function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
   const [clicked, setClicked] = useState(false);
 
   const handleDownload = () => {
     setClicked(true);
-    setTimeout(() => setClicked(false), 1800);
+    setTimeout(() => setClicked(false), 2000);
     const link = document.createElement("a");
     link.href = cvUrl;
     link.download = "CV-Reza-Refka.pdf";
@@ -32,61 +32,106 @@ function DownloadCVButton({ cvUrl, label }: { cvUrl: string; label: string }) {
   return (
     <>
       <style>{`
+        @keyframes cv-shimmer {
+          0%   { transform: translateX(-130%) rotate(-15deg); opacity: 0; }
+          12%  { opacity: 1; }
+          88%  { opacity: 1; }
+          100% { transform: translateX(230%)  rotate(-15deg); opacity: 0; }
+        }
         @keyframes cv-check-draw {
-          from { stroke-dashoffset: 20; }
+          from { stroke-dashoffset: 22; }
           to   { stroke-dashoffset: 0; }
         }
-        .cv-min-btn {
+        @keyframes cv-breathe {
+          0%, 100% { box-shadow: 0 2px 16px var(--brand-alpha-medium); }
+          50%       { box-shadow: 0 4px 26px var(--brand-alpha-strong); }
+        }
+        .cv-cta-btn {
+          position: relative;
+          overflow: hidden;
+          isolation: isolate;
           display: inline-flex;
           align-items: center;
-          gap: 7px;
-          padding: 10px 18px;
-          border-radius: 10px;
-          border: 1px solid var(--neutral-alpha-medium);
-          background: transparent;
-          color: var(--neutral-on-background-strong);
+          gap: 8px;
+          padding: 10px 20px;
+          border-radius: 999px;
+          border: 1px solid var(--brand-alpha-strong);
+          background: var(--brand-background-strong);
+          color: var(--brand-on-solid-strong);
           font-size: 13px;
-          font-weight: 500;
+          font-weight: 600;
           font-family: inherit;
           cursor: pointer;
-          letter-spacing: 0.01em;
-          transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+          letter-spacing: 0.02em;
+          transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), opacity 0.15s;
+          animation: cv-breathe 4s ease-in-out infinite;
           -webkit-tap-highlight-color: transparent;
           outline: none;
           text-decoration: none;
+          white-space: nowrap;
         }
-        .cv-min-btn:hover {
-          background: var(--neutral-alpha-weak);
-          border-color: var(--neutral-alpha-strong);
+        .cv-cta-btn::before {
+          content: "";
+          position: absolute;
+          top: -40%; left: 0;
+          width: 30%; height: 180%;
+          background: linear-gradient(
+            105deg,
+            transparent 0%,
+            rgba(255,255,255,0.06) 25%,
+            rgba(255,255,255,0.22) 50%,
+            rgba(255,255,255,0.06) 75%,
+            transparent 100%
+          );
+          animation: cv-shimmer 4.4s cubic-bezier(0.45,0,0.55,1) infinite;
+          pointer-events: none;
+          filter: blur(0.5px);
         }
-        .cv-min-btn:active {
-          background: var(--neutral-alpha-medium);
+        .cv-cta-btn::after {
+          content: "";
+          position: absolute;
+          top: 0; left: 12%; right: 12%;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5) 50%, transparent);
+          pointer-events: none;
+        }
+        .cv-cta-btn:hover {
+          transform: translateY(-2px) scale(1.04);
+          opacity: 0.92;
+          animation: none;
+        }
+        .cv-cta-btn:active {
+          transform: scale(0.97);
         }
         .cv-check {
-          stroke-dasharray: 20;
-          stroke-dashoffset: 20;
+          stroke-dasharray: 22;
+          stroke-dashoffset: 22;
           animation: cv-check-draw 0.35s ease forwards;
         }
+        .cv-icon { position: relative; z-index: 2; }
+        .cv-label { position: relative; z-index: 2; }
       `}</style>
 
       <button
-        className="cv-min-btn"
+        className="cv-cta-btn"
         onClick={handleDownload}
         type="button"
         aria-label={label}
       >
-        {clicked ? (
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline className="cv-check" points="20 6 9 17 4 12" />
-          </svg>
-        ) : (
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-        )}
-        {clicked ? "Mengunduh…" : label}
+        <span className="cv-icon">
+          {clicked ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline className="cv-check" points="20 6 9 17 4 12" />
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          )}
+        </span>
+        <span className="cv-label">{clicked ? (label === "Download CV" ? "Downloading…" : "Mengunduh…") : label}</span>
       </button>
     </>
   );
