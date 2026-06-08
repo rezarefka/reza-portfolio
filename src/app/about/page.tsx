@@ -89,19 +89,10 @@ export default async function About() {
           <Column className={styles.avatar} top="64" fitHeight position="sticky"
             s={{ position: "relative", style: { top: "auto" } }}
             xs={{ style: { top: "auto" } }}
-            minWidth="160" paddingX="l" paddingBottom="xl" gap="m" flex={3} horizontal="center">
+            minWidth="180" paddingX="l" paddingBottom="xl" flex={3} horizontal="center">
             <ScrollReveal type="scale">
               <AvatarFromCms />
             </ScrollReveal>
-            <Row gap="8" vertical="center">
-              <Icon onBackground="accent-weak" name="globe" />
-              <Text variant="body-default-s">{person.location}</Text>
-            </Row>
-            {person.languages && person.languages.length > 0 && (
-              <Row wrap gap="8">
-                {person.languages.map((lang, i) => <Tag key={i} size="l">{lang}</Tag>)}
-              </Row>
-            )}
           </Column>
         )}
 
