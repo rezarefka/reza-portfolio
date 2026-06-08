@@ -42,7 +42,7 @@ const TOOL_COLORS: Record<string, { bg: string; color: string }> = {
 const getToolStyle = (t: string) =>
   TOOL_COLORS[t] ?? { bg: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.65)" };
 
-// ─── Auto-detect rasio gambar ────────────────────────────────────────────────
+// ─── Ratio detection ─────────────────────────────────────────────────────────
 type Ratio = "landscape" | "portrait" | "square" | "unknown";
 
 function useImageRatio(src: string, type: "image" | "video" | "pdf"): Ratio {
@@ -60,17 +60,14 @@ function useImageRatio(src: string, type: "image" | "video" | "pdf"): Ratio {
   return ratio;
 }
 
-// ─── Aspect ratio per tipe ───────────────────────────────────────────────────
 function getAspect(ratio: Ratio): string {
   if (ratio === "portrait") return "3/4";
   if (ratio === "square")   return "1/1";
-  return "16/9"; // landscape + unknown
+  return "16/9";
 }
 
 // ─── Thumbnail ───────────────────────────────────────────────────────────────
-function ThumbnailDisplay({
-  src, title, priority,
-}: { src: string; title: string; priority?: boolean }) {
+function ThumbnailDisplay({ src, title, priority }: { src: string; title: string; priority?: boolean }) {
   const type = getMediaType(src);
   const ratio = useImageRatio(src, type);
   const aspect = getAspect(ratio);
@@ -176,6 +173,194 @@ function ThumbnailDisplay({
   );
 }
 
+// ─── Inline Share Menu for Card ───────────────────────────────────────────────
+function CardShareMenu({
+  title, thumbnail, href, onClose,
+}: {
+  title: string;
+  thumbnail: string;
+  href: string;
+  onClose: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const shareUrl = typeof window !== "undefined"
+    ? `${window.location.origin}${href}`
+    : href;
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) onClose();
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [onClose]);
+
+  const copyLink = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => { setCopied(false); onClose(); }, 1400);
+    } catch { onClose(); }
+  };
+
+  const toWhatsApp = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${title}\n${shareUrl}`)}`, "_blank", "noopener");
+    onClose();
+  };
+
+  const toTwitter = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${title}\n${shareUrl}`)}`, "_blank", "noopener");
+    onClose();
+  };
+
+  const nativeShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (navigator.share) {
+      try { await navigator.share({ title, url: shareUrl }); } catch { /* cancelled */ }
+    }
+    onClose();
+  };
+
+  const hasNative = typeof navigator !== "undefined" && !!navigator.share;
+
+  return (
+    <div
+      ref={menuRef}
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        position: "absolute",
+        bottom: "calc(100% + 8px)",
+        right: 0,
+        width: 220,
+        background: "var(--neutral-background-strong)",
+        border: "1px solid var(--neutral-alpha-medium)",
+        borderRadius: 14,
+        boxShadow: "0 20px 60px rgba(0,0,0,0.32), 0 4px 16px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.06)",
+        overflow: "hidden",
+        zIndex: 200,
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        animation: "cardShareIn 0.18s cubic-bezier(0.16,1,0.3,1) both",
+      }}
+    >
+      {/* Preview row — sampul + judul */}
+      <div style={{ padding: "10px 10px 8px", borderBottom: "1px solid var(--neutral-alpha-weak)" }}>
+        <div style={{
+          display: "flex", alignItems: "center", gap: 9,
+          padding: "7px 9px", borderRadius: 9,
+          background: "var(--neutral-alpha-weak)",
+        }}>
+          {/* Thumbnail sampul */}
+          <div style={{
+            width: 40, height: 30, borderRadius: 6, overflow: "hidden",
+            flexShrink: 0, background: "var(--neutral-alpha-medium)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            {thumbnail ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={thumbnail} alt={title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--neutral-on-background-weak)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+              </svg>
+            )}
+          </div>
+          {/* Judul */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{
+              fontSize: 11, fontWeight: 600,
+              color: "var(--neutral-on-background-strong)",
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+              lineHeight: 1.3,
+            }}>{title}</div>
+            <div style={{
+              fontSize: 9, color: "var(--neutral-on-background-weak)",
+              marginTop: 2, opacity: 0.6,
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+            }}>{shareUrl.replace(/^https?:\/\//, "").slice(0, 30)}…</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div style={{ padding: "5px 0" }}>
+        {[
+          {
+            label: copied ? "✓ Tersalin!" : "Salin link",
+            onClick: copyLink,
+            icon: (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+            ),
+          },
+          hasNative && {
+            label: "Share...",
+            onClick: nativeShare,
+            icon: (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>
+              </svg>
+            ),
+          },
+          {
+            label: "WhatsApp",
+            onClick: toWhatsApp,
+            icon: (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0 0 20.464 3.488"/>
+              </svg>
+            ),
+          },
+          {
+            label: "X (Twitter)",
+            onClick: toTwitter,
+            icon: (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            ),
+          },
+        ].filter(Boolean).map((item: unknown, i: number) => {
+          const it = item as { label: string; onClick: (e: React.MouseEvent) => void; icon: React.ReactNode };
+          return (
+            <button
+              key={i}
+              onClick={it.onClick}
+              style={{
+                display: "flex", alignItems: "center", gap: 9,
+                width: "100%", padding: "8px 14px",
+                border: "none", background: "transparent",
+                color: "var(--neutral-on-background-medium)",
+                fontSize: 12, fontWeight: 500, cursor: "pointer",
+                textAlign: "left", fontFamily: "inherit",
+                transition: "background 0.1s, color 0.1s, padding-left 0.12s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--neutral-alpha-weak)";
+                e.currentTarget.style.color = "var(--neutral-on-background-strong)";
+                e.currentTarget.style.paddingLeft = "18px";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "var(--neutral-on-background-medium)";
+                e.currentTarget.style.paddingLeft = "14px";
+              }}
+            >
+              {it.icon}
+              {it.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Card ───────────────────────────────────────────────────────────────
 export const ProjectCard: React.FC<ProjectCardProps> = ({
   href, priority, images = [], thumbnail: thumbnailProp,
@@ -183,6 +368,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 }) => {
   const router = useRouter();
   const cardRef = useRef<HTMLDivElement>(null);
+  const [shareOpen, setShareOpen] = useState(false);
   const thumbnail = thumbnailProp || images[0] || "";
 
   // ── Tilt on hover ──────────────────────────────────────────────────────────
@@ -208,9 +394,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   return (
     <>
       <style>{`
+        @keyframes cardShareIn {
+          from { opacity: 0; transform: scale(0.94) translateY(6px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
         .project-card {
           position: relative;
-          border-radius: 16px; overflow: hidden;
+          border-radius: 16px; overflow: visible;
           border: 1px solid var(--neutral-alpha-weak);
           background: var(--neutral-background-medium);
           cursor: pointer;
@@ -219,6 +409,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           display: flex; flex-direction: column;
           transform-style: preserve-3d;
           will-change: transform;
+        }
+        .project-card-inner {
+          border-radius: 16px;
+          overflow: hidden;
+          display: flex; flex-direction: column; flex: 1;
         }
         .project-card:hover {
           border-color: var(--neutral-alpha-medium);
@@ -246,104 +441,142 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           font-size: 12px; font-weight: 600; cursor: pointer;
           transition: background 0.15s, color 0.15s, transform 0.15s;
           text-decoration: none; border: none;
+          font-family: inherit;
         }
         .proj-btn:hover { transform: translateY(-1px); }
+        .share-icon-btn {
+          display: flex; align-items: center; justify-content: center;
+          width: 30px; height: 30px; border-radius: 8px; border: none;
+          background: var(--neutral-alpha-weak);
+          color: var(--neutral-on-background-weak);
+          cursor: pointer; flex-shrink: 0;
+          transition: background 0.15s, color 0.15s, transform 0.15s;
+          font-family: inherit;
+        }
+        .share-icon-btn:hover, .share-icon-btn.active {
+          background: var(--neutral-alpha-medium);
+          color: var(--neutral-on-background-strong);
+          transform: translateY(-1px);
+        }
       `}</style>
 
-      <div
-        ref={cardRef}
-        className="project-card"
-        onClick={() => router.push(href)}
-      >
-        {/* Thumbnail — adaptive rasio */}
-        <div className="proj-thumb">
-          {thumbnail ? (
-            <ThumbnailDisplay src={thumbnail} title={title} priority={priority} />
-          ) : (
-            <div style={{
-              width: "100%", aspectRatio: "16/9", borderRadius: "14px 14px 0 0",
-              background: "linear-gradient(135deg,var(--neutral-alpha-weak),var(--neutral-alpha-medium))",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--neutral-on-background-weak)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
-              </svg>
-            </div>
-          )}
+      <div ref={cardRef} className="project-card" onClick={() => router.push(href)}>
+        <div className="project-card-inner">
+          {/* Thumbnail */}
+          <div className="proj-thumb">
+            {thumbnail ? (
+              <ThumbnailDisplay src={thumbnail} title={title} priority={priority} />
+            ) : (
+              <div style={{
+                width: "100%", aspectRatio: "16/9", borderRadius: "14px 14px 0 0",
+                background: "linear-gradient(135deg,var(--neutral-alpha-weak),var(--neutral-alpha-medium))",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--neutral-on-background-weak)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                </svg>
+              </div>
+            )}
 
-          <div className="proj-overlay">
-            <div style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "7px 16px", borderRadius: 99,
-              background: "rgba(255,255,255,0.15)", backdropFilter: "blur(12px)",
-              color: "#fff", fontSize: 13, fontWeight: 600,
-              border: "1px solid rgba(255,255,255,0.2)",
-              boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
-            }}>
-              Lihat Detail
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
+            <div className="proj-overlay">
+              <div style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "7px 16px", borderRadius: 99,
+                background: "rgba(255,255,255,0.15)", backdropFilter: "blur(12px)",
+                color: "#fff", fontSize: 13, fontWeight: 600,
+                border: "1px solid rgba(255,255,255,0.2)",
+                boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
+              }}>
+                Lihat Detail
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
             </div>
+
+            {category && (
+              <div style={{
+                position: "absolute", top: 10, right: 10,
+                padding: "3px 10px", borderRadius: 99, fontSize: 10, fontWeight: 700,
+                background: "rgba(0,0,0,0.55)", backdropFilter: "blur(8px)",
+                color: "rgba(255,255,255,0.85)", letterSpacing: "0.08em", textTransform: "uppercase",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}>
+                {category}
+              </div>
+            )}
           </div>
 
-          {category && (
-            <div style={{
-              position: "absolute", top: 10, right: 10,
-              padding: "3px 10px", borderRadius: 99, fontSize: 10, fontWeight: 700,
-              background: "rgba(0,0,0,0.55)", backdropFilter: "blur(8px)",
-              color: "rgba(255,255,255,0.85)", letterSpacing: "0.08em", textTransform: "uppercase",
-              border: "1px solid rgba(255,255,255,0.1)",
-            }}>
-              {category}
+          {/* Body */}
+          <div style={{ padding: "18px 20px 20px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
+            <h3 style={{
+              fontSize: 18, fontWeight: 700, lineHeight: 1.3,
+              color: "var(--neutral-on-background-strong)",
+              margin: 0, letterSpacing: "-0.01em",
+            }}>{title}</h3>
+
+            {description?.trim() && (
+              <p style={{
+                fontSize: 13, lineHeight: 1.65,
+                color: "var(--neutral-on-background-weak)",
+                margin: 0, overflow: "hidden",
+                display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+              }}>{description}</p>
+            )}
+
+            {tools.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
+                {tools.slice(0, 6).map((tool) => {
+                  const s = getToolStyle(tool);
+                  return <span key={tool} className="tool-chip" style={{ background: s.bg, color: s.color }}>{tool}</span>;
+                })}
+                {tools.length > 6 && (
+                  <span className="tool-chip" style={{ background: "var(--neutral-alpha-weak)", color: "var(--neutral-on-background-weak)" }}>
+                    +{tools.length - 6}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Action row */}
+            <div style={{ display: "flex", gap: 8, marginTop: "auto", paddingTop: 8, alignItems: "center" }}>
+              {/* Detail button */}
+              <button
+                onClick={(e) => { e.stopPropagation(); router.push(href); }}
+                className="proj-btn"
+                style={{ flex: 1, justifyContent: "center", background: "var(--brand-alpha-weak)", color: "var(--brand-on-background-strong)", border: "1px solid var(--brand-alpha-medium)" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--brand-alpha-medium)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "var(--brand-alpha-weak)"; }}
+              >
+                Detail Karya
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+
+              {/* Share icon button + dropdown */}
+              <div style={{ position: "relative" }}>
+                <button
+                  className={`share-icon-btn${shareOpen ? " active" : ""}`}
+                  title="Bagikan karya ini"
+                  onClick={(e) => { e.stopPropagation(); setShareOpen((v) => !v); }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                  </svg>
+                </button>
+
+                {shareOpen && (
+                  <CardShareMenu
+                    title={title}
+                    thumbnail={thumbnail}
+                    href={href}
+                    onClose={() => setShareOpen(false)}
+                  />
+                )}
+              </div>
             </div>
-          )}
-        </div>
-
-        {/* Body */}
-        <div style={{ padding: "18px 20px 20px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
-          <h3 style={{
-            fontSize: 18, fontWeight: 700, lineHeight: 1.3,
-            color: "var(--neutral-on-background-strong)",
-            margin: 0, letterSpacing: "-0.01em",
-          }}>{title}</h3>
-
-          {description?.trim() && (
-            <p style={{
-              fontSize: 13, lineHeight: 1.65,
-              color: "var(--neutral-on-background-weak)",
-              margin: 0, overflow: "hidden",
-              display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-            }}>{description}</p>
-          )}
-
-          {tools.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
-              {tools.slice(0, 6).map((tool) => {
-                const s = getToolStyle(tool);
-                return <span key={tool} className="tool-chip" style={{ background: s.bg, color: s.color }}>{tool}</span>;
-              })}
-              {tools.length > 6 && (
-                <span className="tool-chip" style={{ background: "var(--neutral-alpha-weak)", color: "var(--neutral-on-background-weak)" }}>
-                  +{tools.length - 6}
-                </span>
-              )}
-            </div>
-          )}
-
-          <div style={{ display: "flex", gap: 10, marginTop: "auto", paddingTop: 8 }}>
-            <button
-              onClick={(e) => { e.stopPropagation(); router.push(href); }}
-              className="proj-btn"
-              style={{ background: "var(--brand-alpha-weak)", color: "var(--brand-on-background-strong)", border: "1px solid var(--brand-alpha-medium)" }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--brand-alpha-medium)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "var(--brand-alpha-weak)"; }}
-            >
-              Detail Karya
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </button>
           </div>
         </div>
       </div>
