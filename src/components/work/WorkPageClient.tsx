@@ -112,26 +112,67 @@ export function WorkPageClient({ projects }: WorkPageClientProps) {
           pointer-events: none;
         }
 
-        /* Filter chips */
-        .work-filter-wrap {
+        /* Filter bar */
+        .work-filter-bar {
           display: flex;
+          align-items: center;
+          gap: 0;
+          padding: 4px;
+          border-radius: 12px;
+          border: 1px solid var(--neutral-alpha-weak);
+          background: var(--neutral-alpha-weak);
           flex-wrap: wrap;
-          gap: 8px;
           justify-content: center;
-          padding: 0 8px;
+          max-width: 100%;
         }
         .work-filter-chip {
-          padding: 6px 16px;
-          border-radius: 99px;
-          border: 1px solid;
+          position: relative;
+          padding: 7px 16px;
+          border-radius: 8px;
+          border: none;
           cursor: pointer;
-          font-size: 13px;
-          transition: all 0.2s cubic-bezier(0.22,1,0.36,1);
+          font-size: 12.5px;
+          font-weight: 500;
+          transition: all 0.18s cubic-bezier(0.22,1,0.36,1);
           white-space: nowrap;
           font-family: inherit;
+          background: transparent;
+          color: var(--neutral-on-background-weak);
+          letter-spacing: 0.01em;
+        }
+        .work-filter-chip.active {
+          background: var(--neutral-background-strong);
+          color: var(--neutral-on-background-strong);
+          font-weight: 600;
+          box-shadow: 0 1px 4px color-mix(in srgb, var(--neutral-on-background-strong) 10%, transparent),
+                      0 0 0 1px var(--neutral-alpha-weak);
+        }
+        .work-filter-chip:not(.active):hover {
+          color: var(--neutral-on-background-strong);
+          background: color-mix(in srgb, var(--neutral-on-background-strong) 5%, transparent);
+        }
+        .work-filter-count {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 18px;
+          height: 18px;
+          padding: 0 5px;
+          border-radius: 99px;
+          font-size: 10px;
+          font-weight: 700;
+          margin-left: 5px;
+          background: var(--neutral-alpha-weak);
+          color: var(--neutral-on-background-weak);
+          vertical-align: middle;
+        }
+        .work-filter-chip.active .work-filter-count {
+          background: var(--brand-alpha-weak);
+          color: var(--brand-on-background-strong);
         }
         @media (max-width: 480px) {
-          .work-filter-chip { font-size: 12px; padding: 5px 12px; }
+          .work-filter-chip { font-size: 11.5px; padding: 6px 12px; }
+          .work-filter-bar { gap: 0; }
         }
 
         /* Pagination */
@@ -171,29 +212,17 @@ export function WorkPageClient({ projects }: WorkPageClientProps) {
 
       <Column fillWidth gap="xl">
         {/* Category Filter */}
-        <div className="work-filter-wrap">
+        <div className="work-filter-bar">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
-              className="work-filter-chip"
+              className={`work-filter-chip${activeCategory === cat ? " active" : ""}`}
               onClick={() => handleCategoryChange(cat)}
-              style={{
-                borderColor: activeCategory === cat
-                  ? "var(--brand-background-strong)"
-                  : "var(--neutral-alpha-medium)",
-                background: activeCategory === cat
-                  ? "var(--brand-alpha-weak)"
-                  : "transparent",
-                color: activeCategory === cat
-                  ? "var(--brand-on-background-strong)"
-                  : "var(--neutral-on-background-weak)",
-                fontWeight: activeCategory === cat ? 600 : 400,
-              }}
             >
               {categoryLabel(cat)}
               {cat !== "All" && (
-                <span style={{ marginLeft: 6, opacity: 0.6, fontSize: 11 }}>
-                  ({projects.filter((p) => p.category === cat).length})
+                <span className="work-filter-count">
+                  {projects.filter((p) => p.category === cat).length}
                 </span>
               )}
             </button>
