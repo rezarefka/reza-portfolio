@@ -113,8 +113,8 @@ export function BlogListClient({ initialBlogs }: BlogListClientProps) {
           <>
             {/* Featured first post */}
             {page === 1 && paginated[0] && (
-              <div className="blog-card-anim" style={{ animationDelay: "0ms", marginBottom: 24 }}>
-                <CmsPost post={paginated[0]} thumbnail direction="column" />
+              <div className="blog-card-anim" style={{ animationDelay: "0ms", marginBottom: 20 }}>
+                <CmsPost post={paginated[0]} thumbnail direction="column" featured />
               </div>
             )}
 
@@ -124,7 +124,7 @@ export function BlogListClient({ initialBlogs }: BlogListClientProps) {
                 <div
                   key={post.slug}
                   className="blog-card-anim"
-                  style={{ animationDelay: `${i * 60}ms` }}
+                  style={{ animationDelay: `${i * 60}ms`, display: "flex", flexDirection: "column" }}
                 >
                   <CmsPost post={post} thumbnail direction="column" />
                 </div>
