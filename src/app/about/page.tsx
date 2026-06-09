@@ -71,6 +71,14 @@ export default async function About() {
 
   return (
     <Column maxWidth="m">
+      <style>{`
+        @media (max-width: 768px) {
+          .about-row-wrap {
+            flex-direction: column !important;
+            align-items: center !important;
+          }
+        }
+      `}</style>
       <Schema as="webPage" baseURL={baseURL} title={about.title} description={about.description}
         path={about.path} image={`/api/og/generate?title=${encodeURIComponent(about.title)}`}
         author={{ name: person.name, url: `${baseURL}${about.path}`, image: `${baseURL}${person.avatar}` }} />
@@ -82,18 +90,15 @@ export default async function About() {
         </Column>
       )}
 
-      <Row fillWidth s={{ direction: "column" }} horizontal="center" gap="0" vertical="start" style={{ alignItems: "flex-start" }}>
+      <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start", width: "100%", gap: 0 }} className="about-row-wrap">
 
         {/* ── Avatar Sidebar ──────────────────────────────────────────── */}
         {about.avatar.display && (
-          <Column
-            className={styles.avatar}
-            horizontal="center"
-          >
+          <div className={styles.avatar}>
             <ScrollReveal type="scale">
               <AvatarFromCms />
             </ScrollReveal>
-          </Column>
+          </div>
         )}
 
         <Column className={styles.blockAlign} flex={1} maxWidth={40}>
@@ -599,7 +604,7 @@ export default async function About() {
           )}
 
         </Column>
-      </Row>
+      </div>
     </Column>
   );
 }
