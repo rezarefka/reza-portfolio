@@ -112,44 +112,42 @@ export function WorkPageClient({ projects }: WorkPageClientProps) {
           pointer-events: none;
         }
 
-        /* Filter bar */
+        /* Filter bar — wrapping grid layout */
         .work-filter-bar {
           display: flex;
           align-items: center;
-          gap: 0;
-          padding: 4px;
-          border-radius: 12px;
-          border: 1px solid var(--neutral-alpha-weak);
-          background: var(--neutral-alpha-weak);
+          gap: 8px;
+          padding: 0;
           flex-wrap: wrap;
-          justify-content: center;
+          justify-content: flex-start;
           max-width: 100%;
         }
         .work-filter-chip {
           position: relative;
-          padding: 7px 16px;
-          border-radius: 8px;
-          border: none;
+          padding: 8px 18px;
+          border-radius: 99px;
+          border: 1px solid var(--neutral-alpha-medium);
           cursor: pointer;
           font-size: 12.5px;
           font-weight: 500;
           transition: all 0.18s cubic-bezier(0.22,1,0.36,1);
           white-space: nowrap;
           font-family: inherit;
-          background: transparent;
+          background: var(--neutral-alpha-weak);
           color: var(--neutral-on-background-weak);
           letter-spacing: 0.01em;
         }
         .work-filter-chip.active {
           background: var(--neutral-background-strong);
           color: var(--neutral-on-background-strong);
-          font-weight: 600;
-          box-shadow: 0 1px 4px color-mix(in srgb, var(--neutral-on-background-strong) 10%, transparent),
-                      0 0 0 1px var(--neutral-alpha-weak);
+          font-weight: 700;
+          border-color: var(--neutral-alpha-strong);
+          box-shadow: 0 1px 4px color-mix(in srgb, var(--neutral-on-background-strong) 10%, transparent);
         }
         .work-filter-chip:not(.active):hover {
           color: var(--neutral-on-background-strong);
-          background: color-mix(in srgb, var(--neutral-on-background-strong) 5%, transparent);
+          border-color: var(--neutral-alpha-strong);
+          background: color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent);
         }
         .work-filter-count {
           display: inline-flex;
@@ -171,8 +169,7 @@ export function WorkPageClient({ projects }: WorkPageClientProps) {
           color: var(--brand-on-background-strong);
         }
         @media (max-width: 480px) {
-          .work-filter-chip { font-size: 11.5px; padding: 6px 12px; }
-          .work-filter-bar { gap: 0; }
+          .work-filter-chip { font-size: 11.5px; padding: 7px 14px; }
         }
 
         /* Pagination */

@@ -41,6 +41,16 @@ const defaultSettings: Omit<SiteSettings, "id" | "updated_at"> = {
   stats_total_visitors: 0,
   stats_years_experience: 0,
   cv_file: null,
+  // Work page
+  work_title_id: "Proyek & Kreasi",
+  work_title_en: "Projects & Creations",
+  work_description_id: "Kumpulan karya nyata — dari web app, mobile, visualisasi data, hingga desain kreatif.",
+  work_description_en: "A collection of real works — from web apps, mobile, data visualization, to creative design.",
+  // Blog page
+  blog_title_id: "Insight & Perspektif dari Dunia Dev",
+  blog_title_en: "Insight & Perspectives from the Dev World",
+  blog_description_id: "Perspektif, pengalaman, dan insight dari Reza Refka Kurniawan seputar dunia pengembangan perangkat lunak.",
+  blog_description_en: "Perspectives, experiences, and insights from Reza Refka Kurniawan about software development.",
 };
 
 export function SettingsForm({ settings }: SettingsFormProps) {
@@ -232,6 +242,58 @@ export function SettingsForm({ settings }: SettingsFormProps) {
           {field("Teks Footer (ID)", "footer_text_id", "Dibuat dengan ❤️ di Makassar")}
           {field("Footer Text (EN)", "footer_text_en", "Made with ❤️ in Makassar")}
         </Row>
+      )}
+
+      {/* Work Page */}
+      {section("Halaman Work (Proyek)",
+        <Column gap="m">
+          <Row gap="m" s={{ direction: "column" }}>
+            {field("Judul Work (ID)", "work_title_id", "Proyek & Kreasi")}
+            {field("Work Title (EN)", "work_title_en", "Projects & Creations")}
+          </Row>
+          <Column gap="s">
+            <Text variant="label-strong-s">Deskripsi Work (ID)</Text>
+            <textarea value={(form as Record<string, unknown>).work_description_id as string ?? ""}
+              onChange={(e) => set("work_description_id", e.target.value)} rows={2}
+              style={{ background: "var(--neutral-background-medium)", border: "1px solid var(--neutral-alpha-medium)",
+                borderRadius: 8, padding: "10px 12px", color: "var(--neutral-on-background-strong)",
+                fontSize: 14, width: "100%", resize: "vertical", fontFamily: "inherit" }} />
+          </Column>
+          <Column gap="s">
+            <Text variant="label-strong-s">Work Description (EN)</Text>
+            <textarea value={(form as Record<string, unknown>).work_description_en as string ?? ""}
+              onChange={(e) => set("work_description_en", e.target.value)} rows={2}
+              style={{ background: "var(--neutral-background-medium)", border: "1px solid var(--neutral-alpha-medium)",
+                borderRadius: 8, padding: "10px 12px", color: "var(--neutral-on-background-strong)",
+                fontSize: 14, width: "100%", resize: "vertical", fontFamily: "inherit" }} />
+          </Column>
+        </Column>
+      )}
+
+      {/* Blog Page */}
+      {section("Halaman Blog",
+        <Column gap="m">
+          <Row gap="m" s={{ direction: "column" }}>
+            {field("Judul Blog (ID)", "blog_title_id", "Insight & Perspektif dari Dunia Dev")}
+            {field("Blog Title (EN)", "blog_title_en", "Insight & Perspectives from the Dev World")}
+          </Row>
+          <Column gap="s">
+            <Text variant="label-strong-s">Deskripsi Blog (ID)</Text>
+            <textarea value={(form as Record<string, unknown>).blog_description_id as string ?? ""}
+              onChange={(e) => set("blog_description_id", e.target.value)} rows={2}
+              style={{ background: "var(--neutral-background-medium)", border: "1px solid var(--neutral-alpha-medium)",
+                borderRadius: 8, padding: "10px 12px", color: "var(--neutral-on-background-strong)",
+                fontSize: 14, width: "100%", resize: "vertical", fontFamily: "inherit" }} />
+          </Column>
+          <Column gap="s">
+            <Text variant="label-strong-s">Blog Description (EN)</Text>
+            <textarea value={(form as Record<string, unknown>).blog_description_en as string ?? ""}
+              onChange={(e) => set("blog_description_en", e.target.value)} rows={2}
+              style={{ background: "var(--neutral-background-medium)", border: "1px solid var(--neutral-alpha-medium)",
+                borderRadius: 8, padding: "10px 12px", color: "var(--neutral-on-background-strong)",
+                fontSize: 14, width: "100%", resize: "vertical", fontFamily: "inherit" }} />
+          </Column>
+        </Column>
       )}
 
       {error && <Text variant="body-default-s" onBackground="danger-strong">{error}</Text>}

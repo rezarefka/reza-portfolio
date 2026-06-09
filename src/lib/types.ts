@@ -99,6 +99,16 @@ export interface SiteSettings {
   stats_total_visitors: number;
   stats_years_experience: number;
   cv_file: string | null;
+  // Work page customization
+  work_title_id: string | null;
+  work_title_en: string | null;
+  work_description_id: string | null;
+  work_description_en: string | null;
+  // Blog page customization
+  blog_title_id: string | null;
+  blog_title_en: string | null;
+  blog_description_id: string | null;
+  blog_description_en: string | null;
   updated_at: string;
 }
 

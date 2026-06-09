@@ -1,6 +1,6 @@
 import { Column, Meta, Schema } from "@once-ui-system/core";
 import { baseURL, blog, person } from "@/resources";
-import { getPublishedBlogs } from "@/lib/db";
+import { getPublishedBlogs, getSettings } from "@/lib/db";
 import { BlogListClient } from "@/components/blog/BlogListClient";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +16,13 @@ export async function generateMetadata() {
 }
 
 export default async function Blog() {
-  const blogs = await getPublishedBlogs().catch(() => []);
+  const [blogs, settings] = await Promise.all([
+    getPublishedBlogs().catch(() => []),
+    getSettings().catch(() => null),
+  ]);
+
+  const titleId = settings?.blog_title_id || "Insight & Perspektif dari Dunia Dev";
+  const descId = settings?.blog_description_id || blog.description;
 
   return (
     <Column maxWidth="m" paddingTop="0">
@@ -126,7 +132,7 @@ export default async function Blog() {
           letter-spacing: 0;
         }
 
-        /* Title */
+        /* Title — solid color, no gradient */
         .blog-hero-title {
           font-size: clamp(26px, 4.5vw, 40px);
           font-weight: 800;
@@ -136,50 +142,15 @@ export default async function Blog() {
           margin: 0 0 14px;
           animation: blogHeroIn 0.6s cubic-bezier(0.22,1,0.36,1) 0.12s both;
         }
-        .blog-hero-title em {
-          font-style: normal;
-          background: linear-gradient(
-            120deg,
-            var(--accent-background-strong) 0%,
-            var(--brand-background-strong) 100%
-          );
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
 
         /* Description */
         .blog-hero-desc {
           font-size: 14px;
           line-height: 1.7;
           color: var(--neutral-on-background-weak);
-          margin: 0 0 28px;
+          margin: 0 0 0;
           max-width: 440px;
           animation: blogHeroIn 0.6s cubic-bezier(0.22,1,0.36,1) 0.2s both;
-        }
-
-        /* Stat pills */
-        .blog-hero-pills {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          animation: blogHeroIn 0.6s cubic-bezier(0.22,1,0.36,1) 0.28s both;
-        }
-        .blog-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 6px 14px;
-          border-radius: 99px;
-          border: 1px solid var(--neutral-alpha-weak);
-          background: var(--neutral-alpha-weak);
-          font-size: 12px;
-          font-weight: 600;
-          color: var(--neutral-on-background-weak);
-        }
-        .blog-pill-icon {
-          color: var(--accent-on-background-strong);
-          flex-shrink: 0;
         }
 
         /* Divider */
@@ -215,42 +186,11 @@ export default async function Blog() {
             <span className="blog-eyebrow-count">{blogs.length} tulisan</span>
           </div>
 
-          {/* Title */}
-          <h1 className="blog-hero-title">
-            Insight &amp; <em>Perspektif</em><br />
-            dari Dunia Dev
-          </h1>
+          {/* Title — plain, no gradient em */}
+          <h1 className="blog-hero-title">{titleId}</h1>
 
           {/* Description */}
-          <p className="blog-hero-desc">{blog.description}</p>
-
-          {/* Pills */}
-          <div className="blog-hero-pills">
-            <span className="blog-pill">
-              <span className="blog-pill-icon">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-                </svg>
-              </span>
-              Teknologi
-            </span>
-            <span className="blog-pill">
-              <span className="blog-pill-icon">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-                </svg>
-              </span>
-              Development
-            </span>
-            <span className="blog-pill">
-              <span className="blog-pill-icon">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
-                </svg>
-              </span>
-              Pengalaman Nyata
-            </span>
-          </div>
+          <p className="blog-hero-desc">{descId}</p>
         </div>
       </div>
 

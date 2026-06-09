@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { Column, Meta, Schema } from "@once-ui-system/core";
 import { baseURL, about, person, work } from "@/resources";
 import { WorkPageClient } from "@/components/work/WorkPageClient";
-import { getPublishedProjects } from "@/lib/db";
+import { getPublishedProjects, getSettings } from "@/lib/db";
 
 export async function generateMetadata() {
   return Meta.generate({
@@ -16,7 +16,13 @@ export async function generateMetadata() {
 }
 
 export default async function Work() {
-  const projects = await getPublishedProjects().catch(() => []);
+  const [projects, settings] = await Promise.all([
+    getPublishedProjects().catch(() => []),
+    getSettings().catch(() => null),
+  ]);
+
+  const titleId = settings?.work_title_id || "Proyek & Kreasi";
+  const descId = settings?.work_description_id || "Kumpulan karya nyata — dari web app, mobile, visualisasi data, hingga desain kreatif.";
 
   return (
     <Column maxWidth="m" paddingTop="0">
@@ -34,7 +40,7 @@ export default async function Work() {
         }}
       />
 
-      {/* ── Creative Hero Header ─────────────────────────────── */}
+      {/* ── Work Hero Header ─────────────────────────────── */}
       <style>{`
         @keyframes workHeroIn {
           from { opacity: 0; transform: translateY(24px); }
@@ -118,7 +124,7 @@ export default async function Work() {
           animation: workDotPulse 2s ease-in-out infinite;
         }
 
-        /* Main title */
+        /* Main title — solid color, no gradient */
         .work-hero-title {
           position: relative;
           font-size: clamp(32px, 6vw, 52px);
@@ -128,17 +134,6 @@ export default async function Work() {
           color: var(--neutral-on-background-strong);
           margin: 0 0 6px;
           animation: workHeroIn 0.65s cubic-bezier(0.22,1,0.36,1) 0.18s both;
-        }
-        /* Gradient highlight on last word */
-        .work-hero-title span {
-          background: linear-gradient(
-            135deg,
-            var(--brand-background-strong) 0%,
-            var(--accent-background-strong) 100%
-          );
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
         }
 
         /* Animated underline */
@@ -215,18 +210,14 @@ export default async function Work() {
           Portofolio Karya
         </div>
 
-        {/* Title */}
-        <h1 className="work-hero-title">
-          Proyek &amp; <span>Kreasi</span>
-        </h1>
+        {/* Title — plain white, no gradient span */}
+        <h1 className="work-hero-title">{titleId}</h1>
 
         {/* Animated line */}
         <div className="work-hero-underline" />
 
         {/* Subtitle */}
-        <p className="work-hero-sub">
-          Kumpulan karya nyata — dari web app, mobile, visualisasi data, hingga desain kreatif.
-        </p>
+        <p className="work-hero-sub">{descId}</p>
 
         {/* Stats */}
         <div className="work-hero-stats">
