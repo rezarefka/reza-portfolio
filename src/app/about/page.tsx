@@ -224,7 +224,7 @@ export default async function About() {
           </Column>
 
           {/* ══════════════════════════════════════════════════════════
-              PENDIDIKAN — Card dengan glow + logo animasi
+              PENDIDIKAN — Redesigned: clean structured elegant card
           ══════════════════════════════════════════════════════════ */}
           <ScrollReveal delay={120}>
             <Row fillWidth vertical="center" gap="m" marginBottom="l">
@@ -235,237 +235,317 @@ export default async function About() {
             </Row>
           </ScrollReveal>
 
-          <Column fillWidth gap="m" marginBottom="48">
+          <Column fillWidth gap="16" marginBottom="48">
             <style>{`
-              @keyframes eduCardIn {
-                from { opacity: 0; transform: translateY(16px); }
-                to   { opacity: 1; transform: translateY(0); }
-              }
-              .edu-card {
-                display: flex;
+              /* ── Education Card ─────────────────────────────────────── */
+              .edu2-card {
                 border-radius: 16px;
-                overflow: hidden;
                 border: 1px solid var(--neutral-alpha-weak);
                 background: var(--neutral-background-medium);
-                transition: box-shadow 0.26s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1), border-color 0.22s;
+                overflow: hidden;
+                transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
               }
-              .edu-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 32px color-mix(in srgb, var(--neutral-on-background-strong) 7%, transparent);
+              .edu2-card:hover {
                 border-color: var(--neutral-alpha-medium);
+                box-shadow: 0 6px 28px color-mix(in srgb, var(--neutral-on-background-strong) 6%, transparent);
+                transform: translateY(-2px);
               }
-              .edu-accent-bar {
-                width: 4px;
+
+              /* ── Header row inside card ─────────────────────────────── */
+              .edu2-header {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                padding: 20px 24px 16px;
+                flex-wrap: nowrap;
+              }
+              .edu2-logo-wrap {
                 flex-shrink: 0;
-                background: linear-gradient(to bottom, var(--brand-background-strong), var(--accent-background-strong));
-                border-radius: 0;
+                width: 56px; height: 56px;
+                border-radius: 14px;
+                overflow: hidden;
+                background: color-mix(in srgb, var(--neutral-on-background-strong) 5%, transparent);
+                border: 1px solid color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent);
+                display: flex; align-items: center; justify-content: center;
               }
-              .edu-badge {
-                display: inline-flex; align-items: center;
-                padding: 2px 10px; border-radius: 99px;
-                font-size: 11px; font-weight: 600;
-                letter-spacing: 0.03em;
+              .edu2-logo-wrap img {
+                width: 100%; height: 100%;
+                object-fit: contain;
+                padding: 7px;
+              }
+              .edu2-title-block {
+                flex: 1;
+                min-width: 0;
+              }
+              .edu2-univ-name {
+                font-weight: 700;
+                font-size: 15px;
+                line-height: 1.25;
+                color: var(--neutral-on-background-strong);
+                word-break: break-word;
+                margin-bottom: 6px;
+              }
+              .edu2-major-text {
+                font-size: 12.5px;
+                color: var(--neutral-on-background-weak);
+                line-height: 1.4;
+              }
+
+              /* ── Badge row ──────────────────────────────────────────── */
+              .edu2-badges {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 0 24px 16px;
+              }
+              .edu2-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                padding: 4px 11px;
+                border-radius: 99px;
+                font-size: 11.5px;
+                font-weight: 600;
+                letter-spacing: 0.02em;
                 white-space: nowrap;
+                line-height: 1;
               }
-              .edu-detail-row {
-                display: flex; gap: 12px; align-items: flex-start;
+              .edu2-badge-degree {
+                background: var(--brand-alpha-weak);
+                color: var(--brand-on-background-strong);
+                border: 1px solid var(--brand-alpha-medium);
               }
-              .edu-detail-icon {
-                flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px;
+              .edu2-badge-year {
+                background: var(--neutral-alpha-weak);
+                color: var(--neutral-on-background-weak);
+              }
+              .edu2-badge-gpa {
+                background: var(--accent-alpha-weak);
+                color: var(--accent-on-background-strong);
+                border: 1px solid var(--accent-alpha-medium);
+              }
+
+              /* ── Detail section ─────────────────────────────────────── */
+              .edu2-details {
+                border-top: 1px solid var(--neutral-alpha-weak);
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0;
+              }
+              .edu2-detail-item {
+                padding: 14px 24px;
+                display: flex;
+                gap: 10px;
+                align-items: flex-start;
+              }
+              .edu2-detail-item + .edu2-detail-item {
+                border-left: 1px solid var(--neutral-alpha-weak);
+              }
+              .edu2-detail-full {
+                grid-column: 1 / -1;
+                padding: 14px 24px;
+                display: flex;
+                gap: 10px;
+                align-items: flex-start;
+              }
+              .edu2-detail-full + .edu2-detail-full,
+              .edu2-detail-full + .edu2-detail-item,
+              .edu2-detail-item + .edu2-detail-full {
+                border-top: 1px solid var(--neutral-alpha-weak);
+              }
+              .edu2-detail-icon {
+                flex-shrink: 0;
+                width: 28px; height: 28px;
+                border-radius: 7px;
                 background: var(--neutral-alpha-weak);
                 display: flex; align-items: center; justify-content: center;
                 color: var(--neutral-on-background-weak);
-                margin-top: 2px;
+                margin-top: 1px;
               }
-              .edu-year-col {
-                display: flex;
+              .edu2-detail-label {
+                font-size: 10px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.09em;
+                color: var(--neutral-on-background-weak);
+                display: block;
+                margin-bottom: 3px;
               }
-              @media (max-width: 640px) {
-                .edu-card { flex-direction: column; border-radius: 14px; }
-                .edu-accent-bar { width: 100%; height: 4px; }
-                .edu-inner { padding: 16px 16px !important; }
-                .edu-year-col { display: none !important; }
-                .edu-logo-wrap { width: 44px !important; height: 44px !important; border-radius: 10px !important; }
+              .edu2-detail-value {
+                font-size: 13.5px;
+                color: var(--neutral-on-background-strong);
+                line-height: 1.55;
+              }
+              .edu2-detail-value em {
+                font-style: italic;
+                color: var(--neutral-on-background-strong);
+              }
+              .edu2-thesis-goal {
+                font-size: 12.5px;
+                color: var(--neutral-on-background-weak);
+                margin-top: 5px;
+                line-height: 1.55;
+              }
+              .edu2-journal-wrap {
+                margin-top: 10px;
+              }
+
+              /* ── Responsive ─────────────────────────────────────────── */
+              @media (max-width: 600px) {
+                .edu2-header { padding: 16px 16px 12px; gap: 12px; }
+                .edu2-badges { padding: 0 16px 14px; }
+                .edu2-logo-wrap { width: 48px; height: 48px; border-radius: 11px; }
+                .edu2-details { grid-template-columns: 1fr; }
+                .edu2-detail-item + .edu2-detail-item { border-left: none; border-top: 1px solid var(--neutral-alpha-weak); }
+                .edu2-detail-item, .edu2-detail-full { padding: 12px 16px; }
+                .edu2-univ-name { font-size: 14px; }
               }
             `}</style>
 
             {educations.length > 0 ? (
               educations.map((edu, i) => (
                 <ScrollReveal key={edu.id} delay={i * 80}>
-                  <div className="edu-card">
-                    {/* Left accent bar */}
-                    <div className="edu-accent-bar" />
+                  <div className="edu2-card">
 
-                    {/* Main body */}
-                    <div className="edu-inner" style={{ flex: 1, padding: "24px 28px" }}>
-                      {/* Top: logo + name + badges */}
-                      <div style={{ display: "flex", gap: 18, alignItems: "flex-start", flexWrap: "wrap" }}>
+                    {/* ── Header: Logo + Nama + Jurusan ── */}
+                    <div className="edu2-header">
                       {/* Logo */}
-                        {edu.logo ? (
+                      {edu.logo ? (
+                        <div className="edu2-logo-wrap" style={{ borderRadius: "50%" }}>
                           <EduLogoImg
                             src={edu.logo}
                             alt={edu.university_name}
                             shimmerDelay={((i % 4) + 1) as 1 | 2 | 3 | 4}
                           />
-                        ) : (
-                          <div style={{
-                            position: "relative", display: "inline-flex",
-                            alignItems: "center", justifyContent: "center",
-                            width: 64, height: 64, borderRadius: 14,
-                            background: "color-mix(in srgb, var(--neutral-on-background-strong) 5%, transparent)",
-                            flexShrink: 0, overflow: "hidden",
-                            border: "1px solid color-mix(in srgb, var(--neutral-on-background-strong) 8%, transparent)",
-                          }}>
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--brand-on-background-weak)" strokeWidth="1.5">
-                              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
-                            </svg>
+                        </div>
+                      ) : (
+                        <div className="edu2-logo-wrap">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-on-background-weak)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                          </svg>
+                        </div>
+                      )}
+
+                      {/* Nama universitas + jurusan */}
+                      <div className="edu2-title-block">
+                        <div className="edu2-univ-name">{edu.university_name}</div>
+                        {(edu.faculty || edu.major) && (
+                          <div className="edu2-major-text">
+                            {edu.faculty && <>{edu.faculty}{edu.major ? " · " : ""}</>}{edu.major}
                           </div>
                         )}
-
-                        {/* Title + meta */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <Text variant="heading-strong-l" style={{ lineHeight: 1.2, marginBottom: 10 }}>
-                            {edu.university_name}
-                          </Text>
-
-                          {/* Badges row */}
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
-                            <span className="edu-badge" style={{
-                              background: "var(--brand-alpha-weak)", color: "var(--brand-on-background-strong)",
-                              border: "1px solid var(--brand-alpha-medium)",
-                            }}>{edu.degree}</span>
-
-                            <span className="edu-badge" style={{
-                              background: "var(--neutral-alpha-weak)", color: "var(--neutral-on-background-weak)",
-                            }}>
-                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: 4 }}>
-                                <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
-                              </svg>
-                              {edu.year_start} – {edu.year_end || "Sekarang"}
-                            </span>
-
-                            {edu.gpa && (
-                              <span className="edu-badge" style={{
-                                background: "var(--accent-alpha-weak)", color: "var(--accent-on-background-strong)",
-                                border: "1px solid var(--accent-alpha-medium)",
-                              }}>
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: 4 }}>
-                                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                                </svg>
-                                IPK {edu.gpa}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Major + faculty */}
-                          <Text variant="body-default-s" onBackground="neutral-weak">
-                            {edu.faculty && <>{edu.faculty} · </>}{edu.major}
-                          </Text>
-                        </div>
                       </div>
+                    </div>
 
-                      {/* Divider + details */}
-                      {(edu.field_of_study || edu.thesis_title) && (
-                        <div style={{
-                          marginTop: 20, paddingTop: 20,
-                          borderTop: "1px solid var(--neutral-alpha-weak)",
-                          display: "flex", flexDirection: "column", gap: 14,
-                        }}>
-                          {edu.field_of_study && (
-                            <div className="edu-detail-row">
-                              <div className="edu-detail-icon">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
-                                </svg>
-                              </div>
-                              <div>
-                                <Text variant="label-default-xs" onBackground="neutral-weak" style={{ textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 2 }}>
-                                  Rumpun Ilmu
-                                </Text>
-                                <Text variant="body-default-m">{edu.field_of_study}</Text>
-                              </div>
-                            </div>
-                          )}
-
-                          {edu.thesis_title && (
-                            <div className="edu-detail-row">
-                              <div className="edu-detail-icon">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                  <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-                                </svg>
-                              </div>
-                              <div style={{ flex: 1 }}>
-                                <Text variant="label-default-xs" onBackground="neutral-weak" style={{ textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 2 }}>
-                                  Skripsi / Tugas Akhir
-                                </Text>
-                                <Text variant="body-default-m" style={{ fontStyle: "italic", lineHeight: 1.55 }}>
-                                  &ldquo;{edu.thesis_title}&rdquo;
-                                </Text>
-                                {edu.thesis_goal && (
-                                  <Text variant="body-default-s" onBackground="neutral-weak" style={{ marginTop: 6, lineHeight: 1.55 }}>
-                                    {edu.thesis_goal}
-                                  </Text>
-                                )}
-                                {/* Tombol Akses Jurnal */}
-                                {(edu.journal_pdf || edu.journal_url) && (
-                                  <div style={{ marginTop: 12 }}>
-                                    <EduJournalModal
-                                      title={edu.thesis_title}
-                                      pdfUrl={edu.journal_pdf}
-                                      externalUrl={edu.journal_url}
-                                    />
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
+                    {/* ── Badges: Degree · Tahun · IPK ── */}
+                    <div className="edu2-badges">
+                      <span className="edu2-badge edu2-badge-degree">{edu.degree}</span>
+                      <span className="edu2-badge edu2-badge-year">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+                        </svg>
+                        {edu.year_start} – {edu.year_end || "Sekarang"}
+                      </span>
+                      {edu.gpa && (
+                        <span className="edu2-badge edu2-badge-gpa">
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                          </svg>
+                          IPK {edu.gpa}
+                        </span>
                       )}
                     </div>
 
-                    {/* Right: year pill (desktop only) */}
-                    <div style={{
-                      flexShrink: 0, width: 80,
-                      display: "flex", flexDirection: "column",
-                      alignItems: "center", justifyContent: "center",
-                      borderLeft: "1px solid var(--neutral-alpha-weak)",
-                      padding: "20px 0",
-                      gap: 4,
-                    }} className="edu-year-col">
-                      <Text variant="heading-strong-xl" style={{ fontSize: 28, lineHeight: 1, color: "var(--brand-on-background-strong)", opacity: 0.18, fontVariantNumeric: "tabular-nums" }}>
-                        {edu.year_start}
-                      </Text>
-                      <div style={{ width: 1, height: 16, background: "var(--neutral-alpha-medium)" }} />
-                      <Text variant="body-default-xs" onBackground="neutral-weak">
-                        {edu.year_end || "Skrg"}
-                      </Text>
-                    </div>
+                    {/* ── Detail rows ── */}
+                    {(edu.field_of_study || edu.thesis_title) && (
+                      <div className="edu2-details">
+
+                        {/* Rumpun Ilmu — jika ada, full width jika hanya itu, atau setengah jika ada thesis juga */}
+                        {edu.field_of_study && !edu.thesis_title && (
+                          <div className="edu2-detail-full">
+                            <div className="edu2-detail-icon">
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                                <path d="M8 21h8M12 17v4"/>
+                              </svg>
+                            </div>
+                            <div>
+                              <span className="edu2-detail-label">Rumpun Ilmu</span>
+                              <div className="edu2-detail-value">{edu.field_of_study}</div>
+                            </div>
+                          </div>
+                        )}
+
+                        {edu.field_of_study && edu.thesis_title && (
+                          <div className="edu2-detail-item">
+                            <div className="edu2-detail-icon">
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                                <path d="M8 21h8M12 17v4"/>
+                              </svg>
+                            </div>
+                            <div>
+                              <span className="edu2-detail-label">Rumpun Ilmu</span>
+                              <div className="edu2-detail-value">{edu.field_of_study}</div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Skripsi / Tugas Akhir */}
+                        {edu.thesis_title && (
+                          <div className={edu.field_of_study ? "edu2-detail-item" : "edu2-detail-full"}>
+                            <div className="edu2-detail-icon" style={{ marginTop: 1 }}>
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                              </svg>
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <span className="edu2-detail-label">Skripsi / Tugas Akhir</span>
+                              <div className="edu2-detail-value">
+                                <em>&ldquo;{edu.thesis_title}&rdquo;</em>
+                              </div>
+                              {edu.thesis_goal && (
+                                <div className="edu2-thesis-goal">{edu.thesis_goal}</div>
+                              )}
+                              {(edu.journal_pdf || edu.journal_url) && (
+                                <div className="edu2-journal-wrap">
+                                  <EduJournalModal
+                                    title={edu.thesis_title}
+                                    pdfUrl={edu.journal_pdf}
+                                    externalUrl={edu.journal_url}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                      </div>
+                    )}
                   </div>
                 </ScrollReveal>
               ))
             ) : (
               about.studies.institutions.map((inst, i) => (
                 <ScrollReveal key={i} delay={i * 80}>
-                  <div className="edu-card">
-                    <div className="edu-accent-bar" />
-                    <div className="edu-inner" style={{ flex: 1, padding: "20px 24px" }}>
-                      <Row gap="16" vertical="center">
-                        <div style={{
-                          width: 48, height: 48, borderRadius: 12,
-                          background: "var(--brand-alpha-weak)",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          color: "var(--brand-on-background-medium)", flexShrink: 0,
-                        }}>
-                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
-                          </svg>
-                        </div>
-                        <Column gap="4">
-                          <Text variant="heading-strong-l">{inst.name}</Text>
-                          <Text variant="body-default-m" onBackground="neutral-weak">{inst.description}</Text>
-                        </Column>
-                      </Row>
+                  <div className="edu2-card">
+                    <div className="edu2-header">
+                      <div className="edu2-logo-wrap">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-on-background-weak)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                        </svg>
+                      </div>
+                      <div className="edu2-title-block">
+                        <div className="edu2-univ-name">{inst.name}</div>
+                        {inst.description && (
+                          <div className="edu2-major-text">{inst.description}</div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </ScrollReveal>
