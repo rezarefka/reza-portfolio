@@ -595,7 +595,7 @@ export default async function About() {
                   </div>
                 </div>
               </ScrollReveal>
-              <Column fillWidth gap="10" marginBottom="48">
+              <Column fillWidth gap="m" marginBottom="48">
                 {organizations.map((org, i) => (
                   <ScrollReveal key={org.id} delay={i * 55}>
                     <div className="org-card">
