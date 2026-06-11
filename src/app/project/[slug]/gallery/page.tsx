@@ -29,7 +29,6 @@ export default async function ProjectGalleryPage({
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
-  // Collect all media: thumbnail + gallery + attachment
   const clean = (url: string) => url.split("?")[0];
 
   const mediaItems: { url: string; type: "image" | "video" | "pdf" }[] = [];
@@ -44,14 +43,18 @@ export default async function ProjectGalleryPage({
   if (project.thumbnail) {
     mediaItems.push({ url: clean(project.thumbnail), type: detectType(project.thumbnail) });
   }
+
+  // gallery is now GalleryItem[] — extract .url from each item
   if (project.gallery?.length > 0) {
     project.gallery.forEach((g) => {
-      const c = clean(g);
+      const rawUrl = typeof g === "string" ? g : g.url;
+      const c = clean(rawUrl);
       if (c && !mediaItems.find((m) => m.url === c)) {
         mediaItems.push({ url: c, type: detectType(c) });
       }
     });
   }
+
   if (project.attachment) {
     const c = clean(project.attachment);
     if (c && !mediaItems.find((m) => m.url === c)) {
