@@ -1,5 +1,5 @@
 import { createClient } from "./supabase/server";
-import type { Project, Certificate, Blog, SiteSettings, Media } from "./types";
+import type { Project, Certificate, Blog, SiteSettings, Media, GalleryItem } from "./types";
 
 // ─── SETTINGS ────────────────────────────────────────────────────────────────
 export async function getSettings(): Promise<SiteSettings | null> {
@@ -14,15 +14,44 @@ export async function getSettings(): Promise<SiteSettings | null> {
 }
 
 // ─── PROJECTS ─────────────────────────────────────────────────────────────────
+
+/**
+ * Normalise the gallery field coming from Supabase.
+ * DB stores it as JSONB array: [{ url, caption, sort_order }]
+ * Legacy rows may still have a plain string array — handle both.
+ */
+function normalizeGallery(raw: unknown): GalleryItem[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((item, idx) => {
+      if (typeof item === "string") {
+        // legacy plain-url row
+        return { url: item, caption: "", sort_order: idx };
+      }
+      if (item && typeof item === "object" && "url" in item) {
+        return {
+          url: String((item as Record<string, unknown>).url ?? ""),
+          caption: String((item as Record<string, unknown>).caption ?? ""),
+          sort_order:
+            typeof (item as Record<string, unknown>).sort_order === "number"
+              ? (item as Record<string, unknown>).sort_order as number
+              : idx,
+        };
+      }
+      return null;
+    })
+    .filter((x): x is GalleryItem => x !== null && Boolean(x.url))
+    .sort((a, b) => a.sort_order - b.sort_order);
+}
+
 function normalizeProject(p: unknown): import("./types").Project {
   const proj = p as Record<string, unknown>;
-  // Kolom di DB bisa pakai underscore suffix (tools_, gallery_)
   const tools = proj.tools ?? proj["tools_"];
   const gallery = proj.gallery ?? proj["gallery_"];
   return {
     ...proj,
     tools: Array.isArray(tools) ? tools : [],
-    gallery: Array.isArray(gallery) ? gallery : [],
+    gallery: normalizeGallery(gallery),
   } as import("./types").Project;
 }
 

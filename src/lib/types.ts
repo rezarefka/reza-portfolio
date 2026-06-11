@@ -6,6 +6,13 @@ export type ProjectCategory =
   | "Data Visualization"
   | "Creativity";
 
+// ─── Gallery item with caption + sort order ───────────────────────────────────
+export interface GalleryItem {
+  url: string;
+  caption?: string;
+  sort_order: number;
+}
+
 export interface Project {
   id: string;
   title_id: string;
@@ -13,7 +20,7 @@ export interface Project {
   slug: string;
   category: ProjectCategory;
   thumbnail: string | null;
-  gallery: string[];
+  gallery: GalleryItem[];
   description_id: string;
   description_en: string;
   content_id: string;
