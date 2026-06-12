@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 
 interface EduJournalModalProps {
   title: string;
+  subtitle?: string | null;
+  description?: string | null;
   pdfUrl?: string | null;
   externalUrl?: string | null;
 }
 
-export function EduJournalModal({ title, pdfUrl, externalUrl }: EduJournalModalProps) {
+export function EduJournalModal({ title, subtitle, description, pdfUrl, externalUrl }: EduJournalModalProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -27,10 +29,10 @@ export function EduJournalModal({ title, pdfUrl, externalUrl }: EduJournalModalP
   if (!pdfUrl && !externalUrl) return null;
 
   const cleanPdfUrl = pdfUrl ? pdfUrl.split("?")[0] : null;
+  const openSrc = cleanPdfUrl ?? externalUrl!;
   const embedSrc = cleanPdfUrl
     ? `${cleanPdfUrl}#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0`
     : `https://docs.google.com/viewer?url=${encodeURIComponent(externalUrl!)}&embedded=true`;
-  const openSrc = cleanPdfUrl ?? `https://docs.google.com/viewer?url=${encodeURIComponent(externalUrl!)}&embedded=true`;
 
   return (
     <>
@@ -39,46 +41,29 @@ export function EduJournalModal({ title, pdfUrl, externalUrl }: EduJournalModalP
         @keyframes jOverlayIn { from { opacity:0; } to { opacity:1; } }
       `}</style>
 
-      {/* ── Compact inline trigger card ── */}
+      {/* ── Text-only trigger card ── */}
       <div
-        className="journal-thumb-inline"
+        className="journal-entry-card"
         onClick={() => setOpen(true)}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => e.key === "Enter" && setOpen(true)}
       >
-        {/* Mini PDF preview */}
-        {cleanPdfUrl ? (
-          <div className="journal-thumb-preview">
-            <iframe
-              src={`${cleanPdfUrl}#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
-              title={`Preview ${title}`}
-              loading="lazy"
-            />
-          </div>
-        ) : (
-          <div className="journal-thumb-preview" style={{ display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <div className="journal-entry-left">
+          <div className="journal-entry-icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <polyline points="14 2 14 8 20 8"/>
             </svg>
           </div>
-        )}
-
-        {/* Info */}
-        <div className="journal-thumb-info">
-          <div className="journal-thumb-label">
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-            </svg>
-            Jurnal / Skripsi
-          </div>
-          <div className="journal-thumb-title">{title}</div>
         </div>
-
-        {/* CTA arrow */}
-        <div className="journal-thumb-cta">
+        <div className="journal-entry-body">
+          <div className="journal-entry-label">Jurnal / Skripsi</div>
+          <div className="journal-entry-title">{title}</div>
+          {subtitle && <div className="journal-entry-sub">{subtitle}</div>}
+          {description && <div className="journal-entry-desc">{description}</div>}
+        </div>
+        <div className="journal-entry-arrow">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
@@ -123,7 +108,7 @@ export function EduJournalModal({ title, pdfUrl, externalUrl }: EduJournalModalP
                 <div style={{ fontSize:12.5, fontWeight:600, color:"var(--neutral-on-background-strong)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontStyle:"italic" }}>{title}</div>
               </div>
               <div style={{ display:"flex", gap:7, flexShrink:0 }}>
-                <a href={cleanPdfUrl ?? externalUrl!} target="_blank" rel="noopener noreferrer"
+                <a href={openSrc} target="_blank" rel="noopener noreferrer"
                   style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"5px 11px", borderRadius:7, background:"var(--neutral-alpha-weak)", border:"1px solid var(--neutral-alpha-medium)", color:"var(--neutral-on-background-strong)", fontSize:11.5, fontWeight:600, textDecoration:"none", cursor:"pointer", transition:"background 0.15s" }}
                   onMouseEnter={(e)=>(e.currentTarget.style.background="var(--neutral-alpha-medium)")}
                   onMouseLeave={(e)=>(e.currentTarget.style.background="var(--neutral-alpha-weak)")}
@@ -144,7 +129,7 @@ export function EduJournalModal({ title, pdfUrl, externalUrl }: EduJournalModalP
 
             {/* PDF viewer */}
             <div style={{ flex:1, overflow:"hidden", position:"relative", background:"#404040" }}>
-              <iframe src={openSrc} title={title} style={{ width:"100%", height:"100%", border:"none", display:"block" }} allow="fullscreen" />
+              <iframe src={embedSrc} title={title} style={{ width:"100%", height:"100%", border:"none", display:"block" }} allow="fullscreen" />
             </div>
 
             {/* Footer */}
