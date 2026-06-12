@@ -13,7 +13,7 @@ export interface GalleryItem {
   sort_order: number;
 }
 
-export type GalleryDisplayMode = "slider" | "grid";
+export type GalleryDisplayMode = "slider" | "scroll-horizontal" | "scroll-vertical";
 
 export interface Project {
   id: string;
