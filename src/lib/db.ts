@@ -1,5 +1,5 @@
 import { createClient } from "./supabase/server";
-import type { Project, Certificate, Blog, SiteSettings, Media, GalleryItem } from "./types";
+import type { Project, Certificate, Blog, SiteSettings, Media, GalleryItem, AboutIntro } from "./types";
 
 // ─── SETTINGS ────────────────────────────────────────────────────────────────
 export async function getSettings(): Promise<SiteSettings | null> {
@@ -268,4 +268,15 @@ export async function getAboutOrganizations() {
     .select("*")
     .order("sort_order", { ascending: true });
   return data || [];
+}
+
+export async function getAboutIntro(): Promise<AboutIntro | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("about_intro")
+    .select("*")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .single();
+  return data ?? null;
 }

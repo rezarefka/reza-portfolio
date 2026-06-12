@@ -24,6 +24,7 @@ import {
   getAboutExperiences,
   getAboutSkills,
   getAboutOrganizations,
+  getAboutIntro,
 } from "@/lib/db";
 import { format } from "date-fns";
 function safeDate(d: string | null | undefined, fmt: string, opts?: Parameters<typeof format>[2]): string {
@@ -97,12 +98,13 @@ function renderDescription(text: string) {
 }
 
 export default async function About() {
-  const [certificates, educations, experiences, skills, organizations] = await Promise.all([
+  const [certificates, educations, experiences, skills, organizations, cmsIntro] = await Promise.all([
     getCertificates().catch(() => []),
     getAboutEducation().catch(() => []),
     getAboutExperiences().catch(() => []),
     getAboutSkills().catch(() => []),
     getAboutOrganizations().catch(() => []),
+    getAboutIntro().catch(() => null),
   ]);
 
   const structure = [
@@ -168,7 +170,7 @@ export default async function About() {
         .tl-row {
           display: flex;
           gap: 20px;
-          padding-bottom: 28px;
+          padding-bottom: 32px;
           position: relative;
         }
         .tl-dot {
@@ -181,74 +183,45 @@ export default async function About() {
           justify-content: center;
           position: relative;
           z-index: 1;
-          margin-top: 6px;
+          margin-top: 4px;
         }
-        .tl-content { flex: 1; min-width: 0; }
-
-        /* ══ Experience card ══════════════════════════════════════ */
-        .tl-card {
-          background: var(--neutral-background-medium);
-          border: 1px solid var(--neutral-alpha-weak);
-          border-radius: 14px;
-          overflow: hidden;
-          transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
-        }
-        .tl-card:hover {
-          border-color: var(--brand-alpha-weak);
-          box-shadow: 0 6px 24px color-mix(in srgb, var(--brand-background-strong) 8%, transparent);
-          transform: translateY(-2px);
-        }
-        .tl-card-strip {
-          height: 3px;
-          background: linear-gradient(90deg, var(--brand-background-strong) 0%, var(--accent-background-strong) 100%);
-        }
-        .tl-card-header {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          gap: 12px;
-          padding: 16px 18px 14px;
-        }
+        .tl-content { flex: 1; min-width: 0; padding-top: 4px; }
         .tl-company {
-          font-size: 15px;
+          font-size: 16px;
           font-weight: 700;
           color: var(--neutral-on-background-strong);
-          margin: 0 0 4px;
-          line-height: 1.3;
+          margin: 0 0 2px;
         }
         .tl-role {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          font-size: 12px;
-          font-weight: 600;
+          font-size: 13px;
           color: var(--brand-on-background-medium);
-          background: color-mix(in srgb, var(--brand-background-strong) 10%, transparent);
-          border: 1px solid color-mix(in srgb, var(--brand-background-strong) 20%, transparent);
-          padding: 3px 10px;
-          border-radius: 99px;
+          font-weight: 600;
+          margin: 0 0 6px;
         }
         .tl-badge {
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          padding: 4px 10px;
-          border-radius: 8px;
+          padding: 3px 10px;
+          border-radius: 99px;
           background: var(--neutral-alpha-weak);
           border: 1px solid var(--neutral-alpha-weak);
           font-size: 11px;
           color: var(--neutral-on-background-weak);
           font-weight: 500;
-          white-space: nowrap;
-          flex-shrink: 0;
+          margin-bottom: 10px;
         }
-        .tl-divider {
-          height: 1px;
-          background: var(--neutral-alpha-weak);
-          margin: 0 18px;
+        /* ══ Experience card body ══════════════════════════════ */
+        .tl-card {
+          background: var(--neutral-background-medium);
+          border: 1px solid var(--neutral-alpha-weak);
+          border-radius: 12px;
+          padding: 16px 18px 18px;
+          transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .tl-card-body {
-          padding: 14px 18px 16px;
+        .tl-card:hover {
+          border-color: var(--neutral-alpha-medium);
+          box-shadow: 0 4px 20px color-mix(in srgb, var(--neutral-on-background-strong) 5%, transparent);
         }
         .tl-desc {
           font-size: 13.5px;
@@ -259,6 +232,7 @@ export default async function About() {
           hyphens: auto;
           -webkit-hyphens: auto;
         }
+        /* Bullet list inside description */
         .tl-desc-list {
           margin: 0;
           padding-left: 0;
@@ -266,12 +240,13 @@ export default async function About() {
           display: flex;
           flex-direction: column;
           gap: 6px;
+          text-align: left;
         }
         .tl-desc-list li {
           display: flex;
           align-items: flex-start;
           gap: 8px;
-          font-size: 13px;
+          font-size: 13.5px;
           color: var(--neutral-on-background-weak);
           line-height: 1.65;
         }
@@ -287,8 +262,7 @@ export default async function About() {
           .tl-line { display: none; }
           .tl-dot { display: none; }
           .tl-row { gap: 0; }
-          .tl-card-header { flex-direction: column; gap: 8px; }
-          .tl-badge { align-self: flex-start; }
+          .tl-card { padding: 14px 14px 16px; }
         }
 
         /* ══ Education cards ══════════════════════════════════════ */
@@ -308,7 +282,7 @@ export default async function About() {
           height: 3px;
           background: linear-gradient(90deg, var(--brand-background-strong) 0%, var(--accent-background-strong) 100%);
         }
-        .edu-body { padding: 20px 20px 0; }
+        .edu-body { padding: 18px 20px 16px; }
         .edu-identity { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
         .edu-logo {
           flex-shrink: 0;
@@ -319,10 +293,10 @@ export default async function About() {
           display: flex; align-items: center; justify-content: center;
         }
         .edu-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; padding: 5px; display: block; }
-        .edu-name { flex: 1; min-width: 0; }
-        .edu-univ { font-size: 15px; font-weight: 700; line-height: 1.3; color: var(--neutral-on-background-strong); margin: 0 0 3px; word-break: break-word; }
-        .edu-major { font-size: 12px; color: var(--neutral-on-background-weak); line-height: 1.4; margin: 0; }
-        .edu-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+        .edu-name { flex: 1; min-width: 0; padding-top: 2px; }
+        .edu-univ { font-size: 15px; font-weight: 700; line-height: 1.3; color: var(--neutral-on-background-strong); margin: 0 0 4px; word-break: break-word; }
+        .edu-major { font-size: 12px; color: var(--neutral-on-background-weak); line-height: 1.5; margin: 0; }
+        .edu-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0; }
         .edu-chip {
           display: inline-flex; align-items: center; gap: 4px;
           padding: 4px 10px; border-radius: 99px;
@@ -331,12 +305,12 @@ export default async function About() {
         .chip-degree { background: var(--brand-alpha-weak); color: var(--brand-on-background-strong); border: 1px solid var(--brand-alpha-medium); }
         .chip-year { background: var(--neutral-alpha-weak); color: var(--neutral-on-background-weak); border: 1px solid var(--neutral-alpha-weak); }
         .chip-gpa { background: var(--accent-alpha-weak); color: var(--accent-on-background-strong); border: 1px solid var(--accent-alpha-medium); }
-        .edu-details { border-top: 1px solid var(--neutral-alpha-weak); display: flex; flex-direction: column; }
+        .edu-details { border-top: 1px solid var(--neutral-alpha-weak); margin-top: 14px; display: flex; flex-direction: column; }
         .edu-drow {
           display: flex; align-items: flex-start; gap: 10px;
           padding: 12px 20px; border-bottom: 1px solid var(--neutral-alpha-weak);
         }
-        .edu-drow:last-child { border-bottom: none; }
+        .edu-drow:last-child { border-bottom: none; padding-bottom: 14px; }
         .edu-dicon {
           flex-shrink: 0; margin-top: 1px;
           width: 26px; height: 26px; border-radius: 7px;
@@ -347,12 +321,35 @@ export default async function About() {
         .edu-dlabel { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--neutral-on-background-weak); display: block; margin-bottom: 3px; }
         .edu-dvalue { font-size: 13px; color: var(--neutral-on-background-strong); line-height: 1.55; }
         .edu-dvalue em { font-style: italic; }
-        .edu-dgoal { font-size: 12px; color: var(--neutral-on-background-weak); margin-top: 4px; line-height: 1.5; }
+        .edu-dgoal { font-size: 12px; color: var(--neutral-on-background-weak); margin-top: 5px; line-height: 1.6; text-align: justify; }
+        /* PDF preview thumbnail in journal button */
+        .journal-pdf-thumb {
+          width: 100%;
+          border-radius: 10px;
+          overflow: hidden;
+          border: 1px solid var(--neutral-alpha-weak);
+          background: #404040;
+          margin-top: 12px;
+          position: relative;
+          aspect-ratio: 16/9;
+          cursor: pointer;
+        }
+        .journal-pdf-thumb iframe {
+          width: 250%; height: 250%;
+          border: none;
+          transform: scale(0.4); transform-origin: top left;
+          pointer-events: none;
+        }
+        .journal-pdf-thumb-overlay {
+          position: absolute; inset: 0;
+          background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.6) 100%);
+          display: flex; align-items: flex-end; padding: 10px 12px;
+        }
         @media (max-width: 480px) {
-          .edu-body { padding: 16px 16px 0; }
+          .edu-body { padding: 14px 14px 12px; }
           .edu-logo { width: 44px; height: 44px; }
           .edu-univ { font-size: 13.5px; }
-          .edu-drow { padding: 10px 16px; }
+          .edu-drow { padding: 10px 14px; }
         }
 
         /* ══ Org cards ════════════════════════════════════════════ */
@@ -530,7 +527,11 @@ export default async function About() {
                     <div style={{ width: 3, height: 20, borderRadius: 2, background: "var(--brand-background-strong)", flexShrink: 0 }} />
                     <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--neutral-on-background-weak)" }}>Tentang Saya</span>
                   </div>
-                  <p className="intro-text">{about.intro.description}</p>
+                  {cmsIntro?.bio_id ? (
+                    renderDescription(cmsIntro.bio_id)
+                  ) : (
+                    <p className="intro-text">{about.intro.description}</p>
+                  )}
                 </Column>
               )}
             </Column>
@@ -572,31 +573,20 @@ export default async function About() {
                     {/* Content */}
                     <div className="tl-content">
                       <div className="tl-card">
-                        <div className="tl-card-strip" />
-                        <div className="tl-card-header">
-                          <div style={{ minWidth: 0 }}>
-                            <p className="tl-company">
-                              {isCms ? (exp as typeof experiences[0]).company : (exp as typeof about.work.experiences[0]).company}
-                            </p>
-                            <span className="tl-role">
-                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M2 12h20"/>
-                              </svg>
-                              {isCms ? (exp as typeof experiences[0]).role_id : (exp as typeof about.work.experiences[0]).role}
-                            </span>
-                          </div>
-                          <span className="tl-badge">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                            {isCms ? (exp as typeof experiences[0]).timeframe : (exp as typeof about.work.experiences[0]).timeframe}
-                          </span>
-                        </div>
+                        <p className="tl-company">
+                          {isCms ? (exp as typeof experiences[0]).company : (exp as typeof about.work.experiences[0]).company}
+                        </p>
+                        <p className="tl-role">
+                          {isCms ? (exp as typeof experiences[0]).role_id : (exp as typeof about.work.experiences[0]).role}
+                        </p>
+                        <span className="tl-badge">
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                          {isCms ? (exp as typeof experiences[0]).timeframe : (exp as typeof about.work.experiences[0]).timeframe}
+                        </span>
                         {isCms && (exp as typeof experiences[0]).description_id && (
-                          <>
-                            <div className="tl-divider" />
-                            <div className="tl-card-body">
-                              {renderDescription((exp as typeof experiences[0]).description_id!)}
-                            </div>
-                          </>
+                          <div style={{ marginTop: 10 }}>
+                            {renderDescription((exp as typeof experiences[0]).description_id!)}
+                          </div>
                         )}
                       </div>
                     </div>

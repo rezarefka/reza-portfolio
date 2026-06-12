@@ -4,6 +4,12 @@ import type { Metadata } from "next";
 export const metadata: Metadata = { title: "About CMS – Reza Control" };
 
 const icons = {
+  intro: (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+    </svg>
+  ),
   education: (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
@@ -29,6 +35,7 @@ const icons = {
 };
 
 const sections = [
+  { href: "/reza-control/about/intro",        icon: icons.intro,         label: "Tentang Saya",    desc: "Teks perkenalan & bio halaman About" },
   { href: "/reza-control/about/education",     icon: icons.education,     label: "Pendidikan",       desc: "Universitas, jurusan, logo kampus" },
   { href: "/reza-control/about/experience",    icon: icons.experience,    label: "Pengalaman Kerja", desc: "Riwayat pekerjaan dan pencapaian" },
   { href: "/reza-control/about/skills",        icon: icons.skills,        label: "Keahlian Teknis",  desc: "Skill dan teknologi yang dikuasai" },
