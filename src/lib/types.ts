@@ -13,6 +13,8 @@ export interface GalleryItem {
   sort_order: number;
 }
 
+export type GalleryDisplayMode = "slider" | "grid";
+
 export interface Project {
   id: string;
   title_id: string;
