@@ -21,6 +21,7 @@ export interface Project {
   category: ProjectCategory;
   thumbnail: string | null;
   gallery: GalleryItem[];
+  gallery_display_mode: "slider" | "grid" | null;
   description_id: string;
   description_en: string;
   content_id: string;
