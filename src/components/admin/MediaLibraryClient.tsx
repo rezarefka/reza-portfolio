@@ -110,9 +110,12 @@ export function MediaLibraryClient({ initialMedia }: MediaLibraryClientProps) {
           multiple
           accept="image/*,video/mp4,.pdf,.docx,.xlsx"
           style={{ display: "none" }}
-          onChange={(e) => {
+          onChange={async (e) => {
             const files = Array.from(e.target.files || []);
-            files.forEach(handleUpload);
+            e.target.value = ""; // reset agar onChange bisa fire lagi untuk file sama
+            for (const file of files) {
+              await handleUpload(file);
+            }
           }}
         />
       </Row>

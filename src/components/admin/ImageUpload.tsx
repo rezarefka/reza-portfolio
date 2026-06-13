@@ -4,7 +4,6 @@ import { useState, useRef } from "react";
 import { Column, Row, Text, Button } from "@once-ui-system/core";
 import { createClient } from "@/lib/supabase/client";
 import { compressFile, formatBytes, type CompressionResult } from "@/lib/mediaCompressor";
-import { pdfToImages } from "@/lib/pdfToImages";
 
 interface UploadedFile {
   name: string;
@@ -120,11 +119,12 @@ export function ImageUpload({
 
   const uploadFile = async (originalFile: File): Promise<{ url: string | null; result: CompressionResult | null }> => {
     const supabase = createClient();
+    const isPdfFile = originalFile.type === "application/pdf" || originalFile.name.toLowerCase().endsWith(".pdf");
     let fileToUpload = originalFile;
     let compressionResult: CompressionResult | null = null;
 
-    // ── FASE 1: KOMPRESI ──────────────────────────────────────
-    if (enableCompression) {
+    // ── FASE 1: KOMPRESI (skip untuk PDF) ─────────────────────
+    if (enableCompression && !isPdfFile) {
       setPhase(originalFile.name, "compressing", 5, "Mengompres…");
 
       try {
@@ -172,16 +172,6 @@ export function ImageUpload({
     const { data } = supabase.storage.from(bucket).getPublicUrl(path);
     const publicUrl = data.publicUrl;
 
-    // Log ke media
-    supabase.from("media").insert([{
-      name: originalFile.name,
-      url: publicUrl,
-      type: fileToUpload.type,
-      size: fileToUpload.size,
-      bucket, path,
-      created_at: new Date().toISOString(),
-    }]).then(() => {});
-
     setPhase(originalFile.name, "done", 100, "Selesai ✓");
     setTimeout(() => removePhase(originalFile.name), 2000);
 
@@ -200,46 +190,10 @@ export function ImageUpload({
     setError("");
     setSaved(false);
 
-    // ── Expand PDF files → JPG pages ──────────────────────────────────
-    const expandedFiles: File[] = [];
-    for (const file of fileArr) {
-      const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
-      if (isPdf) {
-        try {
-          setPhase(file.name, "compressing", 5, "Mengonversi PDF ke gambar…");
-          const result = await pdfToImages(file, {
-            scale: 2.0,
-            quality: 0.88,
-            onProgress: ({ page, total, pct }) => {
-              setPhase(
-                file.name,
-                "compressing",
-                Math.round(pct * 0.9),
-                total > 1
-                  ? `Render halaman ${page} / ${total}…`
-                  : "Merender halaman…"
-              );
-            },
-          });
-          setPhase(file.name, "done", 100, `✓ ${result.pageCount} halaman dikonversi`);
-          setTimeout(() => removePhase(file.name), 1500);
-          expandedFiles.push(...result.pages);
-        } catch (err) {
-          setPhase(file.name, "error", 0, "Gagal konversi PDF");
-          setTimeout(() => removePhase(file.name), 4000);
-          setError(`${file.name}: Gagal mengonversi PDF ke gambar`);
-          // Jika konversi gagal, upload PDF aslinya sebagai fallback
-          expandedFiles.push(file);
-        }
-      } else {
-        expandedFiles.push(file);
-      }
-    }
-
     const urls: string[] = [];
     const newUploaded: UploadedFile[] = [];
 
-    for (const file of expandedFiles) {
+    for (const file of fileArr) {
       const { url, result } = await uploadFile(file);
       if (url) {
         urls.push(url);
@@ -375,7 +329,7 @@ export function ImageUpload({
               {uploading ? "Memproses…" : dragOver ? "Lepaskan file di sini" : "Klik atau seret file ke sini"}
             </Text>
             <Text variant="body-default-xs" onBackground="neutral-weak">
-              Gambar (→ WebP) · Video · <strong>PDF (→ JPG per halaman)</strong> · ZIP · dll · {multiple ? "Bisa beberapa file" : "1 file"}
+              Gambar (→ WebP) · Video · <strong>PDF</strong> · ZIP · dll · {multiple ? "Bisa beberapa file" : "1 file"}
             </Text>
           </>
         )}
