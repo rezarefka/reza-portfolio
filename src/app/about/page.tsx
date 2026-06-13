@@ -896,9 +896,28 @@ export default async function About() {
                       </div>
 
                       <div className="edu-name">
-                        {/* Baris atas: nama universitas + tahun lulus */}
+                        {/* Baris atas: nama + badge jenjang + tahun */}
                         <div className="edu-name-top">
-                          <p className="edu-univ">{edu.university_name}</p>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" as const }}>
+                            <p className="edu-univ" style={{ margin: 0 }}>{edu.university_name}</p>
+                            {edu.education_level && (
+                              <span style={{
+                                fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 99,
+                                background: edu.education_level === "SMA/SMK"
+                                  ? "color-mix(in srgb, #fb923c 14%, transparent)"
+                                  : edu.education_level === "S2" || edu.education_level === "S3"
+                                    ? "color-mix(in srgb, #a78bfa 14%, transparent)"
+                                    : "color-mix(in srgb, #818cf8 14%, transparent)",
+                                color: edu.education_level === "SMA/SMK" ? "#fb923c"
+                                  : edu.education_level === "S2" || edu.education_level === "S3" ? "#a78bfa"
+                                  : "#818cf8",
+                                border: `1px solid ${edu.education_level === "SMA/SMK"
+                                  ? "color-mix(in srgb, #fb923c 30%, transparent)"
+                                  : "color-mix(in srgb, #818cf8 30%, transparent)"}`,
+                                letterSpacing: "0.05em", flexShrink: 0,
+                              }}>{edu.education_level}</span>
+                            )}
+                          </div>
                           <span className="edu-year-badge">
                             <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
                             {edu.year_start} – {edu.year_end || "Sekarang"}
@@ -910,20 +929,25 @@ export default async function About() {
                             {edu.faculty && <>{edu.faculty}{edu.major ? " · " : ""}</>}{edu.major}
                           </p>
                         )}
-                        {/* IPK chip inline di bawah major */}
+                        {/* IPK / Nilai chip */}
                         {edu.gpa && (
                           <span className="edu-chip chip-gpa" style={{ alignSelf: "flex-start" }}>
                             <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            IPK {edu.gpa}
+                            {edu.education_level === "SMA/SMK" ? "Nilai" : "IPK"} {edu.gpa}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    {/* ── Thesis ── */}
-                    {edu.thesis_title && (
+                    {/* ── Thesis (hanya untuk jenjang universitas) ── */}
+                    {edu.education_level !== "SMA/SMK" && edu.thesis_title && (
                       <div className="edu-thesis">
-                        <span className="edu-thesis-label">Skripsi / Tugas Akhir</span>
+                        <span className="edu-thesis-label">
+                          {edu.education_level === "S2" ? "Tesis"
+                            : edu.education_level === "S3" ? "Disertasi"
+                            : edu.education_level === "D3" ? "Proyek Akhir"
+                            : "Skripsi / Tugas Akhir"}
+                        </span>
                         <p className="edu-thesis-title">&ldquo;{edu.thesis_title}&rdquo;</p>
 
                         {edu.thesis_goal && !edu.thesis_output && !edu.thesis_impact && (

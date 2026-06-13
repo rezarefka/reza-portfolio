@@ -182,14 +182,13 @@ export interface AboutIntro {
 
 export interface AboutEducation {
   id: string;
-  university_name: string;
-  faculty: string;
+  education_level: string;       // 'S1' | 'D3' | 'D4' | 'S2' | 'S3' | 'SMA/SMK'
+  university_name: string;       // juga dipakai sebagai nama sekolah
+  faculty: string | null;
   major: string;
-  degree: string;
   year_start: string;
   year_end: string;
-  gpa: string | null;
-  field_of_study: string | null;
+  gpa: string | null;            // IPK untuk univ, Nilai untuk SMA/SMK
   thesis_title: string | null;
   thesis_goal: string | null;
   thesis_output: string | null;
