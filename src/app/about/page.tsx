@@ -80,9 +80,16 @@ export default async function About() {
           align-items: flex-start;
           width: 100%;
           gap: 0;
+          min-width: 0;
+        }
+        .about-content-col {
+          min-width: 0;
+          flex: 1 1 0;
+          overflow: visible;
+          width: 100%;
         }
         @media (max-width: 768px) {
-          .about-wrap { flex-direction: column; align-items: center; }
+          .about-wrap { flex-direction: column; align-items: stretch; }
         }
 
         /* ══ Section header bar ═══════════════════════════════════ */
@@ -183,6 +190,8 @@ export default async function About() {
           border: 1px solid var(--neutral-alpha-weak);
           background: var(--neutral-background-medium);
           overflow: hidden;
+          width: 100%;
+          box-sizing: border-box;
           transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
         }
         .edu-card:hover {
@@ -195,37 +204,42 @@ export default async function About() {
           background: linear-gradient(90deg, var(--brand-background-strong) 0%, var(--accent-background-strong) 100%);
         }
 
-        /* ── Header: logo left, text right, full width ─────── */
+        /* ── Header: logo kiri, nama kanan — TIDAK boleh wrap nama ── */
         .edu-header {
-          display: flex;
-          align-items: center;
+          display: grid;
+          grid-template-columns: 56px 1fr;
           gap: 16px;
-          padding: 22px 24px 16px;
+          align-items: center;
+          padding: 22px 24px 14px;
+          width: 100%;
+          box-sizing: border-box;
         }
         .edu-logo {
-          flex-shrink: 0;
           width: 56px; height: 56px;
           border-radius: 50%;
           background: color-mix(in srgb, var(--neutral-on-background-strong) 6%, transparent);
           border: 1.5px solid color-mix(in srgb, var(--neutral-on-background-strong) 10%, transparent);
           display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0;
         }
         .edu-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; padding: 5px; display: block; }
-        .edu-name { flex: 1; min-width: 0; }
+        .edu-name { min-width: 0; width: 100%; overflow: hidden; }
         .edu-univ {
           font-size: 15px; font-weight: 700; line-height: 1.45;
           color: var(--neutral-on-background-strong); margin: 0 0 4px;
-          white-space: normal; word-break: break-word;
+          white-space: normal; word-break: break-word; overflow-wrap: anywhere;
         }
         .edu-major {
-          font-size: 12.5px; color: var(--neutral-on-background-weak);
-          line-height: 1.4; margin: 0; white-space: normal; word-break: break-word;
+          font-size: 12px; color: var(--neutral-on-background-weak);
+          line-height: 1.4; margin: 0;
+          white-space: normal; word-break: break-word;
         }
 
         /* ── Chips row ───────────────────────────────────────── */
         .edu-chips {
           display: flex; flex-wrap: wrap; gap: 6px;
           padding: 0 24px 18px;
+          width: 100%; box-sizing: border-box;
         }
         .edu-chip {
           display: inline-flex; align-items: center; gap: 4px;
@@ -238,10 +252,11 @@ export default async function About() {
         .chip-gpa { background: var(--accent-alpha-weak); color: var(--accent-on-background-strong); border: 1px solid var(--accent-alpha-medium); }
 
         /* ── Detail rows ─────────────────────────────────────── */
-        .edu-details { border-top: 1px solid var(--neutral-alpha-weak); display: flex; flex-direction: column; }
+        .edu-details { border-top: 1px solid var(--neutral-alpha-weak); display: flex; flex-direction: column; width: 100%; }
         .edu-drow {
           display: flex; align-items: flex-start; gap: 12px;
           padding: 14px 24px; border-bottom: 1px solid var(--neutral-alpha-weak);
+          width: 100%; box-sizing: border-box;
         }
         .edu-drow:last-child { border-bottom: none; }
         .edu-dicon {
@@ -251,48 +266,34 @@ export default async function About() {
           display: flex; align-items: center; justify-content: center;
           color: var(--neutral-on-background-weak);
         }
+        .edu-dtext { flex: 1; min-width: 0; overflow: hidden; }
         .edu-dlabel { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--neutral-on-background-weak); display: block; margin-bottom: 4px; }
-        .edu-dvalue { font-size: 13.5px; color: var(--neutral-on-background-strong); line-height: 1.6; word-break: break-word; }
+        .edu-dvalue { font-size: 13.5px; color: var(--neutral-on-background-strong); line-height: 1.6; word-break: break-word; overflow-wrap: anywhere; }
         .edu-dvalue em { font-style: italic; }
         .edu-dgoal { font-size: 12.5px; color: var(--neutral-on-background-weak); margin-top: 6px; line-height: 1.6; }
 
         /* ── Thesis output/impact — single column ─────────── */
         .edu-thesis-cols {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          margin-top: 12px;
+          display: flex; flex-direction: column; gap: 8px; margin-top: 12px;
         }
         .edu-thesis-col {
-          border-radius: 10px;
-          border: 1px solid var(--neutral-alpha-weak);
-          overflow: hidden;
-          background: var(--neutral-background-medium);
+          border-radius: 10px; border: 1px solid var(--neutral-alpha-weak);
+          overflow: hidden; background: var(--neutral-background-medium);
+          width: 100%; box-sizing: border-box;
         }
         .edu-thesis-col-head {
-          display: flex; align-items: center; gap: 6px;
-          padding: 7px 14px;
+          display: flex; align-items: center; gap: 6px; padding: 7px 14px;
           font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
           border-bottom: 1px solid var(--neutral-alpha-weak);
         }
-        .edu-thesis-output .edu-thesis-col-head {
-          color: #818cf8;
-          background: color-mix(in srgb, #818cf8 8%, transparent);
-        }
-        .edu-thesis-impact .edu-thesis-col-head {
-          color: #34d399;
-          background: color-mix(in srgb, #34d399 8%, transparent);
-        }
-        .edu-thesis-col-body {
-          padding: 10px 14px;
-          font-size: 13px; line-height: 1.65;
-          color: var(--neutral-on-background-medium);
-        }
+        .edu-thesis-output .edu-thesis-col-head { color: #818cf8; background: color-mix(in srgb, #818cf8 8%, transparent); }
+        .edu-thesis-impact .edu-thesis-col-head { color: #34d399; background: color-mix(in srgb, #34d399 8%, transparent); }
+        .edu-thesis-col-body { padding: 10px 14px; font-size: 13px; line-height: 1.65; color: var(--neutral-on-background-medium); word-break: break-word; }
         @media (max-width: 480px) {
-          .edu-header { padding: 18px 18px 14px; gap: 14px; }
-          .edu-logo { width: 48px; height: 48px; }
+          .edu-header { grid-template-columns: 44px 1fr; gap: 12px; padding: 18px 18px 12px; }
+          .edu-logo { width: 44px; height: 44px; }
           .edu-univ { font-size: 14px; }
-          .edu-chips { padding: 0 18px 16px; }
+          .edu-chips { padding: 0 18px 14px; }
           .edu-drow { padding: 12px 18px; }
         }
 
@@ -427,7 +428,7 @@ export default async function About() {
           </div>
         )}
 
-        <Column className={styles.blockAlign} flex={1} maxWidth={40}>
+        <Column className={`${styles.blockAlign} about-content-col`} flex={1}>
 
           {/* ══ PERKENALAN ══════════════════════════════════════ */}
           <ScrollReveal>
@@ -588,13 +589,13 @@ export default async function About() {
                       {edu.field_of_study && (
                         <div className="edu-drow">
                           <div className="edu-dicon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
-                          <div><span className="edu-dlabel">Rumpun Ilmu</span><div className="edu-dvalue">{edu.field_of_study}</div></div>
+                          <div className="edu-dtext"><span className="edu-dlabel">Rumpun Ilmu</span><div className="edu-dvalue">{edu.field_of_study}</div></div>
                         </div>
                       )}
                       {edu.thesis_title && (
                         <div className="edu-drow">
                           <div className="edu-dicon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
+                          <div className="edu-dtext">
                             <span className="edu-dlabel">Skripsi / Tugas Akhir</span>
                             <div className="edu-dvalue"><em>&ldquo;{edu.thesis_title}&rdquo;</em></div>
                             {edu.thesis_goal && !edu.thesis_output && !edu.thesis_impact && (
