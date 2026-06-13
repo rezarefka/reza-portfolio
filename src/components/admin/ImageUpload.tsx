@@ -97,6 +97,7 @@ export function ImageUpload({
   const [saved, setSaved] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [videoQualityPreset, setVideoQualityPreset] = useState<"low" | "medium" | "high">("medium");
+  const [hasVideoSelected, setHasVideoSelected] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const displayUrl = value ? value.split("?")[0] : "";
@@ -190,6 +191,11 @@ export function ImageUpload({
   const handleFiles = async (files: FileList | File[]) => {
     const fileArr = Array.from(files);
     if (!fileArr.length) return;
+
+    // Deteksi apakah ada video → update state untuk tampilkan pilihan kualitas
+    const containsVideo = fileArr.some((f) => f.type.startsWith("video/"));
+    setHasVideoSelected(containsVideo);
+
     setUploading(true);
     setError("");
     setSaved(false);
@@ -272,6 +278,7 @@ export function ImageUpload({
     }
 
     setUploading(false);
+    setHasVideoSelected(false);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -386,8 +393,8 @@ export function ImageUpload({
         />
       </div>
 
-      {/* ── Pilihan Kualitas Video ── */}
-      {enableCompression && (
+      {/* ── Pilihan Kualitas Video — hanya muncul jika ada file video dipilih ── */}
+      {enableCompression && hasVideoSelected && (
         <div style={{
           padding: "10px 12px",
           borderRadius: 10,
