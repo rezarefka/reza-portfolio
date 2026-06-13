@@ -1,14 +1,21 @@
-import { baseURL } from "@/resources";
+import { MetadataRoute } from 'next'
 
-export default function robots() {
+export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
-        userAgent: "*",
-        allow: "/",
-        disallow: ["/reza-control", "/reza-control/"],
+        userAgent: '*',
+        allow: '/',
+      },
+      {
+        userAgent: '*',
+        disallow: [
+          '/api/',
+          '/reza-control/',
+        ],
       },
     ],
-    sitemap: `${baseURL}/sitemap.xml`,
-  };
+    sitemap: 'https://rezarefka.web.id/sitemap.xml',
+    host: 'https://rezarefka.web.id',
+  }
 }
