@@ -184,13 +184,25 @@ export default async function About() {
           .tl-row { gap: 0; }
         }
 
-        /* ══ Education cards ══════════════════════════════════════ */
+        /* ══ Education list & cards ══════════════════════════════ */
+        .edu-list {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          width: 100%;
+          margin-bottom: 48px;
+        }
+        .edu-reveal-wrap {
+          display: block;
+          width: 100%;
+        }
         .edu-card {
+          display: block;
+          width: 100%;
           border-radius: 16px;
           border: 1px solid var(--neutral-alpha-weak);
           background: var(--neutral-background-medium);
           overflow: hidden;
-          width: 100%;
           box-sizing: border-box;
           transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
         }
@@ -201,100 +213,166 @@ export default async function About() {
         }
         .edu-strip {
           height: 2px;
+          width: 100%;
           background: linear-gradient(90deg, var(--brand-background-strong) 0%, var(--accent-background-strong) 100%);
         }
-
-        /* ── Header: logo kiri, nama kanan — TIDAK boleh wrap nama ── */
+        /* ── Header ── */
         .edu-header {
-          display: grid;
-          grid-template-columns: 56px 1fr;
-          gap: 16px;
+          display: flex;
+          flex-direction: row;
           align-items: center;
-          padding: 22px 24px 14px;
-          width: 100%;
+          gap: 16px;
+          padding: 20px 22px 14px;
           box-sizing: border-box;
         }
         .edu-logo {
-          width: 56px; height: 56px;
+          flex: 0 0 52px;
+          width: 52px;
+          height: 52px;
           border-radius: 50%;
           background: color-mix(in srgb, var(--neutral-on-background-strong) 6%, transparent);
           border: 1.5px solid color-mix(in srgb, var(--neutral-on-background-strong) 10%, transparent);
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
         }
         .edu-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; padding: 5px; display: block; }
-        .edu-name { min-width: 0; width: 100%; overflow: hidden; }
+        .edu-name {
+          flex: 1 1 0;
+          min-width: 0;
+        }
         .edu-univ {
-          font-size: 15px; font-weight: 700; line-height: 1.45;
-          color: var(--neutral-on-background-strong); margin: 0 0 4px;
-          white-space: normal; word-break: break-word; overflow-wrap: anywhere;
+          font-size: 15px;
+          font-weight: 700;
+          line-height: 1.4;
+          color: var(--neutral-on-background-strong);
+          margin: 0 0 3px;
+          word-break: break-word;
         }
         .edu-major {
-          font-size: 12px; color: var(--neutral-on-background-weak);
-          line-height: 1.4; margin: 0;
-          white-space: normal; word-break: break-word;
+          font-size: 12px;
+          color: var(--neutral-on-background-weak);
+          line-height: 1.4;
+          margin: 0;
+          word-break: break-word;
         }
-
-        /* ── Chips row ───────────────────────────────────────── */
+        /* ── Chips ── */
         .edu-chips {
-          display: flex; flex-wrap: wrap; gap: 6px;
-          padding: 0 24px 18px;
-          width: 100%; box-sizing: border-box;
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          padding: 0 22px 18px;
         }
         .edu-chip {
-          display: inline-flex; align-items: center; gap: 4px;
-          padding: 4px 11px; border-radius: 99px;
-          font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
-          white-space: nowrap; line-height: 1;
+          display: inline-flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 10px;
+          border-radius: 99px;
+          font-size: 11px;
+          font-weight: 600;
+          white-space: nowrap;
+          line-height: 1;
+          height: auto;
         }
         .chip-degree { background: var(--brand-alpha-weak); color: var(--brand-on-background-strong); border: 1px solid var(--brand-alpha-medium); }
-        .chip-year { background: var(--neutral-alpha-weak); color: var(--neutral-on-background-weak); border: 1px solid var(--neutral-alpha-weak); }
-        .chip-gpa { background: var(--accent-alpha-weak); color: var(--accent-on-background-strong); border: 1px solid var(--accent-alpha-medium); }
-
-        /* ── Detail rows ─────────────────────────────────────── */
-        .edu-details { border-top: 1px solid var(--neutral-alpha-weak); display: flex; flex-direction: column; width: 100%; }
+        .chip-year   { background: var(--neutral-alpha-weak); color: var(--neutral-on-background-weak); border: 1px solid var(--neutral-alpha-weak); }
+        .chip-gpa    { background: var(--accent-alpha-weak); color: var(--accent-on-background-strong); border: 1px solid var(--accent-alpha-medium); }
+        /* ── Detail rows ── */
+        .edu-details {
+          border-top: 1px solid var(--neutral-alpha-weak);
+        }
         .edu-drow {
-          display: flex; align-items: flex-start; gap: 12px;
-          padding: 14px 24px; border-bottom: 1px solid var(--neutral-alpha-weak);
-          width: 100%; box-sizing: border-box;
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 14px 22px;
+          border-bottom: 1px solid var(--neutral-alpha-weak);
+          box-sizing: border-box;
         }
         .edu-drow:last-child { border-bottom: none; }
         .edu-dicon {
-          flex-shrink: 0; margin-top: 2px;
-          width: 28px; height: 28px; border-radius: 8px;
+          flex: 0 0 26px;
+          width: 26px;
+          height: 26px;
+          border-radius: 8px;
+          margin-top: 2px;
           background: var(--neutral-alpha-weak);
-          display: flex; align-items: center; justify-content: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           color: var(--neutral-on-background-weak);
         }
-        .edu-dtext { flex: 1; min-width: 0; overflow: hidden; }
-        .edu-dlabel { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--neutral-on-background-weak); display: block; margin-bottom: 4px; }
-        .edu-dvalue { font-size: 13.5px; color: var(--neutral-on-background-strong); line-height: 1.6; word-break: break-word; overflow-wrap: anywhere; }
+        .edu-dtext {
+          flex: 1 1 0;
+          min-width: 0;
+        }
+        .edu-dlabel {
+          display: block;
+          font-size: 9.5px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: var(--neutral-on-background-weak);
+          margin-bottom: 4px;
+        }
+        .edu-dvalue {
+          font-size: 13.5px;
+          color: var(--neutral-on-background-strong);
+          line-height: 1.6;
+          word-break: break-word;
+        }
         .edu-dvalue em { font-style: italic; }
-        .edu-dgoal { font-size: 12.5px; color: var(--neutral-on-background-weak); margin-top: 6px; line-height: 1.6; }
-
-        /* ── Thesis output/impact — single column ─────────── */
+        .edu-dgoal {
+          font-size: 12.5px;
+          color: var(--neutral-on-background-weak);
+          margin-top: 6px;
+          line-height: 1.6;
+        }
+        /* ── Thesis boxes ── */
         .edu-thesis-cols {
-          display: flex; flex-direction: column; gap: 8px; margin-top: 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-top: 12px;
         }
         .edu-thesis-col {
-          border-radius: 10px; border: 1px solid var(--neutral-alpha-weak);
-          overflow: hidden; background: var(--neutral-background-medium);
-          width: 100%; box-sizing: border-box;
+          border-radius: 10px;
+          border: 1px solid var(--neutral-alpha-weak);
+          overflow: hidden;
+          background: var(--neutral-background-medium);
         }
         .edu-thesis-col-head {
-          display: flex; align-items: center; gap: 6px; padding: 7px 14px;
-          font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 6px;
+          padding: 7px 14px;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.07em;
+          text-transform: uppercase;
           border-bottom: 1px solid var(--neutral-alpha-weak);
         }
         .edu-thesis-output .edu-thesis-col-head { color: #818cf8; background: color-mix(in srgb, #818cf8 8%, transparent); }
         .edu-thesis-impact .edu-thesis-col-head { color: #34d399; background: color-mix(in srgb, #34d399 8%, transparent); }
-        .edu-thesis-col-body { padding: 10px 14px; font-size: 13px; line-height: 1.65; color: var(--neutral-on-background-medium); word-break: break-word; }
+        .edu-thesis-col-body {
+          padding: 10px 14px;
+          font-size: 13px;
+          line-height: 1.65;
+          color: var(--neutral-on-background-medium);
+          word-break: break-word;
+        }
         @media (max-width: 480px) {
-          .edu-header { grid-template-columns: 44px 1fr; gap: 12px; padding: 18px 18px 12px; }
-          .edu-logo { width: 44px; height: 44px; }
-          .edu-univ { font-size: 14px; }
-          .edu-chips { padding: 0 18px 14px; }
-          .edu-drow { padding: 12px 18px; }
+          .edu-header { padding: 16px 16px 12px; gap: 12px; }
+          .edu-logo { flex: 0 0 44px; width: 44px; height: 44px; }
+          .edu-univ { font-size: 13.5px; }
+          .edu-chips { padding: 0 16px 14px; }
+          .edu-drow { padding: 12px 16px; }
         }
 
         /* ══ Org cards ════════════════════════════════════════════ */
@@ -544,120 +622,129 @@ export default async function About() {
             </div>
           </ScrollReveal>
 
-          <Column fillWidth gap="12" marginBottom="48">
+          <div className="edu-list">
             {educations.length > 0 ? educations.map((edu, i) => (
-              <ScrollReveal key={edu.id} delay={i * 80}>
-                <div className="edu-card">
-                  <div className="edu-strip" />
-                  {/* ── Header: logo + nama universitas ── */}
-                  <div className="edu-header">
-                    <div className="edu-logo">
-                      {edu.logo ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={edu.logo} alt={edu.university_name} />
-                      ) : (
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--brand-on-background-weak)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
-                        </svg>
-                      )}
+              <div key={edu.id} className="edu-reveal-wrap">
+                <ScrollReveal delay={i * 80}>
+                  <div className="edu-card">
+                    <div className="edu-strip" />
+                    <div className="edu-header">
+                      <div className="edu-logo">
+                        {edu.logo ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={edu.logo} alt={edu.university_name} />
+                        ) : (
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-on-background-weak)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                          </svg>
+                        )}
+                      </div>
+                      <div className="edu-name">
+                        <p className="edu-univ">{edu.university_name}</p>
+                        {(edu.faculty || edu.major) && (
+                          <p className="edu-major">
+                            {edu.faculty && <>{edu.faculty}{edu.major ? " · " : ""}</>}{edu.major}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div className="edu-name">
-                      <p className="edu-univ">{edu.university_name}</p>
-                      {(edu.faculty || edu.major) && (
-                        <p className="edu-major">
-                          {edu.faculty && <>{edu.faculty}{edu.major ? " · " : ""}</>}{edu.major}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  {/* ── Chips: degree, tahun, IPK ── */}
-                  <div className="edu-chips">
-                    <span className="edu-chip chip-degree">{edu.degree}</span>
-                    <span className="edu-chip chip-year">
-                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                      {edu.year_start} – {edu.year_end || "Sekarang"}
-                    </span>
-                    {edu.gpa && (
-                      <span className="edu-chip chip-gpa">
-                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                        IPK {edu.gpa}
+                    <div className="edu-chips">
+                      <span className="edu-chip chip-degree">{edu.degree}</span>
+                      <span className="edu-chip chip-year">
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                        {edu.year_start} – {edu.year_end || "Sekarang"}
                       </span>
+                      {edu.gpa && (
+                        <span className="edu-chip chip-gpa">
+                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                          IPK {edu.gpa}
+                        </span>
+                      )}
+                    </div>
+                    {(edu.field_of_study || edu.thesis_title) && (
+                      <div className="edu-details">
+                        {edu.field_of_study && (
+                          <div className="edu-drow">
+                            <div className="edu-dicon">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                            </div>
+                            <div className="edu-dtext">
+                              <span className="edu-dlabel">Rumpun Ilmu</span>
+                              <div className="edu-dvalue">{edu.field_of_study}</div>
+                            </div>
+                          </div>
+                        )}
+                        {edu.thesis_title && (
+                          <div className="edu-drow">
+                            <div className="edu-dicon">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            </div>
+                            <div className="edu-dtext">
+                              <span className="edu-dlabel">Skripsi / Tugas Akhir</span>
+                              <div className="edu-dvalue"><em>&ldquo;{edu.thesis_title}&rdquo;</em></div>
+                              {edu.thesis_goal && !edu.thesis_output && !edu.thesis_impact && (
+                                <div className="edu-dgoal">{edu.thesis_goal}</div>
+                              )}
+                              {(edu.thesis_output || edu.thesis_impact) && (
+                                <div className="edu-thesis-cols">
+                                  {edu.thesis_output && (
+                                    <div className="edu-thesis-col edu-thesis-output">
+                                      <div className="edu-thesis-col-head">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                                          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                                        </svg>
+                                        Output
+                                      </div>
+                                      <div className="edu-thesis-col-body">{edu.thesis_output}</div>
+                                    </div>
+                                  )}
+                                  {edu.thesis_impact && (
+                                    <div className="edu-thesis-col edu-thesis-impact">
+                                      <div className="edu-thesis-col-head">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                                          <circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/>
+                                        </svg>
+                                        Dampak
+                                      </div>
+                                      <div className="edu-thesis-col-body">{edu.thesis_impact}</div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              {(edu.journal_pdf || edu.journal_url) && (
+                                <div style={{ marginTop: 10 }}>
+                                  <EduJournalModal title={edu.thesis_title} pdfUrl={edu.journal_pdf} externalUrl={edu.journal_url} />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
-                  {(edu.field_of_study || edu.thesis_title) && (
-                    <div className="edu-details">
-                      {edu.field_of_study && (
-                        <div className="edu-drow">
-                          <div className="edu-dicon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
-                          <div className="edu-dtext"><span className="edu-dlabel">Rumpun Ilmu</span><div className="edu-dvalue">{edu.field_of_study}</div></div>
-                        </div>
-                      )}
-                      {edu.thesis_title && (
-                        <div className="edu-drow">
-                          <div className="edu-dicon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-                          <div className="edu-dtext">
-                            <span className="edu-dlabel">Skripsi / Tugas Akhir</span>
-                            <div className="edu-dvalue"><em>&ldquo;{edu.thesis_title}&rdquo;</em></div>
-                            {edu.thesis_goal && !edu.thesis_output && !edu.thesis_impact && (
-                              <div className="edu-dgoal">{edu.thesis_goal}</div>
-                            )}
-                            {(edu.thesis_output || edu.thesis_impact) && (
-                              <div className="edu-thesis-cols">
-                                {edu.thesis_output && (
-                                  <div className="edu-thesis-col edu-thesis-output">
-                                    <div className="edu-thesis-col-head">
-                                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                                        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-                                      </svg>
-                                      Output
-                                    </div>
-                                    <div className="edu-thesis-col-body">{edu.thesis_output}</div>
-                                  </div>
-                                )}
-                                {edu.thesis_impact && (
-                                  <div className="edu-thesis-col edu-thesis-impact">
-                                    <div className="edu-thesis-col-head">
-                                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                                        <circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/>
-                                      </svg>
-                                      Dampak
-                                    </div>
-                                    <div className="edu-thesis-col-body">{edu.thesis_impact}</div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                            {(edu.journal_pdf || edu.journal_url) && (
-                              <div style={{ marginTop: 10 }}>
-                                <EduJournalModal title={edu.thesis_title} pdfUrl={edu.journal_pdf} externalUrl={edu.journal_url} />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </ScrollReveal>
+                </ScrollReveal>
+              </div>
             )) : about.studies.institutions.map((inst, i) => (
-              <ScrollReveal key={i} delay={i * 80}>
-                <div className="edu-card">
-                  <div className="edu-strip" />
-                  <div className="edu-header">
-                    <div className="edu-logo">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--brand-on-background-weak)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
-                      </svg>
-                    </div>
-                    <div className="edu-name">
-                      <p className="edu-univ">{inst.name}</p>
-                      {inst.description && <p className="edu-major">{inst.description}</p>}
+              <div key={i} className="edu-reveal-wrap">
+                <ScrollReveal delay={i * 80}>
+                  <div className="edu-card">
+                    <div className="edu-strip" />
+                    <div className="edu-header">
+                      <div className="edu-logo">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-on-background-weak)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                        </svg>
+                      </div>
+                      <div className="edu-name">
+                        <p className="edu-univ">{inst.name}</p>
+                        {inst.description && <p className="edu-major">{inst.description}</p>}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </ScrollReveal>
+                </ScrollReveal>
+              </div>
             ))}
-          </Column>
+          </div>
 
           {/* ══ KEAHLIAN ════════════════════════════════════════════ */}
           <ScrollReveal delay={120}>
