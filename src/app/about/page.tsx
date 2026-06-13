@@ -206,8 +206,13 @@ export default async function About() {
         }
         .edu-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; padding: 5px; display: block; }
         .edu-name { flex: 1; min-width: 0; }
-        .edu-univ { font-size: 15px; font-weight: 700; line-height: 1.3; color: var(--neutral-on-background-strong); margin: 0 0 3px; word-break: break-word; }
-        .edu-major { font-size: 12px; color: var(--neutral-on-background-weak); line-height: 1.4; margin: 0; }
+        .edu-univ {
+          font-size: 15px; font-weight: 700; line-height: 1.4;
+          color: var(--neutral-on-background-strong); margin: 0 0 3px;
+          word-break: break-word; overflow-wrap: anywhere; hyphens: auto;
+          white-space: normal;
+        }
+        .edu-major { font-size: 12px; color: var(--neutral-on-background-weak); line-height: 1.4; margin: 0; white-space: normal; word-break: break-word; }
         .edu-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
         .edu-chip {
           display: inline-flex; align-items: center; gap: 4px;
@@ -231,7 +236,7 @@ export default async function About() {
           color: var(--neutral-on-background-weak);
         }
         .edu-dlabel { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--neutral-on-background-weak); display: block; margin-bottom: 3px; }
-        .edu-dvalue { font-size: 13px; color: var(--neutral-on-background-strong); line-height: 1.55; }
+        .edu-dvalue { font-size: 13px; color: var(--neutral-on-background-strong); line-height: 1.55; word-break: break-word; }
         .edu-dvalue em { font-style: italic; }
         .edu-dgoal { font-size: 12px; color: var(--neutral-on-background-weak); margin-top: 4px; line-height: 1.5; }
 
@@ -275,6 +280,7 @@ export default async function About() {
           .edu-logo { width: 44px; height: 44px; }
           .edu-univ { font-size: 13.5px; }
           .edu-drow { padding: 10px 16px; }
+          .edu-thesis-cols { grid-template-columns: 1fr; }
         }
 
         /* ══ Org cards ════════════════════════════════════════════ */
