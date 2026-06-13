@@ -85,161 +85,161 @@ export function MediaLibraryClient({ initialMedia }: MediaLibraryClientProps) {
 
   return (
     <>
-        <Column fillWidth gap="l">
-      {/* Toolbar */}
-      <Row fillWidth gap="m" wrap>
-        <Input
-          id="search"
-          value={search}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-          placeholder="Cari file..."
-          style={{ flex: 1 }}
-        />
-        <Button
-          onClick={() => inputRef.current?.click()}
-          variant="primary"
-          size="m"
-          loading={uploading}
-          prefixIcon="plus"
-        >
-          Upload
-        </Button>
-        <input
-          ref={inputRef}
-          type="file"
-          multiple
-          accept="image/*,video/mp4,.pdf,.docx,.xlsx"
-          style={{ display: "none" }}
-          onChange={async (e) => {
-            const files = Array.from(e.target.files || []);
-            e.target.value = ""; // reset agar onChange bisa fire lagi untuk file sama
-            for (const file of files) {
-              await handleUpload(file);
-            }
-          }}
-        />
-      </Row>
-
-      {/* Grid */}
-      {filtered.length === 0 ? (
-        <Column
-          border="neutral-alpha-weak"
-          radius="m"
-          padding="xl"
-          background="surface"
-          horizontal="center"
-          align="center"
-          gap="m"
-        >
-          <Text style={{ fontSize: 48 }}>🖼️</Text>
-          <Text variant="heading-strong-m">Belum ada media</Text>
-          <Button onClick={() => inputRef.current?.click()} variant="primary" size="m">
-            Upload File
+      <Column fillWidth gap="l">
+        {/* Toolbar */}
+        <Row fillWidth gap="m" wrap>
+          <Input
+            id="search"
+            value={search}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+            placeholder="Cari file..."
+            style={{ flex: 1 }}
+          />
+          <Button
+            onClick={() => inputRef.current?.click()}
+            variant="primary"
+            size="m"
+            loading={uploading}
+            prefixIcon="plus"
+          >
+            Upload
           </Button>
-        </Column>
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-            gap: 12,
-          }}
-        >
-          {filtered.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => setSelected(selected === item.id ? null : item.id)}
-              style={{
-                border: `2px solid ${selected === item.id ? "var(--brand-background-strong)" : "var(--neutral-alpha-weak)"}`,
-                borderRadius: 12,
-                overflow: "hidden",
-                cursor: "pointer",
-                background: "var(--neutral-background-medium)",
-                transition: "border-color 0.15s",
-              }}
-            >
-              {/* Preview */}
+          <input
+            ref={inputRef}
+            type="file"
+            multiple
+            accept="image/*,video/mp4,.pdf,.docx,.xlsx"
+            style={{ display: "none" }}
+            onChange={async (e) => {
+              const files = Array.from(e.target.files || []);
+              e.target.value = "";
+              for (const file of files) {
+                await handleUpload(file);
+              }
+            }}
+          />
+        </Row>
+
+        {/* Grid */}
+        {filtered.length === 0 ? (
+          <Column
+            border="neutral-alpha-weak"
+            radius="m"
+            padding="xl"
+            background="surface"
+            horizontal="center"
+            align="center"
+            gap="m"
+          >
+            <Text style={{ fontSize: 48 }}>🖼️</Text>
+            <Text variant="heading-strong-m">Belum ada media</Text>
+            <Button onClick={() => inputRef.current?.click()} variant="primary" size="m">
+              Upload File
+            </Button>
+          </Column>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+              gap: 12,
+            }}
+          >
+            {filtered.map((item) => (
               <div
+                key={item.id}
+                onClick={() => setSelected(selected === item.id ? null : item.id)}
                 style={{
-                  height: 120,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "var(--neutral-alpha-weak)",
+                  border: `2px solid ${selected === item.id ? "var(--brand-background-strong)" : "var(--neutral-alpha-weak)"}`,
+                  borderRadius: 12,
                   overflow: "hidden",
+                  cursor: "pointer",
+                  background: "var(--neutral-background-medium)",
+                  transition: "border-color 0.15s",
                 }}
               >
-                {isImage(item.type) ? (
-                  <img
-                    src={item.url}
-                    alt={item.name}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                ) : (
-                  <Text style={{ fontSize: 40 }}>
-                    {item.type.includes("pdf")
-                      ? "📄"
-                      : item.type.includes("video")
-                      ? "🎬"
-                      : "📎"}
-                  </Text>
-                )}
-              </div>
-
-              {/* Info */}
-              <div style={{ padding: "8px 10px" }}>
-                <Text
-                  variant="body-default-xs"
+                {/* Preview */}
+                <div
                   style={{
+                    height: 120,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "var(--neutral-alpha-weak)",
                     overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    display: "block",
                   }}
                 >
-                  {item.name}
-                </Text>
-                <Text variant="body-default-xs" onBackground="neutral-weak">
-                  {formatBytes(item.size)}
-                </Text>
-              </div>
-
-              {/* Actions (visible on select) */}
-              {selected === item.id && (
-                <div style={{ padding: "0 10px 10px", display: "flex", gap: 6 }}>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleCopy(item.url, item.id); }}
-                    style={{
-                      flex: 1, padding: "5px 0", borderRadius: 6, border: "none",
-                      background: "var(--brand-alpha-weak)", color: "var(--brand-on-background-strong)",
-                      cursor: "pointer", fontSize: 11, fontWeight: 600,
-                    }}
-                  >
-                    {copied === item.id ? "✓ Copied!" : "Copy URL"}
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleDelete(item); }}
-                    style={{
-                      padding: "5px 8px", borderRadius: 6, border: "none",
-                      background: "var(--danger-alpha-weak)", color: "var(--danger-on-background-strong)",
-                      cursor: "pointer", fontSize: 11, fontWeight: 600,
-                    }}
-                  >
-                    🗑
-                  </button>
+                  {isImage(item.type) ? (
+                    <img
+                      src={item.url}
+                      alt={item.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  ) : (
+                    <Text style={{ fontSize: 40 }}>
+                      {item.type.includes("pdf")
+                        ? "📄"
+                        : item.type.includes("video")
+                        ? "🎬"
+                        : "📎"}
+                    </Text>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
 
-      {filtered.length > 0 && (
-        <Text variant="body-default-xs" onBackground="neutral-weak">
-          {filtered.length} dari {media.length} file
-        </Text>
-      )}
-    </Column>
+                {/* Info */}
+                <div style={{ padding: "8px 10px" }}>
+                  <Text
+                    variant="body-default-xs"
+                    style={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      display: "block",
+                    }}
+                  >
+                    {item.name}
+                  </Text>
+                  <Text variant="body-default-xs" onBackground="neutral-weak">
+                    {formatBytes(item.size)}
+                  </Text>
+                </div>
+
+                {/* Actions */}
+                {selected === item.id && (
+                  <div style={{ padding: "0 10px 10px", display: "flex", gap: 6 }}>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleCopy(item.url, item.id); }}
+                      style={{
+                        flex: 1, padding: "5px 0", borderRadius: 6, border: "none",
+                        background: "var(--brand-alpha-weak)", color: "var(--brand-on-background-strong)",
+                        cursor: "pointer", fontSize: 11, fontWeight: 600,
+                      }}
+                    >
+                      {copied === item.id ? "✓ Copied!" : "Copy URL"}
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDelete(item); }}
+                      style={{
+                        padding: "5px 8px", borderRadius: 6, border: "none",
+                        background: "var(--danger-alpha-weak)", color: "var(--danger-on-background-strong)",
+                        cursor: "pointer", fontSize: 11, fontWeight: 600,
+                      }}
+                    >
+                      🗑
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {filtered.length > 0 && (
+          <Text variant="body-default-xs" onBackground="neutral-weak">
+            {filtered.length} dari {media.length} file
+          </Text>
+        )}
+      </Column>
       <ConfirmModal
         open={!!confirmItem}
         title="Hapus File?"

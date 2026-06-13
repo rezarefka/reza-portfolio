@@ -123,10 +123,9 @@ export function ImageUpload({
     let fileToUpload = originalFile;
     let compressionResult: CompressionResult | null = null;
 
-    // ── FASE 1: KOMPRESI (skip untuk PDF) ─────────────────────
+    // FASE 1: KOMPRESI — skip untuk PDF, upload PDF as-is
     if (enableCompression && !isPdfFile) {
       setPhase(originalFile.name, "compressing", 5, "Mengompres…");
-
       try {
         compressionResult = await compressFile(originalFile, {
           imageMaxBytes: 800 * 1024,
@@ -145,12 +144,11 @@ export function ImageUpload({
         });
         fileToUpload = compressionResult.file;
       } catch {
-        // Kompresi gagal → pakai file asli
         compressionResult = null;
       }
     }
 
-    // ── FASE 2: UPLOAD ────────────────────────────────────────
+    // FASE 2: UPLOAD
     setPhase(originalFile.name, "uploading", 62, "Mengunggah…");
 
     const ext = fileToUpload.name.split(".").pop()?.toLowerCase() || "bin";
@@ -168,7 +166,6 @@ export function ImageUpload({
     }
 
     setPhase(originalFile.name, "uploading", 88, "Mendapatkan URL…");
-
     const { data } = supabase.storage.from(bucket).getPublicUrl(path);
     const publicUrl = data.publicUrl;
 
@@ -182,10 +179,8 @@ export function ImageUpload({
     const fileArr = Array.from(files);
     if (!fileArr.length) return;
 
-    // Deteksi apakah ada video → update state untuk tampilkan pilihan kualitas
     const containsVideo = fileArr.some((f) => f.type.startsWith("video/"));
     setHasVideoSelected(containsVideo);
-
     setUploading(true);
     setError("");
     setSaved(false);
@@ -255,7 +250,6 @@ export function ImageUpload({
     <Column gap="m">
       {label && <Text variant="label-strong-s">{label}</Text>}
 
-      {/* Compression info badge */}
       {enableCompression && (
         <div style={{
           display: "flex", alignItems: "center", gap: 7,
@@ -347,16 +341,13 @@ export function ImageUpload({
         />
       </div>
 
-      {/* ── Pilihan Kualitas Video — hanya muncul jika ada file video dipilih ── */}
+      {/* Pilihan Kualitas Video */}
       {enableCompression && hasVideoSelected && (
         <div style={{
-          padding: "10px 12px",
-          borderRadius: 10,
+          padding: "10px 12px", borderRadius: 10,
           background: "var(--neutral-background-medium)",
           border: "1px solid var(--neutral-alpha-weak)",
-          display: "flex",
-          flexDirection: "column",
-          gap: 8,
+          display: "flex", flexDirection: "column", gap: 8,
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--brand-on-background-strong)" strokeWidth="2.2" strokeLinecap="round">
@@ -369,9 +360,9 @@ export function ImageUpload({
           <div style={{ display: "flex", gap: 6 }}>
             {(["low", "medium", "high"] as const).map((preset) => {
               const META = {
-                low:    { label: "Ringan",  desc: "400kbps · 720p", color: "#34d399" },
+                low:    { label: "Ringan",   desc: "400kbps · 720p",  color: "#34d399" },
                 medium: { label: "Seimbang", desc: "800kbps · 1080p", color: "#818cf8" },
-                high:   { label: "Tajam",   desc: "2Mbps · 1440p", color: "#f59e0b" },
+                high:   { label: "Tajam",    desc: "2Mbps · 1440p",   color: "#f59e0b" },
               };
               const m = META[preset];
               const active = videoQualityPreset === preset;
@@ -412,7 +403,6 @@ export function ImageUpload({
             <div key={name}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, overflow: "hidden" }}>
-                  {/* Phase icon */}
                   {fp.phase === "compressing" && (
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.2" strokeLinecap="round" style={{ flexShrink: 0 }}>
                       <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
@@ -469,8 +459,6 @@ export function ImageUpload({
               <span style={{ flex: 1, fontSize: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--neutral-on-background-strong)" }}>
                 {f.name}
               </span>
-
-              {/* Size info */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0, gap: 1 }}>
                 <span style={{ fontSize: 11, color: "var(--neutral-on-background-weak)" }}>
                   {formatBytes(f.size)}
@@ -481,8 +469,6 @@ export function ImageUpload({
                   </span>
                 )}
               </div>
-
-              {/* Compression badge */}
               {f.compressed && (
                 <div style={{
                   padding: "2px 6px", borderRadius: 99,
@@ -493,8 +479,6 @@ export function ImageUpload({
                   OPTIMIZED
                 </div>
               )}
-
-              {/* Open link */}
               <a href={f.url} target="_blank" rel="noopener noreferrer"
                 style={{ flexShrink: 0, color: "var(--neutral-on-background-weak)" }}
                 onClick={(e) => e.stopPropagation()}
