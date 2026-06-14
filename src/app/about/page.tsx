@@ -481,7 +481,8 @@ export default async function About() {
         .org-logo img { width: 100%; height: 100%; object-fit: contain; }
         .org-info { flex: 1; min-width: 0; }
         .org-name { font-size: 14px; font-weight: 700; color: var(--neutral-on-background-strong); margin: 0 0 2px; }
-        .org-role { font-size: 12.5px; color: var(--brand-on-background-medium); font-weight: 600; margin: 0 0 2px; }
+        .org-role { font-size: 12.5px; color: var(--brand-on-background-medium); font-weight: 600; margin: 0 0 4px; }
+        .org-desc { font-size: 12px; color: var(--neutral-on-background-weak); margin: 0; line-height: 1.5; }
         .org-year { font-size: 11.5px; color: var(--neutral-on-background-weak); }
         .org-year-badge {
           flex-shrink: 0;
@@ -942,6 +943,9 @@ export default async function About() {
                       <div className="org-info">
                         <p className="org-name">{org.name}</p>
                         <p className="org-role">{org.role_id}</p>
+                        {org.description_id && (
+                          <p className="org-desc">{org.description_id}</p>
+                        )}
                       </div>
                       <span className="org-year-badge">{org.year}</span>
                     </div>
