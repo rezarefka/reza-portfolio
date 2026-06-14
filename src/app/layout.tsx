@@ -15,6 +15,7 @@ import {
 } from "@once-ui-system/core";
 import { Footer, Header, RouteGuard, Providers } from "@/components";
 import { baseURL, effects, fonts, style, dataStyle, home } from "@/resources";
+import { getSettings } from "@/lib/db";
 
 export async function generateMetadata() {
   return Meta.generate({
@@ -31,6 +32,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Ambil timestamp settings untuk cache-busting favicon
+  const settings = await getSettings();
+  const faviconTs = settings?.updated_at
+    ? new Date(settings.updated_at).getTime()
+    : Date.now();
+
   return (
     <Flex
       suppressHydrationWarning
@@ -45,9 +52,9 @@ export default async function RootLayout({
       )}
     >
       <head>
-        {/* Favicon dinamis dari CMS — dihandle oleh /api/favicon */}
-        <link rel="icon" href="/api/favicon" type="image/png" />
-        <link rel="apple-touch-icon" href="/api/icon?size=192" />
+        {/* Favicon dengan cache-busting — berubah otomatis setiap settings disimpan */}
+        <link rel="icon" href={`/api/favicon?v=${faviconTs}`} type="image/png" />
+        <link rel="apple-touch-icon" href={`/api/icon?size=192&v=${faviconTs}`} />
         <script
           id="theme-init"
           dangerouslySetInnerHTML={{
