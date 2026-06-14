@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import sharp from "sharp";
 
-// Fallback jika tidak ada favicon/avatar di settings
 const FALLBACK_AVATAR =
   "https://baxvcjsensttnkupambu.supabase.co/storage/v1/object/public/avatars/1780364547823-7vnrjoqh2vu.png";
 
-// no-store: selalu baca dari Supabase, tidak di-cache di edge/CDN
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -27,15 +26,19 @@ export async function GET(request: Request) {
   }
 
   try {
-    // no-store: jangan cache fetch ke Supabase, selalu ambil fresh
     const res = await fetch(iconUrl, { cache: "no-store" });
     if (!res.ok) throw new Error("fetch failed");
-    const buf = await res.arrayBuffer();
-    const contentType = res.headers.get("content-type") || "image/png";
-    return new NextResponse(buf, {
+    const buf = Buffer.from(await res.arrayBuffer());
+
+    // Konversi ke PNG dengan ukuran yang diminta
+    const png = await sharp(buf)
+      .resize(size, size, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png()
+      .toBuffer();
+
+    return new NextResponse(png, {
       headers: {
-        "Content-Type": contentType,
-        // no-cache: browser boleh cache tapi harus revalidate setiap kali
+        "Content-Type": "image/png",
         "Cache-Control": "no-cache, no-store, must-revalidate",
         "X-Icon-Size": `${size}`,
       },
