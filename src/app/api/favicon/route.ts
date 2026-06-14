@@ -25,27 +25,26 @@ export async function GET() {
   try {
     const res = await fetch(iconUrl, { cache: "no-store" });
     if (!res.ok) throw new Error("fetch failed");
-    const buf = Buffer.from(await res.arrayBuffer());
+    const inputBuf = await res.arrayBuffer();
 
-    // Konversi ke PNG 256x256 — Chrome tab favicon wajib PNG/ICO, tidak support WebP
-    const png = await sharp(buf)
+    // Konversi ke PNG 256x256 — Chrome tab favicon tidak support WebP
+    const pngBuffer = await sharp(Buffer.from(inputBuf))
       .resize(256, 256, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
       .png()
       .toBuffer();
 
-    return new NextResponse(png, {
+    return new NextResponse(new Uint8Array(pngBuffer), {
       headers: {
         "Content-Type": "image/png",
         "Cache-Control": "no-cache, no-store, must-revalidate",
       },
     });
   } catch {
-    // 1x1 transparan PNG sebagai fallback
     const fallback = Buffer.from(
       "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
       "base64"
     );
-    return new NextResponse(fallback, {
+    return new NextResponse(new Uint8Array(fallback), {
       headers: {
         "Content-Type": "image/png",
         "Cache-Control": "no-cache, no-store, must-revalidate",

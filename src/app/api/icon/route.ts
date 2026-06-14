@@ -28,15 +28,14 @@ export async function GET(request: Request) {
   try {
     const res = await fetch(iconUrl, { cache: "no-store" });
     if (!res.ok) throw new Error("fetch failed");
-    const buf = Buffer.from(await res.arrayBuffer());
+    const inputBuf = await res.arrayBuffer();
 
-    // Konversi ke PNG dengan ukuran yang diminta
-    const png = await sharp(buf)
+    const pngBuffer = await sharp(Buffer.from(inputBuf))
       .resize(size, size, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
       .png()
       .toBuffer();
 
-    return new NextResponse(png, {
+    return new NextResponse(new Uint8Array(pngBuffer), {
       headers: {
         "Content-Type": "image/png",
         "Cache-Control": "no-cache, no-store, must-revalidate",
@@ -48,7 +47,7 @@ export async function GET(request: Request) {
       "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
       "base64"
     );
-    return new NextResponse(fallback, {
+    return new NextResponse(new Uint8Array(fallback), {
       headers: {
         "Content-Type": "image/png",
         "Cache-Control": "no-cache, no-store, must-revalidate",
