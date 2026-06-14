@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { ConfirmModal } from "@/components/admin/ConfirmModal";
 import { Column, Row, Text, Button } from "@once-ui-system/core";
 import { createClient } from "@/lib/supabase/client";
+import { compressFile, formatBytes } from "@/lib/mediaCompressor";
 
 interface GalleryPhoto {
   id: string;
@@ -20,6 +21,7 @@ interface GalleryClientProps {
 export function GalleryClient({ initialPhotos }: GalleryClientProps) {
   const [photos, setPhotos] = useState<GalleryPhoto[]>(initialPhotos);
   const [uploading, setUploading] = useState(false);
+  const [compressInfo, setCompressInfo] = useState<{name:string;before:number;after:number}|null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editCaption, setEditCaption] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
@@ -28,9 +30,22 @@ export function GalleryClient({ initialPhotos }: GalleryClientProps) {
 
   const handleUpload = async (files: FileList) => {
     setUploading(true);
+    setCompressInfo(null);
     const supabase = createClient();
 
-    for (const file of Array.from(files)) {
+    for (const rawFile of Array.from(files)) {
+      // Compress image before upload
+      const result = await compressFile(rawFile, {
+        imageMaxBytes: 600 * 1024,
+        imageQuality: 0.82,
+        imageMaxDimension: 2560,
+        imageFormat: "image/webp",
+      });
+      const file = result.file;
+      if (result.wasCompressed) {
+        setCompressInfo({ name: rawFile.name, before: result.originalSize, after: result.compressedSize });
+      }
+
       const ext = file.name.split(".").pop();
       const path = `gallery/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
@@ -159,6 +174,21 @@ export function GalleryClient({ initialPhotos }: GalleryClientProps) {
       </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
+      {/* Compress result badge */}
+      {compressInfo && (
+        <div style={{
+          display:"flex", alignItems:"center", gap:8,
+          padding:"8px 14px", borderRadius:10,
+          background:"color-mix(in srgb,#22c55e 10%,transparent)",
+          border:"1px solid color-mix(in srgb,#22c55e 25%,transparent)",
+          fontSize:12, color:"#4ade80",
+        }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Dikompres: <strong>{formatBytes(compressInfo.before)}</strong> → <strong>{formatBytes(compressInfo.after)}</strong>
+          {" "}(-{Math.round((1-compressInfo.after/compressInfo.before)*100)}%)</span>
+        </div>
+      )}
 
       {/* Count */}
       <Text variant="body-default-s" onBackground="neutral-weak">
