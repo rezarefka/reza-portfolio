@@ -25,7 +25,6 @@ import {
   getAboutExperiences,
   getAboutSkills,
   getAboutOrganizations,
-  getAboutIntro,
 } from "@/lib/db";
 import { format } from "date-fns";
 function safeDate(d: string | null | undefined, fmt: string, opts?: Parameters<typeof format>[2]): string {
@@ -52,13 +51,12 @@ export async function generateMetadata() {
 }
 
 export default async function About() {
-  const [certificates, educations, experiences, skills, organizations, cmsIntro] = await Promise.all([
+  const [certificates, educations, experiences, skills, organizations] = await Promise.all([
     getCertificates().catch(() => []),
     getAboutEducation().catch(() => []),
     getAboutExperiences().catch(() => []),
     getAboutSkills().catch(() => []),
     getAboutOrganizations().catch(() => []),
-    getAboutIntro().catch(() => null),
   ]);
 
   const structure = [
@@ -484,7 +482,6 @@ export default async function About() {
         .org-info { flex: 1; min-width: 0; }
         .org-name { font-size: 14px; font-weight: 700; color: var(--neutral-on-background-strong); margin: 0 0 2px; }
         .org-role { font-size: 12.5px; color: var(--brand-on-background-medium); font-weight: 600; margin: 0 0 2px; }
-        .org-desc { font-size: 12px; color: var(--neutral-on-background-weak); margin: 4px 0 0; line-height: 1.55; }
         .org-year { font-size: 11.5px; color: var(--neutral-on-background-weak); }
         .org-year-badge {
           flex-shrink: 0;
@@ -497,49 +494,55 @@ export default async function About() {
           color: #a78bfa;
         }
 
-        /* ══ Certificate bento grid ═══════════════════════════════ */
+        /* ══ Certificate grid — Instagram 4:5 ratio ═══════════════ */
         .cert-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          grid-auto-rows: 1fr;
           gap: 10px;
+        }
+        /* ScrollReveal wrapper transparent to grid */
+        .cert-grid > div {
+          display: contents;
         }
         .cert-card {
           position: relative;
-          border-radius: 10px;
+          border-radius: 12px;
           border: 1px solid var(--neutral-alpha-weak);
           background: var(--neutral-background-medium);
           overflow: hidden;
           text-decoration: none;
           display: flex;
           flex-direction: column;
-          transition: border-color 0.2s, background 0.2s;
-          aspect-ratio: 1 / 1;
+          /* Instagram portrait 4:5 */
+          aspect-ratio: 4 / 5;
+          transition: border-color 0.2s, transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
         }
         .cert-card:hover {
           border-color: var(--neutral-alpha-medium);
-          background: var(--neutral-background-weak);
+          transform: translateY(-4px);
+          box-shadow: 0 12px 32px rgba(0,0,0,0.18);
         }
-        /* Bento variety: a few cards span 2 columns */
+        /* No more bento wide — all cards uniform */
         .cert-card.cert-wide {
-          grid-column: span 2;
-          aspect-ratio: 2 / 1;
+          grid-column: span 1;
+          aspect-ratio: 4 / 5;
         }
         .cert-thumb-wrap {
           width: 100%;
           flex: 1;
+          min-height: 0;
           overflow: hidden;
-          background: var(--neutral-alpha-weak);
+          background: color-mix(in srgb, var(--neutral-on-background-strong) 4%, transparent);
           display: flex;
           align-items: center;
           justify-content: center;
-          min-height: 0;
         }
         .cert-thumb {
           width: 100%;
           height: 100%;
           display: block;
           object-fit: cover;
+          object-position: center top;
         }
         .cert-nothumb {
           width: 100%;
@@ -547,32 +550,35 @@ export default async function About() {
           display: flex; align-items: center; justify-content: center;
           background: linear-gradient(135deg, var(--brand-alpha-weak), var(--accent-alpha-weak));
           color: var(--brand-on-background-medium);
-          min-height: 0;
         }
         .cert-body {
-          padding: 8px 10px;
+          padding: 10px 12px 12px;
           flex-shrink: 0;
+          border-top: 1px solid var(--neutral-alpha-weak);
+          background: var(--neutral-background-medium);
         }
         .cert-issuer {
           display: inline-flex; align-items: center; gap: 4px;
           font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
           color: var(--brand-on-background-medium);
-          margin-bottom: 3px;
+          margin-bottom: 4px;
         }
         .cert-title {
-          font-size: 11px; font-weight: 600;
+          font-size: 11.5px; font-weight: 700;
           color: var(--neutral-on-background-strong);
-          line-height: 1.35;
-          margin: 0 0 3px;
+          line-height: 1.4;
+          margin: 0 0 5px;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
         .cert-date { font-size: 10px; color: var(--neutral-on-background-weak); display: flex; align-items: center; gap: 4px; }
-        @media (max-width: 720px) {
+        @media (max-width: 900px) {
+          .cert-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 600px) {
           .cert-grid { grid-template-columns: repeat(2, 1fr); }
-          .cert-card.cert-wide { grid-column: span 2; }
         }
 
         /* ══ Intro section ════════════════════════════════════════ */
@@ -639,7 +645,7 @@ export default async function About() {
                 </Row>
               )}
 
-              {/* Intro text — CMS first, fallback to static content */}
+              {/* Intro text */}
               {about.intro.display && (
                 <Column fillWidth gap="m" style={{
                   padding: "20px 24px",
@@ -651,11 +657,7 @@ export default async function About() {
                     <div style={{ width: 3, height: 20, borderRadius: 2, background: "var(--brand-background-strong)", flexShrink: 0 }} />
                     <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--neutral-on-background-weak)" }}>Tentang Saya</span>
                   </div>
-                  {cmsIntro?.bio_id ? (
-                    <CmsBioRenderer text={cmsIntro.bio_id} />
-                  ) : (
-                    <p className="intro-text">{about.intro.description}</p>
-                  )}
+                  <p className="intro-text">{about.intro.description}</p>
                 </Column>
               )}
             </Column>
@@ -940,9 +942,6 @@ export default async function About() {
                       <div className="org-info">
                         <p className="org-name">{org.name}</p>
                         <p className="org-role">{org.role_id}</p>
-                        {org.description_id && (
-                          <p className="org-desc">{org.description_id}</p>
-                        )}
                       </div>
                       <span className="org-year-badge">{org.year}</span>
                     </div>
@@ -966,10 +965,9 @@ export default async function About() {
               </ScrollReveal>
               <div className="cert-grid" style={{ marginBottom: 48 }}>
                 {certificates.map((cert, i) => {
-                  const isWide = i % 5 === 0;
                   return (
                   <ScrollReveal key={cert.id} delay={i * 35}>
-                    <a href={`/certificate/${cert.id}`} className={`cert-card${isWide ? " cert-wide" : ""}`}>
+                    <a href={`/certificate/${cert.id}`} className="cert-card">
                       {cert.thumbnail ? (
                         <div className="cert-thumb-wrap">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1005,45 +1003,5 @@ export default async function About() {
         </Column>
       </div>
     </Column>
-  );
-}
-
-/** Render teks bio dari CMS — support bullet points (- item) */
-function CmsBioRenderer({ text }: { text: string }) {
-  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-  const hasBullet = lines.some((l) => /^[-•*]\s/.test(l));
-
-  if (!hasBullet) {
-    return (
-      <p style={{ fontSize: 15.5, color: "var(--neutral-on-background-medium)", lineHeight: 1.8, margin: 0 }}>
-        {text}
-      </p>
-    );
-  }
-
-  const introLines: string[] = [];
-  const listItems: string[] = [];
-  let inList = false;
-  for (const line of lines) {
-    if (/^[-•*]\s/.test(line)) { inList = true; listItems.push(line.replace(/^[-•*]\s+/, "")); }
-    else if (!inList) introLines.push(line);
-  }
-
-  return (
-    <>
-      {introLines.length > 0 && (
-        <p style={{ fontSize: 15.5, color: "var(--neutral-on-background-medium)", lineHeight: 1.8, margin: "0 0 10px" }}>
-          {introLines.join(" ")}
-        </p>
-      )}
-      <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 7 }}>
-        {listItems.map((item, idx) => (
-          <li key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 9, fontSize: 15.5, color: "var(--neutral-on-background-medium)", lineHeight: 1.75 }}>
-            <span style={{ flexShrink: 0, width: 5, height: 5, borderRadius: "50%", background: "var(--brand-background-strong)", marginTop: 9 }} />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-    </>
   );
 }
