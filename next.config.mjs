@@ -4,7 +4,7 @@ const cspHeader = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+  "connect-src 'self' blob: https://*.supabase.co wss://*.supabase.co",
   "worker-src 'self' blob:",
 ].join('; ')
 
@@ -13,8 +13,6 @@ const nextConfig = {
   pageExtensions: ['ts', 'tsx', 'mdx'],
 
   images: {
-    // Matikan optimizer — semua gambar serve langsung tanpa /_next/image
-    // Ini menghilangkan semua error 400/404 dari next/image
     unoptimized: true,
     remotePatterns: [
       {
@@ -41,6 +39,15 @@ const nextConfig = {
         ],
       },
     ]
+  },
+
+  webpack(config) {
+    // Handle pdf.worker.min.mjs so Next.js bundles it correctly
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      canvas: false,
+    };
+    return config;
   },
 }
 

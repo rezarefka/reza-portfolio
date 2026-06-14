@@ -2,10 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 
-/* ─── pdf.js CDN loader (same pattern as pdfToImages.ts) ─── */
-const PDFJS_VERSION = "4.4.168";
-const PDFJS_BASE = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}`;
-
+/* ─── pdf.js loader via npm dynamic import ─── */
 interface PdfjsLib {
   getDocument(src: { url: string; withCredentials?: boolean }): { promise: Promise<PDFDocumentProxy> };
   GlobalWorkerOptions: { workerSrc: string };
@@ -24,23 +21,17 @@ interface PDFViewport { width: number; height: number; }
 let _pdfjsPromise: Promise<PdfjsLib> | null = null;
 function loadPdfJs(): Promise<PdfjsLib> {
   if (_pdfjsPromise) return _pdfjsPromise;
-  _pdfjsPromise = new Promise<PdfjsLib>((resolve, reject) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const w = window as any;
-    if (w.pdfjsLib?.getDocument) {
-      w.pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDFJS_BASE}/pdf.worker.min.js`;
-      return resolve(w.pdfjsLib as PdfjsLib);
-    }
-    const s = document.createElement("script");
-    s.src = `${PDFJS_BASE}/pdf.min.js`;
-    s.async = true;
-    s.onload = () => {
-      if (!w.pdfjsLib?.getDocument) { _pdfjsPromise = null; return reject(new Error("pdfjs load failed")); }
-      w.pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDFJS_BASE}/pdf.worker.min.js`;
-      resolve(w.pdfjsLib as PdfjsLib);
-    };
-    s.onerror = () => { _pdfjsPromise = null; reject(new Error("pdfjs script error")); };
-    document.head.appendChild(s);
+  _pdfjsPromise = (async () => {
+    const pdfjs = await import("pdfjs-dist");
+    const workerSrc = new URL(
+      "pdfjs-dist/build/pdf.worker.min.mjs",
+      import.meta.url
+    ).toString();
+    pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+    return pdfjs as unknown as PdfjsLib;
+  })().catch((e) => {
+    _pdfjsPromise = null;
+    throw e;
   });
   return _pdfjsPromise;
 }
