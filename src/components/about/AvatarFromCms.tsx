@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 import { Tilt3DCard } from "./Tilt3DCard";
 
 export function AvatarFromCms() {
-  const [src, setSrc] = useState<string>(person.avatar);
-  const [loaded, setLoaded] = useState(false);
-  const [cvUrl, setCvUrl] = useState<string | null>(null);
+  const [src, setSrc]           = useState<string>(person.avatar);
+  const [loaded, setLoaded]     = useState(false);
+  const [cvUrl, setCvUrl]       = useState<string | null>(null);
   const [cvClicked, setCvClicked] = useState(false);
 
   useEffect(() => {
@@ -20,10 +20,7 @@ export function AvatarFromCms() {
       .limit(1)
       .single()
       .then(({ data }) => {
-        if (data?.avatar) {
-          const clean = data.avatar.split("?")[0];
-          setSrc(clean);
-        }
+        if (data?.avatar) setSrc(data.avatar.split("?")[0]);
         if (data?.cv_file) setCvUrl(data.cv_file);
       });
   }, []);
@@ -45,8 +42,8 @@ export function AvatarFromCms() {
     <>
       <style>{`
         @keyframes avatarFadeIn {
-          from { opacity: 0; transform: scale(0.97); }
-          to   { opacity: 1; transform: scale(1); }
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes locationDotBlink {
           0%, 100% { opacity: 1;    transform: scale(1); }
@@ -62,12 +59,11 @@ export function AvatarFromCms() {
           width: 100%;
         }
 
-        /* Location row */
         .av-location {
           display: flex;
           align-items: center;
           gap: 7px;
-          margin-top: 22px;
+          margin-top: 14px;
         }
         .av-loc-dot {
           width: 7px;
@@ -85,7 +81,6 @@ export function AvatarFromCms() {
           letter-spacing: 0.01em;
         }
 
-        /* Tombol Hubungi - minimalis dengan shimmer */
         .av-cta {
           display: flex;
           align-items: center;
@@ -112,32 +107,19 @@ export function AvatarFromCms() {
         .av-cta::after {
           content: "";
           position: absolute;
-          top: 0;
-          left: -100%;
-          width: 60%;
-          height: 100%;
-          background: linear-gradient(
-            105deg,
-            transparent 30%,
-            rgba(255,255,255,0.18) 50%,
-            transparent 70%
-          );
+          top: 0; left: -100%;
+          width: 60%; height: 100%;
+          background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
           animation: ctaShimmer 3.2s ease-in-out infinite;
         }
         @keyframes ctaShimmer {
-          0%   { left: -100%; }
-          50%  { left: 150%; }
-          100% { left: 150%; }
+          0%  { left: -100%; }
+          50% { left: 150%; }
+          100%{ left: 150%; }
         }
-        .av-cta:hover {
-          opacity: 0.88;
-          transform: translateY(-1px);
-        }
-        .av-cta:active {
-          transform: scale(0.97);
-        }
+        .av-cta:hover   { opacity: 0.88; transform: translateY(-1px); }
+        .av-cta:active  { transform: scale(0.97); }
 
-        /* Tombol Resume - secondary, outline style */
         .av-resume {
           display: flex;
           align-items: center;
@@ -159,13 +141,8 @@ export function AvatarFromCms() {
           transition: background 0.15s, border-color 0.15s, transform 0.13s;
           box-sizing: border-box;
         }
-        .av-resume:hover {
-          background: var(--neutral-alpha-weak);
-          border-color: var(--neutral-alpha-strong);
-        }
-        .av-resume:active {
-          transform: scale(0.97);
-        }
+        .av-resume:hover { background: var(--neutral-alpha-weak); border-color: var(--neutral-alpha-strong); }
+        .av-resume:active { transform: scale(0.97); }
         .av-resume.av-resume-ok {
           color: rgb(74,222,128);
           border-color: rgba(34,197,94,0.38);
@@ -183,24 +160,26 @@ export function AvatarFromCms() {
       `}</style>
 
       <div className="av-shell">
-        {/* ── Foto Profil: 3D Tilt Card ── */}
+        {/* ── Lanyard + 3D Card ── */}
         <Tilt3DCard
           src={src}
           alt={person.name}
           loaded={loaded}
+          name={person.name}
+          role={person.role}
           onLoad={() => setLoaded(true)}
           onError={(e) => {
             (e.target as HTMLImageElement).src = person.avatar;
           }}
         />
 
-        {/* ── Location dengan dot kedap-kedip ── */}
+        {/* ── Location ── */}
         <div className="av-location">
           <div className="av-loc-dot" />
           <span className="av-loc-text">Makassar, Indonesia</span>
         </div>
 
-        {/* ── Tombol Hubungi ── */}
+        {/* ── Hubungi ── */}
         <a href="mailto:rezarefka@gmail.com" className="av-cta">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -209,7 +188,7 @@ export function AvatarFromCms() {
           Hubungi Saya
         </a>
 
-        {/* ── Tombol Resume ── */}
+        {/* ── Resume ── */}
         {cvUrl && (
           <button
             type="button"
