@@ -63,8 +63,7 @@ export function AvatarFromCms() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          width: 200px;
-          flex-shrink: 0;
+          width: 100%;
           gap: 0;
           animation: avatarPanelIn 0.55s cubic-bezier(0.34, 1.2, 0.64, 1) both;
         }
@@ -176,12 +175,11 @@ export function AvatarFromCms() {
           animation: avResumeCheck 0.35s ease forwards;
         }
 
-        /* ── Mobile: full width stack ────────────────────── */
+        /* ── Mobile: handled by parent SCSS ─────────────── */
         @media (max-width: 768px) {
           .av-panel {
-            width: 100%;
             max-width: 240px;
-            margin: 0 auto 24px;
+            margin: 0 auto;
           }
         }
       `}</style>

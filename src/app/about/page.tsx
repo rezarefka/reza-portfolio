@@ -79,7 +79,7 @@ export default async function About() {
           flex-direction: row;
           align-items: flex-start;
           width: 100%;
-          gap: 0;
+          gap: 32px;
           min-width: 0;
         }
         .about-content-col {
@@ -89,7 +89,11 @@ export default async function About() {
           width: 100%;
         }
         @media (max-width: 768px) {
-          .about-wrap { flex-direction: column; align-items: stretch; }
+          .about-wrap {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0;
+          }
         }
 
         /* ══ Section header bar ═══════════════════════════════════ */

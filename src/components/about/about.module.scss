@@ -8,17 +8,16 @@
     }
 }
 
-/* ── Desktop: avatar is now a floating fixed panel (zero-footprint placeholder) ── */
+/* ── Desktop: sidebar avatar ── */
 .avatar {
-    /* Panel renders as position:fixed — no space taken in flow */
-    width: 0;
-    height: 0;
-    overflow: visible;
+    width: 220px;
     flex-shrink: 0;
-    padding: 0;
+    align-self: flex-start;
+    position: sticky;
+    top: 88px;         /* di bawah navbar */
 }
 
-/* ── Mobile: show as normal flow block, centered ── */
+/* ── Mobile ── */
 @media (max-width: breakpoints.$s) {
     .textAlign {
         text-align: center;
@@ -29,11 +28,10 @@
     }
 
     .avatar {
-        /* On mobile AvatarFromCms renders itself as relative/block via its own media query */
         width: 100%;
         height: auto;
-        overflow: visible;
-        padding: 0 0 16px 0;
+        position: static;
+        padding: 0 0 24px 0;
         align-self: center;
     }
 }
