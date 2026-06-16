@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useState } from "react";
 
 interface Tilt3DCardProps {
   src: string;
@@ -17,49 +17,12 @@ export function Tilt3DCard({ src, alt, onLoad, onError }: Tilt3DCardProps) {
   const [hovered, setHovered] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
-  const TILT_X = -8;   // miring ke kanan (rotateY positif = kanan naik)
-  const TILT_Y = 6;    // rotateX sedikit ke depan atas
-  const TILT_Z = -2;   // rotateZ dikit
-  const SHADOW_OFFSET_X = 18;
-  const SHADOW_OFFSET_Y = 28;
-
-  const tiltTransform = `
-    perspective(900px)
-    rotateY(${TILT_X}deg)
-    rotateX(${TILT_Y}deg)
-    rotateZ(${TILT_Z}deg)
-    scale3d(1.02, 1.02, 1.02)
-  `;
-  const flatTransform = `
-    perspective(900px)
-    rotateY(0deg)
-    rotateX(0deg)
-    rotateZ(0deg)
-    scale3d(1, 1, 1)
-  `;
-
-  const tiltShadow = `
-    ${SHADOW_OFFSET_X}px ${SHADOW_OFFSET_Y}px 60px rgba(0,0,0,0.55),
-    ${Math.round(SHADOW_OFFSET_X * 0.5)}px ${Math.round(SHADOW_OFFSET_Y * 0.5)}px 24px rgba(0,0,0,0.30),
-    4px 8px 8px rgba(0,0,0,0.22)
-  `;
-  const flatShadow = `
-    0px 8px 32px rgba(0,0,0,0.32),
-    0px 2px 8px rgba(0,0,0,0.18)
-  `;
-
   return (
     <>
       <style>{`
         @keyframes lgCardIn {
-          from {
-            opacity: 0;
-            transform: perspective(900px) rotateY(-24deg) rotateX(10deg) rotateZ(-4deg) translateY(24px);
-          }
-          to {
-            opacity: 1;
-            transform: ${tiltTransform};
-          }
+          from { opacity: 0; transform: translateY(20px) scale(0.96); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         @keyframes lgBlobDriftA {
@@ -83,7 +46,7 @@ export function Tilt3DCard({ src, alt, onLoad, onError }: Tilt3DCardProps) {
           100% { transform: translateX(140%) rotate(18deg); }
         }
         @keyframes lgRimGlow {
-          0%, 100% { opacity: 0.55; }
+          0%, 100% { opacity: 0.5; }
           50%       { opacity: 1; }
         }
 
@@ -93,19 +56,19 @@ export function Tilt3DCard({ src, alt, onLoad, onError }: Tilt3DCardProps) {
           justify-content: center;
           width: 100%;
           height: 100%;
-          padding: 22px 18px 8px;
+          padding: 18px 16px 10px;
           box-sizing: border-box;
         }
 
-        /* ── Glass shell — this is the liquid glass frame ── */
+        /* ── Glass shell — the liquid glass frame, square & rounded, no tilt ── */
         .lg-card {
           position: relative;
-          width: 168px;
-          height: 224px;
-          padding: 9px;
+          width: 206px;
+          height: 206px;
+          padding: 11px;
           box-sizing: border-box;
           display: flex;
-          border-radius: 30px;
+          border-radius: 40px;
           cursor: pointer;
           background:
             linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.03) 45%, rgba(255,255,255,0.07) 100%);
@@ -113,23 +76,27 @@ export function Tilt3DCard({ src, alt, onLoad, onError }: Tilt3DCardProps) {
           -webkit-backdrop-filter: blur(14px) saturate(160%);
           border: 1px solid rgba(255,255,255,0.22);
           box-shadow:
-            ${tiltShadow},
-            inset 0 1px 1px rgba(255,255,255,0.45),
-            inset 0 -10px 18px rgba(0,0,0,0.28);
-          transform: ${tiltTransform};
+            0 14px 36px rgba(0,0,0,0.38),
+            0 3px 10px rgba(0,0,0,0.24),
+            inset 0 1px 1px rgba(255,255,255,0.4),
+            inset 0 -10px 18px rgba(0,0,0,0.26);
+          transform: translateY(0) scale(1);
           transition:
-            transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-            box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-          animation: lgCardIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+            transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+            box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+            border-color 0.45s ease;
+          animation: lgCardIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
           will-change: transform, box-shadow;
           overflow: hidden;
         }
-        .lg-card.flat {
-          transform: ${flatTransform};
+        .lg-card.hovered {
+          transform: translateY(-7px) scale(1.045);
+          border-color: rgba(255,255,255,0.4);
           box-shadow:
-            ${flatShadow},
-            inset 0 1px 1px rgba(255,255,255,0.35),
-            inset 0 -8px 14px rgba(0,0,0,0.22);
+            0 28px 56px rgba(0,0,0,0.5),
+            0 8px 20px rgba(0,0,0,0.3),
+            inset 0 1px 1px rgba(255,255,255,0.55),
+            inset 0 -10px 20px rgba(0,0,0,0.3);
         }
 
         /* Liquid blobs — frosted, drifting colour, only ever visible in the glass rim
@@ -143,25 +110,29 @@ export function Tilt3DCard({ src, alt, onLoad, onError }: Tilt3DCardProps) {
         }
         .lg-blob {
           position: absolute;
-          filter: blur(16px);
+          filter: blur(18px);
           opacity: 0.85;
           will-change: transform;
+          transition: opacity 0.45s ease;
+        }
+        .lg-card.hovered .lg-blob {
+          opacity: 1;
         }
         .lg-blob-a {
-          width: 70%; height: 60%;
-          top: -14%; left: -10%;
+          width: 68%; height: 58%;
+          top: -12%; left: -10%;
           background: radial-gradient(circle, rgba(99,102,241,0.65), rgba(99,102,241,0) 72%);
           animation: lgBlobDriftA 9s ease-in-out infinite;
         }
         .lg-blob-b {
-          width: 60%; height: 55%;
-          bottom: -16%; right: -12%;
+          width: 58%; height: 52%;
+          bottom: -14%; right: -10%;
           background: radial-gradient(circle, rgba(56,189,248,0.55), rgba(56,189,248,0) 72%);
           animation: lgBlobDriftB 11s ease-in-out infinite;
         }
         .lg-blob-c {
-          width: 50%; height: 46%;
-          bottom: 6%; left: -14%;
+          width: 48%; height: 42%;
+          bottom: 8%; left: -12%;
           background: radial-gradient(circle, rgba(167,139,250,0.5), rgba(167,139,250,0) 72%);
           animation: lgBlobDriftC 13s ease-in-out infinite;
         }
@@ -172,7 +143,7 @@ export function Tilt3DCard({ src, alt, onLoad, onError }: Tilt3DCardProps) {
           position: absolute;
           top: -40%;
           left: 0;
-          width: 38%;
+          width: 36%;
           height: 180%;
           z-index: 1;
           background: linear-gradient(
@@ -186,6 +157,9 @@ export function Tilt3DCard({ src, alt, onLoad, onError }: Tilt3DCardProps) {
           animation: lgSheenSweep 5.5s ease-in-out infinite;
           pointer-events: none;
         }
+        .lg-card.hovered .lg-sheen {
+          animation-duration: 2.2s;
+        }
 
         /* Thin glowing seam right at the rim, pulses gently */
         .lg-card::before {
@@ -193,7 +167,7 @@ export function Tilt3DCard({ src, alt, onLoad, onError }: Tilt3DCardProps) {
           position: absolute;
           inset: 0;
           z-index: 1;
-          border-radius: 30px;
+          border-radius: 40px;
           border: 1px solid rgba(255,255,255,0.5);
           mask: linear-gradient(135deg, #000 0%, transparent 45%, transparent 60%, #000 100%);
           -webkit-mask: linear-gradient(135deg, #000 0%, transparent 45%, transparent 60%, #000 100%);
@@ -206,13 +180,17 @@ export function Tilt3DCard({ src, alt, onLoad, onError }: Tilt3DCardProps) {
           position: relative;
           z-index: 2;
           flex: 1;
-          border-radius: 22px;
+          border-radius: 32px;
           overflow: hidden;
           background: #0d0e14;
           box-shadow:
             0 1px 0 rgba(255,255,255,0.18) inset,
             0 3px 18px rgba(0,0,0,0.4);
           border: 1px solid rgba(255,255,255,0.10);
+          transition: border-color 0.45s ease;
+        }
+        .lg-card.hovered .lg-photo-inset {
+          border-color: rgba(255,255,255,0.22);
         }
 
         .lg-photo-inset img {
@@ -223,10 +201,13 @@ export function Tilt3DCard({ src, alt, onLoad, onError }: Tilt3DCardProps) {
           object-fit: cover;
           object-position: center top;
           display: block;
-          transition: opacity 0.4s ease;
+          transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .lg-photo-inset img.hidden {
           opacity: 0;
+        }
+        .lg-card.hovered .lg-photo-inset img {
+          transform: scale(1.05);
         }
 
         .lg-skeleton {
@@ -257,13 +238,16 @@ export function Tilt3DCard({ src, alt, onLoad, onError }: Tilt3DCardProps) {
           .lg-blob-a, .lg-blob-b, .lg-blob-c, .lg-sheen, .lg-card::before {
             animation: none !important;
           }
+          .lg-card, .lg-photo-inset img {
+            transition: none !important;
+          }
         }
       `}</style>
 
       <div className="lg-wrap">
         <div
           ref={cardRef}
-          className={`lg-card${hovered ? " flat" : ""}`}
+          className={`lg-card${hovered ? " hovered" : ""}`}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           onTouchStart={() => setHovered(true)}
