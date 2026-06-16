@@ -464,8 +464,8 @@ export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProp
         .lc-root {
           position: relative;
           width: 100%;
-          max-width: 300px;
-          height: 520px;
+          height: 100%;
+          min-height: 260px;
           margin: 0 auto;
           user-select: none;
           -webkit-user-select: none;
@@ -480,9 +480,6 @@ export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProp
           cursor: grab;
         }
         .lc-canvas:active { cursor: grabbing; }
-        @media (max-width: 680px) {
-          .lc-root { max-width: 240px; height: 440px; }
-        }
       `}</style>
 
       <div className="lc-root" ref={wrapRef}>

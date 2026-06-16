@@ -8,24 +8,17 @@
     }
 }
 
-/* ── Desktop: true sticky sidebar ── */
+/* ── Desktop: avatar is now a floating fixed panel (zero-footprint placeholder) ── */
 .avatar {
-    position: sticky;
-    top: 88px;
-    align-self: flex-start;
-    height: fit-content;
-    min-width: 200px;
-    max-width: 240px;
-    width: 220px;
+    /* Panel renders as position:fixed — no space taken in flow */
+    width: 0;
+    height: 0;
+    overflow: visible;
     flex-shrink: 0;
-    padding: 0 16px 24px 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 2;
+    padding: 0;
 }
 
-/* ── Mobile: non-sticky, full width, centered ── */
+/* ── Mobile: show as normal flow block, centered ── */
 @media (max-width: breakpoints.$s) {
     .textAlign {
         text-align: center;
@@ -36,15 +29,11 @@
     }
 
     .avatar {
-        position: relative;
-        top: auto;
+        /* On mobile AvatarFromCms renders itself as relative/block via its own media query */
         width: 100%;
-        min-width: unset;
-        max-width: 100%;
-        flex-shrink: unset;
-        padding: 0 0 16px 0;
         height: auto;
+        overflow: visible;
+        padding: 0 0 16px 0;
         align-self: center;
-        z-index: auto;
     }
 }
