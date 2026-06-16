@@ -17,6 +17,9 @@ import { Footer, Header, RouteGuard, Providers } from "@/components";
 import { baseURL, effects, fonts, style, dataStyle, home } from "@/resources";
 import { getSettings } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateMetadata() {
   const settings = await getSettings();
   const faviconTs = settings?.updated_at
@@ -46,13 +49,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Ambil timestamp untuk cache-busting — inject langsung ke <head> sebagai fallback
-  const settings = await getSettings();
-  const faviconTs = settings?.updated_at
-    ? new Date(settings.updated_at).getTime()
-    : Date.now();
-  const faviconUrl = `/api/favicon?v=${faviconTs}`;
-
   return (
     <Flex
       suppressHydrationWarning
@@ -67,10 +63,7 @@ export default async function RootLayout({
       )}
     >
       <head>
-        {/* Inject langsung ke <head> — paling reliable, tidak bergantung pada generateMetadata */}
-        <link rel="icon" type="image/png" href={faviconUrl} />
-        <link rel="shortcut icon" type="image/png" href={faviconUrl} />
-        <link rel="apple-touch-icon" href={`/api/icon?size=192&v=${faviconTs}`} />
+        {/* Favicon dihandle oleh generateMetadata() di atas — single source of truth */}
         <script
           id="theme-init"
           dangerouslySetInnerHTML={{
