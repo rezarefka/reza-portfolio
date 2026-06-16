@@ -8,19 +8,21 @@ import { Tilt3DCard } from "./Tilt3DCard";
 export function AvatarFromCms() {
   const [src, setSrc]             = useState<string>(person.avatar);
   const [cvUrl, setCvUrl]         = useState<string | null>(null);
+  const [cvUpdatedAt, setCvUpdatedAt] = useState<string | null>(null);
   const [cvClicked, setCvClicked] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
     supabase
       .from("settings")
-      .select("avatar, cv_file")
+      .select("avatar, cv_file, cv_updated_at")
       .order("updated_at", { ascending: false })
       .limit(1)
       .single()
       .then(({ data }) => {
         if (data?.avatar) setSrc(data.avatar.split("?")[0]);
         if (data?.cv_file) setCvUrl(data.cv_file);
+        if (data?.cv_updated_at) setCvUpdatedAt(data.cv_updated_at);
       });
   }, []);
 
@@ -174,6 +176,13 @@ export function AvatarFromCms() {
           stroke-dashoffset: 22;
           animation: avResumeCheck 0.35s ease forwards;
         }
+        .av-cv-updated {
+          font-size: 10.5px;
+          font-weight: 500;
+          color: var(--neutral-on-background-weak);
+          text-align: center;
+          margin-top: -2px;
+        }
 
         /* ── Mobile: handled by parent SCSS ─────────────── */
         @media (max-width: 768px) {
@@ -216,25 +225,32 @@ export function AvatarFromCms() {
 
           {/* Resume */}
           {cvUrl && (
-            <button
-              type="button"
-              className={`av-resume${cvClicked ? " av-resume-ok" : ""}`}
-              onClick={handleCvDownload}
-              aria-label="Unduh Resume"
-            >
-              {cvClicked ? (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline className="av-resume-check" points="20 6 9 17 4 12" />
-                </svg>
-              ) : (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7 10 12 15 17 10"/>
-                  <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
+            <>
+              <button
+                type="button"
+                className={`av-resume${cvClicked ? " av-resume-ok" : ""}`}
+                onClick={handleCvDownload}
+                aria-label="Unduh Resume"
+              >
+                {cvClicked ? (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline className="av-resume-check" points="20 6 9 17 4 12" />
+                  </svg>
+                ) : (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                )}
+                {cvClicked ? "Tersimpan!" : "Resume"}
+              </button>
+              {cvUpdatedAt && (
+                <span className="av-cv-updated">
+                  Update: {new Date(cvUpdatedAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                </span>
               )}
-              {cvClicked ? "Tersimpan!" : "Resume"}
-            </button>
+            </>
           )}
         </div>
       </div>

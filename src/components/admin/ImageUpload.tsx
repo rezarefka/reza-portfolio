@@ -22,6 +22,8 @@ interface ImageUploadProps {
   accept?: string;
   label?: string;
   autoSaveSettingsKey?: string;
+  /** Field tambahan yang ikut tersimpan bersamaan saat autoSaveSettingsKey aktif (mis. timestamp) */
+  autoSaveExtraFields?: Record<string, unknown>;
   /** Allow picking multiple files at once */
   multiple?: boolean;
   /** Callback when multiple files uploaded — returns all URLs */
@@ -85,6 +87,7 @@ export function ImageUpload({
   accept = "image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar",
   label,
   autoSaveSettingsKey,
+  autoSaveExtraFields,
   multiple = true,
   onMultipleChange,
   enableCompression = true,
@@ -219,7 +222,7 @@ export function ImageUpload({
           .order("updated_at", { ascending: false }).limit(1);
         if (rows?.length) {
           const { error: saveErr } = await supabase.from("settings")
-            .update({ [autoSaveSettingsKey]: urls[0], updated_at: new Date().toISOString() })
+            .update({ [autoSaveSettingsKey]: urls[0], ...autoSaveExtraFields, updated_at: new Date().toISOString() })
             .eq("id", rows[0].id);
           if (!saveErr) { setSaved(true); setTimeout(() => setSaved(false), 4000); }
         }

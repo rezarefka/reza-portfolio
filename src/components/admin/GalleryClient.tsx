@@ -88,9 +88,10 @@ export function GalleryClient({ initialPhotos }: GalleryClientProps) {
   const doDelete = async (photo: GalleryPhoto) => {
     setConfirmPhoto(null);
     const supabase = createClient();
+    const { error: rowErr } = await supabase.from("gallery_photos").delete().eq("id", photo.id);
+    if (rowErr) { alert(`Gagal menghapus: ${rowErr.message}`); return; }
     const path = photo.url.split("/media/")[1];
     if (path) await supabase.storage.from("media").remove([path]);
-    await supabase.from("gallery_photos").delete().eq("id", photo.id);
     setPhotos((prev) => prev.filter((p) => p.id !== photo.id));
     if (preview === photo.url) setPreview(null);
   };

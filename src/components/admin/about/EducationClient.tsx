@@ -115,7 +115,8 @@ export function EducationClient({ initialData }: Props) {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Hapus data pendidikan ini?")) return;
-    await createClient().from("about_education").delete().eq("id", id);
+    const { error } = await createClient().from("about_education").delete().eq("id", id);
+    if (error) { alert(`Gagal menghapus: ${error.message}`); return; }
     setItems((p) => p.filter((x) => x.id !== id));
     if (editing?.id === id) setEditing(null);
   };

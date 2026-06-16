@@ -72,7 +72,8 @@ export function CertificateForm({ certificate }: CertificateFormProps) {
     setConfirmOpen(false);
     setDeleting(true);
     const supabase = createClient();
-    await supabase.from("certificates").delete().eq("id", certificate.id);
+    const { error: delErr } = await supabase.from("certificates").delete().eq("id", certificate.id);
+    if (delErr) { setError(`Gagal menghapus: ${delErr.message}`); setDeleting(false); return; }
     router.push("/reza-control/certificates");
     router.refresh();
   };

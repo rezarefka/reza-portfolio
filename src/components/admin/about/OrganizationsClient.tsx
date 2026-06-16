@@ -44,7 +44,8 @@ export function OrganizationsClient({ initialData }: Props) {
 
   const doDeleteOrg = async (id: string) => {
     setConfirmDeleteId(null);
-    await createClient().from("about_organizations").delete().eq("id",id);
+    const { error } = await createClient().from("about_organizations").delete().eq("id",id);
+    if (error) { setMsg(`Gagal menghapus: ${error.message}`); return; }
     setItems((p)=>p.filter((x)=>x.id!==id));
     if (editing?.id===id) setEditing(null);
   };
@@ -112,6 +113,7 @@ export function OrganizationsClient({ initialData }: Props) {
         </Card>
       ))}
     </Column>
+      {msg && <Text variant="body-default-s" onBackground="danger-strong">{msg}</Text>}
       <ConfirmModal
         open={!!confirmDeleteId}
         title="Hapus Organisasi?"

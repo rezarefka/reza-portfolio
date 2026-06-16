@@ -42,7 +42,8 @@ export function SkillsClient({ initialData }: Props) {
 
   const doDeleteSkill = async (id: string) => {
     setConfirmDeleteId(null);
-    await createClient().from("about_skills").delete().eq("id",id);
+    const { error } = await createClient().from("about_skills").delete().eq("id",id);
+    if (error) { setMsg(`Gagal menghapus: ${error.message}`); return; }
     setItems((p)=>p.filter((x)=>x.id!==id));
     if (editing?.id===id) setEditing(null);
   };
@@ -136,6 +137,7 @@ export function SkillsClient({ initialData }: Props) {
         </Row>
       )}
     </Column>
+      {msg && <Text variant="body-default-s" onBackground="danger-strong">{msg}</Text>}
       <ConfirmModal
         open={!!confirmDeleteId}
         title="Hapus Skill?"

@@ -78,7 +78,8 @@ export function BlogForm({ blog }: BlogFormProps) {
     setConfirmOpen(false);
     setDeleting(true);
     const supabase = createClient();
-    await supabase.from("blogs").delete().eq("id", blog.id);
+    const { error: delErr } = await supabase.from("blogs").delete().eq("id", blog.id);
+    if (delErr) { setError(`Gagal menghapus: ${delErr.message}`); setDeleting(false); return; }
     router.push("/reza-control/blogs");
     router.refresh();
   };

@@ -119,6 +119,7 @@ export interface SiteSettings {
   stats_total_visitors: number;
   stats_years_experience: number;
   cv_file: string | null;
+  cv_updated_at: string | null;
   // Work page customization
   work_title_id: string | null;
   work_title_en: string | null;

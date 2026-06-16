@@ -76,8 +76,9 @@ export function MediaLibraryClient({ initialMedia }: MediaLibraryClientProps) {
   const doDelete = async (item: Media) => {
     setConfirmItem(null);
     const supabase = createClient();
+    const { error: delErr } = await supabase.from("media").delete().eq("id", item.id);
+    if (delErr) { alert(`Gagal menghapus: ${delErr.message}`); return; }
     await supabase.storage.from(item.bucket).remove([item.path]);
-    await supabase.from("media").delete().eq("id", item.id);
     setMedia((prev) => prev.filter((m) => m.id !== item.id));
     setSelected((prev) => { const s = new Set(prev); s.delete(item.id); return s; });
   };
@@ -86,12 +87,17 @@ export function MediaLibraryClient({ initialMedia }: MediaLibraryClientProps) {
     setConfirmBulk(false);
     const supabase = createClient();
     const toDelete = media.filter((m) => selected.has(m.id));
+    const succeededIds = new Set<string>();
+    const failedNames: string[] = [];
     for (const item of toDelete) {
+      const { error: delErr } = await supabase.from("media").delete().eq("id", item.id);
+      if (delErr) { failedNames.push(item.name); continue; }
       await supabase.storage.from(item.bucket).remove([item.path]);
-      await supabase.from("media").delete().eq("id", item.id);
+      succeededIds.add(item.id);
     }
-    setMedia((prev) => prev.filter((m) => !selected.has(m.id)));
+    setMedia((prev) => prev.filter((m) => !succeededIds.has(m.id)));
     setSelected(new Set());
+    if (failedNames.length) alert(`Gagal menghapus ${failedNames.length} file: ${failedNames.join(", ")}`);
   };
 
   const isImage = (type: string) => type.startsWith("image/");

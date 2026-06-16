@@ -47,7 +47,8 @@ export function ExperienceClient({ initialData }: Props) {
 
   const doDeleteExp = async (id: string) => {
     setConfirmDeleteId(null);
-    await createClient().from("about_experiences").delete().eq("id", id);
+    const { error } = await createClient().from("about_experiences").delete().eq("id", id);
+    if (error) { setMsg(`Gagal menghapus: ${error.message}`); return; }
     setItems((p) => p.filter((x) => x.id !== id));
     if (editing?.id === id) setEditing(null);
   };
@@ -107,6 +108,7 @@ export function ExperienceClient({ initialData }: Props) {
         </Card>
       ))}
     </Column>
+      {msg && <Text variant="body-default-s" onBackground="danger-strong">{msg}</Text>}
       <ConfirmModal
         open={!!confirmDeleteId}
         title="Hapus Pengalaman?"

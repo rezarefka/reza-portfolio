@@ -25,6 +25,7 @@ import {
   getAboutExperiences,
   getAboutSkills,
   getAboutOrganizations,
+  getSettings,
 } from "@/lib/db";
 import { format } from "date-fns";
 function safeDate(d: string | null | undefined, fmt: string, opts?: Parameters<typeof format>[2]): string {
@@ -51,13 +52,16 @@ export async function generateMetadata() {
 }
 
 export default async function About() {
-  const [certificates, educations, experiences, skills, organizations] = await Promise.all([
+  const [certificates, educations, experiences, skills, organizations, settings] = await Promise.all([
     getCertificates().catch(() => []),
     getAboutEducation().catch(() => []),
     getAboutExperiences().catch(() => []),
     getAboutSkills().catch(() => []),
     getAboutOrganizations().catch(() => []),
+    getSettings().catch(() => null),
   ]);
+
+  const roleTagline = settings?.tagline_id?.trim() || person.role;
 
   const structure = [
     { title: "Perkenalan",       display: about.intro.display,     items: [], id: "perkenalan" },
@@ -627,7 +631,7 @@ export default async function About() {
               <Column marginBottom="20">
                 <Heading className={styles.textAlign} variant="display-strong-xl">{person.name}</Heading>
                 <Text className={styles.textAlign} variant="display-default-xs" onBackground="neutral-weak">
-                  {person.role}
+                  {roleTagline}
                 </Text>
               </Column>
 

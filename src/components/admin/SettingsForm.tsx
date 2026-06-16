@@ -41,6 +41,7 @@ const defaultSettings: Omit<SiteSettings, "id" | "updated_at"> = {
   stats_total_visitors: 0,
   stats_years_experience: 0,
   cv_file: null,
+  cv_updated_at: null,
   // Work page
   work_title_id: "Proyek & Kreasi",
   work_title_en: "Projects & Creations",
@@ -114,9 +115,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
       {/* Website Info */}
       {section("Informasi Website",
         <Row gap="m" s={{ direction: "column" }}>
-          {field("Nama Website", "website_name", "Reza Refka Kurniawan")}
-          {field("Tagline (ID)", "tagline_id", "Full Stack Developer...")}
-          {field("Tagline (EN)", "tagline_en", "Full Stack Developer...")}
+          {field("Nama Lengkap", "website_name", "Reza Refka Kurniawan")}
+          {field("Tagline / Jabatan (ID)", "tagline_id", "Full Stack Developer & Data Engineer")}
+          {field("Tagline / Role (EN)", "tagline_en", "Full Stack Developer & Data Engineer")}
         </Row>
       )}
 
@@ -214,11 +215,20 @@ export function SettingsForm({ settings }: SettingsFormProps) {
           <ImageUpload
             bucket="documents"
             value={form.cv_file ?? ""}
-            onChange={(url) => set("cv_file", url)}
+            onChange={(url) => {
+              set("cv_file", url);
+              set("cv_updated_at", new Date().toISOString());
+            }}
             accept=".pdf,.doc,.docx"
             multiple={false}
             autoSaveSettingsKey="cv_file"
+            autoSaveExtraFields={{ cv_updated_at: new Date().toISOString() }}
           />
+          {form.cv_file && form.cv_updated_at && (
+            <Text variant="body-default-xs" onBackground="neutral-weak">
+              Terakhir diperbarui: {new Date(form.cv_updated_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+            </Text>
+          )}
         </Column>
       )}
 

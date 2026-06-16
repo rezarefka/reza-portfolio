@@ -698,7 +698,8 @@ export function ProjectForm({ project }: ProjectFormProps) {
       return;
     setDeleting(true);
     const supabase = createClient();
-    await supabase.from("projects").delete().eq("id", project.id);
+    const { error: delErr } = await supabase.from("projects").delete().eq("id", project.id);
+    if (delErr) { setError(`Gagal menghapus: ${delErr.message}`); setDeleting(false); return; }
     router.push("/reza-control/projects");
     router.refresh();
   };
