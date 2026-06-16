@@ -47,10 +47,10 @@ const social: Social = [
 
 const home: Home = {
   path: "/",
-  image: "/images/og/home.jpg",
+  image: `/api/og/generate?title=${encodeURIComponent("Reza Refka Kurniawan – Full Stack Developer & Data Engineer")}`,
   label: "Home",
-  title: `${person.name} – Portfolio`,
-  description: `Portfolio Reza Refka Kurniawan – Full Stack Developer & Data Engineer dari Makassar, Indonesia.`,
+  title: `Reza Refka Kurniawan – Full Stack Developer & Data Engineer`,
+  description: `Portfolio Reza Refka Kurniawan – Full Stack Developer & Data Engineer dari Makassar, Indonesia. Spesialis Next.js, Supabase, React, TypeScript, dan Data Engineering.`,
   headline: <>Membangun solusi digital yang bermakna</>,
   featured: {
     display: false,
@@ -68,8 +68,8 @@ const home: Home = {
 const about: About = {
   path: "/about",
   label: "About",
-  title: `About – ${person.name}`,
-  description: `Kenali ${person.name}, ${person.role} dari Makassar, Indonesia`,
+  title: `Tentang Reza Refka Kurniawan – Full Stack Developer dari Makassar`,
+  description: `Kenali Reza Refka Kurniawan, Full Stack Developer & Data Engineer dari Makassar. Berpengalaman di Next.js, React, Supabase, Python, dan Machine Learning.`,
   tableOfContent: {
     display: true,
     subItems: false,
@@ -209,22 +209,22 @@ const about: About = {
 const blog: Blog = {
   path: "/blog",
   label: "Blog",
-  title: "Tulisan tentang teknologi dan pengembangan",
-  description: `Perspektif, pengalaman, dan insight dari ${person.name} seputar dunia pengembangan perangkat lunak.`,
+  title: "Blog – Reza Refka Kurniawan | Teknologi & Web Development",
+  description: `Artikel, tutorial, dan insight dari Reza Refka Kurniawan seputar web development, Next.js, Supabase, data engineering, dan teknologi terkini.`,
 };
 
 const work: Work = {
   path: "/work",
   label: "Work",
-  title: `Proyek – ${person.name}`,
-  description: `Kumpulan karya dan proyek yang telah dikerjakan oleh ${person.name}.`,
+  title: `Proyek & Portofolio – Reza Refka Kurniawan`,
+  description: `Kumpulan proyek dan karya Reza Refka Kurniawan: aplikasi web, sistem data, tools developer, dan solusi digital menggunakan Next.js, React, dan Supabase.`,
 };
 
 const gallery: Gallery = {
   path: "/gallery",
   label: "Gallery",
-  title: `Galeri Foto – ${person.name}`,
-  description: `Koleksi momen dan dokumentasi visual oleh ${person.name}`,
+  title: `Galeri – Reza Refka Kurniawan`,
+  description: `Koleksi momen, dokumentasi, dan karya visual oleh Reza Refka Kurniawan dari Makassar, Indonesia.`,
   images: [
     { src: "/images/gallery/horizontal-1.jpg", alt: "image", orientation: "horizontal" },
     { src: "/images/gallery/vertical-1.jpg", alt: "image", orientation: "vertical" },

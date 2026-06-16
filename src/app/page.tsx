@@ -23,7 +23,7 @@ export async function generateMetadata() {
     description: home.description,
     baseURL: baseURL,
     path: home.path,
-    image: home.image,
+    image: `/api/og/generate?title=${encodeURIComponent(home.title)}`,
   });
 }
 
@@ -39,19 +39,44 @@ export default async function Home() {
     "@type": "Person",
     "@id": `${baseURL}/#person`,
     name: person.name,
+    givenName: "Reza",
+    familyName: "Refka Kurniawan",
     jobTitle: person.role,
+    description: "Full Stack Developer & Data Engineer dari Makassar, Indonesia. Spesialis Next.js, React, TypeScript, Supabase, dan Data Engineering.",
     url: baseURL,
-    image: person.avatar,
-    email: `mailto:${person.email}`,
+    image: {
+      "@type": "ImageObject",
+      url: person.avatar,
+      width: 400,
+      height: 400,
+    },
+    email: person.email,
     address: {
       "@type": "PostalAddress",
       addressLocality: "Makassar",
+      addressRegion: "Sulawesi Selatan",
       addressCountry: "ID",
     },
+    alumniOf: {
+      "@type": "CollegeOrUniversity",
+      name: "Universitas Teknologi AKBA Makassar",
+    },
+    knowsAbout: [
+      "Web Development",
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Supabase",
+      "Data Engineering",
+      "Machine Learning",
+      "Graphic Design",
+      "Videography",
+    ],
     sameAs: [
       "https://github.com/rezarefka",
       "https://www.linkedin.com/in/rezarefka",
       "https://www.instagram.com/rezarefka",
+      "https://www.threads.com/@rezarefka",
     ],
   };
 

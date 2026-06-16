@@ -16,7 +16,7 @@ import { home } from "./index";
 // ─── BASE URL ─────────────────────────────────────────────────────────────────
 // Replace with your deployed domain
 const baseURL: string =
-  process.env.NEXT_PUBLIC_BASE_URL || "https://rezarefka.com";
+  process.env.NEXT_PUBLIC_BASE_URL || "https://rezarefka.web.id";
 
 // ─── ROUTES ───────────────────────────────────────────────────────────────────
 const routes: RoutesConfig = {
