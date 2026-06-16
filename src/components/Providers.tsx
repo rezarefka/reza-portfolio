@@ -21,6 +21,7 @@ import { style, dataStyle } from "../resources";
 import { iconLibrary } from "../resources/icons";
 import { LangProvider } from "@/lib/lang-context";
 import { AnalyticsTracker } from "./AnalyticsTracker";
+import { GoogleAnalytics } from "./GoogleAnalytics";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -51,6 +52,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <IconProvider icons={iconLibrary}>
               <LangProvider>
                 <AnalyticsTracker />
+                <GoogleAnalytics />
                 {children}
               </LangProvider>
             </IconProvider>
