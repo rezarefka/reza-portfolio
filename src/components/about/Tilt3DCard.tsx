@@ -18,43 +18,47 @@ interface Node {
   pinned?: boolean;
 }
 
-const SEGMENTS  = 16;
-const GRAVITY   = 0.48;
-const DAMPING   = 0.982;
-const STIFFNESS = 0.85;
-const ROPE_LEN  = 130; // px
+const SEGMENTS  = 18;
+const GRAVITY   = 0.45;
+const DAMPING   = 0.978;
+const STIFFNESS = 0.82;
 
 export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProps) {
   const rootRef   = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const cardRef   = useRef<HTMLDivElement>(null);
+  const cardWrapRef = useRef<HTMLDivElement>(null);
   const rafRef    = useRef<number>(0);
   const nodesRef  = useRef<Node[]>([]);
-  const dragRef   = useRef<{ active: boolean; nodeIdx: number; fromCard: boolean }>({
-    active: false, nodeIdx: -1, fromCard: false,
-  });
+  const dragRef   = useRef<{ active: boolean; nodeIdx: number }>({ active: false, nodeIdx: -1 });
   const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
   const tiltRef = useRef({ rx: 0, ry: 0 });
 
-  // ── Inisialisasi nodes ────────────────────────────────────────────────────
+  // Ukuran dinamis
+  const sizeRef = useRef({ w: 220, canvasH: 150, cardH: 280 });
+
+  const getSegLen = () => sizeRef.current.canvasH / SEGMENTS;
+
+  // ── Init nodes — posisi awal menggantung lurus ──────────────────────────
   const initNodes = useCallback(() => {
     const root = rootRef.current;
     if (!root) return;
-    const cx = root.offsetWidth / 2;
-    const segLen = ROPE_LEN / SEGMENTS;
+    const w = root.offsetWidth;
+    const cx = w / 2;
+    const segLen = getSegLen();
     const nodes: Node[] = [];
     for (let i = 0; i <= SEGMENTS; i++) {
       const y = 12 + i * segLen;
       nodes.push({ x: cx, y, px: cx, py: y, pinned: i === 0 });
     }
     nodesRef.current = nodes;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Simulasi Verlet ───────────────────────────────────────────────────────
+  // ── Verlet simulation ────────────────────────────────────────────────────
   const simulate = useCallback(() => {
     const nodes = nodesRef.current;
     if (!nodes.length) return;
-    const segLen = ROPE_LEN / SEGMENTS;
+    const segLen = getSegLen();
 
     for (const n of nodes) {
       if (n.pinned) continue;
@@ -63,8 +67,7 @@ export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProp
       n.px = n.x; n.py = n.y;
       n.x += vx; n.y += vy + GRAVITY;
     }
-
-    for (let iter = 0; iter < 18; iter++) {
+    for (let iter = 0; iter < 20; iter++) {
       for (let i = 0; i < nodes.length - 1; i++) {
         const a = nodes[i], b = nodes[i + 1];
         const dx = b.x - a.x, dy = b.y - a.y;
@@ -74,13 +77,15 @@ export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProp
         if (!b.pinned) { b.x -= dx * diff; b.y -= dy * diff; }
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Draw ─────────────────────────────────────────────────────────────────
+  // ── Draw canvas ──────────────────────────────────────────────────────────
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     const root   = rootRef.current;
-    if (!canvas || !root) return;
+    const cardWrap = cardWrapRef.current;
+    if (!canvas || !root || !cardWrap) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const nodes = nodesRef.current;
@@ -89,78 +94,74 @@ export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProp
     const dpr = window.devicePixelRatio || 1;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Ambil warna tema dari CSS var
-    const style = getComputedStyle(root);
-    const brandColor = style.getPropertyValue("--brand-solid-strong").trim() || "#6366f1";
-    const accentColor = style.getPropertyValue("--accent-solid-strong").trim() || "#4f46e5";
+    // Baca CSS var warna tema
+    const st = getComputedStyle(root);
+    const c1 = st.getPropertyValue("--brand-solid-strong").trim() || "#6366f1";
+    const c2 = st.getPropertyValue("--accent-solid-strong").trim() || "#4f46e5";
 
-    // ── Tali utama ─────────────────────────────────────────────────────────
+    // ── Shadow tali ──
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(nodes[0].x * dpr, nodes[0].y * dpr);
-    for (let i = 1; i < nodes.length; i++) {
-      ctx.lineTo(nodes[i].x * dpr, nodes[i].y * dpr);
-    }
+    for (let i = 1; i < nodes.length; i++) ctx.lineTo(nodes[i].x * dpr, nodes[i].y * dpr);
+    ctx.strokeStyle = "rgba(0,0,0,0.35)";
+    ctx.lineWidth = 7 * dpr;
+    ctx.lineCap = ctx.lineJoin = "round";
+    ctx.filter = `blur(${2 * dpr}px)`;
+    ctx.stroke();
+    ctx.filter = "none";
+    ctx.restore();
 
-    const tailNode = nodes[nodes.length - 1];
-    const grad = ctx.createLinearGradient(
-      nodes[0].x * dpr, nodes[0].y * dpr,
-      tailNode.x * dpr, tailNode.y * dpr
-    );
-    grad.addColorStop(0, brandColor);
-    grad.addColorStop(0.5, accentColor);
-    grad.addColorStop(1, brandColor + "99");
-
+    // ── Tali utama (gradient tema) ──
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(nodes[0].x * dpr, nodes[0].y * dpr);
+    for (let i = 1; i < nodes.length; i++) ctx.lineTo(nodes[i].x * dpr, nodes[i].y * dpr);
+    const tail = nodes[nodes.length - 1];
+    const grad = ctx.createLinearGradient(nodes[0].x * dpr, nodes[0].y * dpr, tail.x * dpr, tail.y * dpr);
+    grad.addColorStop(0, c1);
+    grad.addColorStop(0.5, c2);
+    grad.addColorStop(1, c1 + "bb");
     ctx.strokeStyle = grad;
-    ctx.lineWidth   = 5 * dpr;
+    ctx.lineWidth = 5 * dpr;
     ctx.lineCap = ctx.lineJoin = "round";
     ctx.stroke();
 
-    // Highlight strip
+    // ── Highlight strip tali ──
     ctx.beginPath();
     ctx.moveTo(nodes[0].x * dpr, nodes[0].y * dpr);
-    for (let i = 1; i < nodes.length; i++) {
-      ctx.lineTo(nodes[i].x * dpr, nodes[i].y * dpr);
-    }
-    ctx.strokeStyle = "rgba(255,255,255,0.20)";
-    ctx.lineWidth   = 1.8 * dpr;
+    for (let i = 1; i < nodes.length; i++) ctx.lineTo(nodes[i].x * dpr, nodes[i].y * dpr);
+    ctx.strokeStyle = "rgba(255,255,255,0.22)";
+    ctx.lineWidth = 1.5 * dpr;
     ctx.stroke();
     ctx.restore();
 
-    // ── Metal clip ring di anchor atas ──────────────────────────────────────
+    // ── Metal clip ring anchor atas ──
     const n0 = nodes[0];
     ctx.save();
-    const ringGrad = ctx.createRadialGradient(
-      (n0.x - 2) * dpr, (n0.y - 2) * dpr, 1 * dpr,
-      n0.x * dpr, n0.y * dpr, 8 * dpr
-    );
-    ringGrad.addColorStop(0, "#d1d5db");
-    ringGrad.addColorStop(1, "#6b7280");
+    const rg = ctx.createRadialGradient((n0.x-2)*dpr, (n0.y-2)*dpr, 1*dpr, n0.x*dpr, n0.y*dpr, 8*dpr);
+    rg.addColorStop(0, "#e5e7eb");
+    rg.addColorStop(1, "#4b5563");
     ctx.beginPath();
-    ctx.arc(n0.x * dpr, n0.y * dpr, 7 * dpr, 0, Math.PI * 2);
-    ctx.fillStyle = ringGrad;
+    ctx.arc(n0.x*dpr, n0.y*dpr, 8*dpr, 0, Math.PI*2);
+    ctx.fillStyle = rg;
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(n0.x * dpr, n0.y * dpr, 4.5 * dpr, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
+    ctx.arc(n0.x*dpr, n0.y*dpr, 5*dpr, 0, Math.PI*2);
+    ctx.fillStyle = "rgba(0,0,0,0.7)";
     ctx.fill();
     ctx.restore();
 
-    // ── Tilt kartu ikut arah tali ───────────────────────────────────────────
-    const tail  = nodes[nodes.length - 1];
-    const head  = nodes[nodes.length - 4];
-    const dx    = tail.x - head.x;
-    const dy    = tail.y - head.y;
+    // ── Tilt kartu ikut arah tali ujung ──
+    const headN = nodes[nodes.length - 4];
+    const dx = tail.x - headN.x;
+    const dy = tail.y - headN.y;
     const angle = Math.atan2(dy, dx) * (180 / Math.PI) - 90;
-    const norm  = angle / 55;
-
-    // Lerp halus
+    const norm = Math.max(-1, Math.min(1, angle / 50));
     const curr = tiltRef.current;
-    const targetRx = norm * -6;
-    const targetRy = norm * 18;
     const lerped = {
-      rx: curr.rx + (targetRx - curr.rx) * 0.12,
-      ry: curr.ry + (targetRy - curr.ry) * 0.12,
+      rx: curr.rx + (norm * -5 - curr.rx) * 0.10,
+      ry: curr.ry + (norm * 16 - curr.ry) * 0.10,
     };
     tiltRef.current = lerped;
     setTilt({ ...lerped });
@@ -173,14 +174,15 @@ export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProp
     rafRef.current = requestAnimationFrame(loop);
   }, [simulate, draw]);
 
-  // ── Canvas size ───────────────────────────────────────────────────────────
+  // ── Resize canvas ─────────────────────────────────────────────────────────
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     const root   = rootRef.current;
-    if (!canvas || !root) return;
+    const cardWrap = cardWrapRef.current;
+    if (!canvas || !root || !cardWrap) return;
     const dpr = window.devicePixelRatio || 1;
     const w   = root.offsetWidth;
-    const h   = 160;
+    const h   = sizeRef.current.canvasH;
     canvas.width  = w * dpr;
     canvas.height = h * dpr;
     canvas.style.width  = `${w}px`;
@@ -196,89 +198,98 @@ export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProp
     initNodes();
     resizeCanvas();
     rafRef.current = requestAnimationFrame(loop);
-    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("resize", () => { resizeCanvas(); });
     return () => {
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", resizeCanvas);
     };
   }, [initNodes, resizeCanvas, loop]);
 
-  // ── Pointer helpers ───────────────────────────────────────────────────────
-  const getPosOnCanvas = (clientX: number, clientY: number) => {
+  // ── Pointer utils ─────────────────────────────────────────────────────────
+  const toCanvasPos = (clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
-    const rect = canvas.getBoundingClientRect();
-    return { x: clientX - rect.left, y: clientY - rect.top };
+    const r = canvas.getBoundingClientRect();
+    return { x: clientX - r.left, y: clientY - r.top };
   };
 
-  const getPosOnCardAsRope = (clientX: number, clientY: number) => {
-    // Perlakukan kartu sebagai posisi ujung tali (node terakhir)
+  // Konversi posisi di kartu ke koordinat canvas
+  // Canvas height = 150px, kartu dimulai persis setelah canvas
+  // Tapi node terakhir berada di y ≈ canvasH (ujung canvas = atas kartu)
+  const toCardAsCanvasPos = (clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
-    if (!canvas) return { x: 0, y: 0 };
-    const rect = canvas.getBoundingClientRect();
-    // offset ke bawah canvas = posisi kartu
-    const cardEl = cardRef.current;
-    if (!cardEl) return { x: 0, y: 0 };
-    const cardRect = cardEl.getBoundingClientRect();
+    const cardWrap = cardWrapRef.current;
+    if (!canvas || !cardWrap) return { x: 0, y: 0 };
+    const cr = canvas.getBoundingClientRect();
+    const wr = cardWrap.getBoundingClientRect();
+    // offset dari atas canvas
     return {
-      x: clientX - rect.left,
-      y: (cardRect.top - rect.top) + (clientY - cardRect.top),
+      x: clientX - cr.left,
+      y: (wr.top - cr.top) + (clientY - wr.top),
     };
   };
 
-  const findClosestNode = (px: number, py: number, radius = 40) => {
+  const findClosestNode = (px: number, py: number, radius = 48) => {
     const nodes = nodesRef.current;
-    let best = -1, bestDist = radius * radius;
+    let best = -1, bestD = radius * radius;
     for (let i = 1; i < nodes.length; i++) {
       const d = (nodes[i].x - px) ** 2 + (nodes[i].y - py) ** 2;
-      if (d < bestDist) { bestDist = d; best = i; }
+      if (d < bestD) { bestD = d; best = i; }
     }
     return best;
   };
 
-  const setDragNode = (x: number, y: number) => {
-    const idx = findClosestNode(x, y, 50);
-    if (idx !== -1) {
-      dragRef.current = { active: true, nodeIdx: idx, fromCard: false };
-      return true;
-    }
-    return false;
-  };
-
-  const moveDragNode = (x: number, y: number) => {
+  const applyDrag = (x: number, y: number) => {
     if (!dragRef.current.active) return;
     const n = nodesRef.current[dragRef.current.nodeIdx];
     if (n) { n.x = x; n.y = y; n.px = x; n.py = y; }
   };
 
-  const stopDrag = () => {
-    dragRef.current.active = false;
+  const stopDrag = () => { dragRef.current.active = false; };
+
+  // Canvas mouse
+  const onCMD = (e: React.MouseEvent) => {
+    const p = toCanvasPos(e.clientX, e.clientY);
+    const idx = findClosestNode(p.x, p.y);
+    if (idx !== -1) dragRef.current = { active: true, nodeIdx: idx };
+  };
+  const onCMM = (e: React.MouseEvent) => { const p = toCanvasPos(e.clientX, e.clientY); applyDrag(p.x, p.y); };
+
+  // Canvas touch
+  const onCTD = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    const p = toCanvasPos(t.clientX, t.clientY);
+    const idx = findClosestNode(p.x, p.y);
+    if (idx !== -1) dragRef.current = { active: true, nodeIdx: idx };
+  };
+  const onCTM = (e: React.TouchEvent) => {
+    if (!dragRef.current.active) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    const p = toCanvasPos(t.clientX, t.clientY);
+    applyDrag(p.x, p.y);
   };
 
-  // Canvas events
-  const onCanvasDown  = (e: React.MouseEvent) => { const p = getPosOnCanvas(e.clientX, e.clientY); setDragNode(p.x, p.y); };
-  const onCanvasMove  = (e: React.MouseEvent) => { const p = getPosOnCanvas(e.clientX, e.clientY); moveDragNode(p.x, p.y); };
-  const onCanvasTDown = (e: React.TouchEvent) => { const t = e.touches[0]; const p = getPosOnCanvas(t.clientX, t.clientY); setDragNode(p.x, p.y); };
-  const onCanvasTMove = (e: React.TouchEvent) => { if (!dragRef.current.active) return; e.preventDefault(); const t = e.touches[0]; const p = getPosOnCanvas(t.clientX, t.clientY); moveDragNode(p.x, p.y); };
-
-  // Card drag — tarik kartu → node terakhir ikut
-  const onCardDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
+  // Card drag — tarik kartu → node terakhir ikut cursor
+  const startCardDrag = (clientX: number, clientY: number) => {
     const nodes = nodesRef.current;
     const lastIdx = nodes.length - 1;
-    dragRef.current = { active: true, nodeIdx: lastIdx, fromCard: true };
+    dragRef.current = { active: true, nodeIdx: lastIdx };
+    // Snap node terakhir ke posisi cursor saat ini
+    const p = toCardAsCanvasPos(clientX, clientY);
+    const n = nodes[lastIdx];
+    if (n) { n.x = p.x; n.y = p.y; n.px = p.x; n.py = p.y; }
+  };
 
+  const onCardMD = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    startCardDrag(e.clientX, e.clientY);
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-
     const onMove = (ev: MouseEvent) => {
       if (!dragRef.current.active) return;
-      const x = ev.clientX - rect.left;
-      const y = ev.clientY - rect.top;
-      // Drag semua node belakang bersamaan (biar terasa menarik kartu)
-      const n = nodesRef.current[lastIdx];
-      if (n) { n.x = x; n.y = y; n.px = x; n.py = y; }
+      const p = toCardAsCanvasPos(ev.clientX, ev.clientY);
+      applyDrag(p.x, p.y);
     };
     const onUp = () => {
       stopDrag();
@@ -289,24 +300,16 @@ export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProp
     window.addEventListener("mouseup", onUp);
   };
 
-  const onCardTouchDown = (e: React.TouchEvent<HTMLDivElement>) => {
+  const onCardTD = (e: React.TouchEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    const nodes = nodesRef.current;
-    const lastIdx = nodes.length - 1;
-    dragRef.current = { active: true, nodeIdx: lastIdx, fromCard: true };
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-
+    const t = e.touches[0];
+    startCardDrag(t.clientX, t.clientY);
     const onMove = (ev: TouchEvent) => {
       if (!dragRef.current.active) return;
       ev.preventDefault();
-      const t = ev.touches[0];
-      const x = t.clientX - rect.left;
-      const y = t.clientY - rect.top;
-      const n = nodesRef.current[lastIdx];
-      if (n) { n.x = x; n.y = y; n.px = x; n.py = y; }
+      const tt = ev.touches[0];
+      const p = toCardAsCanvasPos(tt.clientX, tt.clientY);
+      applyDrag(p.x, p.y);
     };
     const onEnd = () => {
       stopDrag();
@@ -317,27 +320,25 @@ export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProp
     window.addEventListener("touchend", onEnd);
   };
 
-  // Card hover tilt
+  // Card hover tilt (saat tidak di-drag)
   const onCardHover = (e: React.MouseEvent<HTMLDivElement>) => {
     if (dragRef.current.active) return;
-    const card = cardRef.current;
-    if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top)  / rect.height;
-    const rx = (0.5 - y) * 24;
-    const ry = (x - 0.5) * 24;
+    const el = e.currentTarget;
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top)  / r.height;
+    const rx = (0.5 - y) * 22;
+    const ry = (x - 0.5) * 22;
     tiltRef.current = { rx, ry };
     setTilt({ rx, ry });
-
-    const glare = card.querySelector(".lc-glare") as HTMLElement | null;
+    const glare = el.querySelector(".lc-glare") as HTMLElement | null;
     if (glare) {
-      glare.style.background = `radial-gradient(circle at ${x*100}% ${y*100}%, rgba(255,255,255,0.28) 0%, transparent 65%)`;
+      glare.style.background = `radial-gradient(circle at ${x*100}% ${y*100}%, rgba(255,255,255,0.25) 0%, transparent 65%)`;
       glare.style.opacity = "1";
     }
   };
-  const onCardHoverLeave = () => {
-    const glare = cardRef.current?.querySelector(".lc-glare") as HTMLElement | null;
+  const onCardHoverLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    const glare = e.currentTarget.querySelector(".lc-glare") as HTMLElement | null;
     if (glare) glare.style.opacity = "0";
   };
 
@@ -345,33 +346,38 @@ export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProp
     <>
       <style>{`
         @keyframes lcFloat {
-          0%,100% { filter: drop-shadow(0 26px 16px rgba(0,0,0,0.50)); }
-          50%      { filter: drop-shadow(0 14px 8px  rgba(0,0,0,0.30)); }
+          0%,100% { filter: drop-shadow(0 28px 18px rgba(0,0,0,0.55)) drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+          50%      { filter: drop-shadow(0 14px 10px rgba(0,0,0,0.35)) drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
         }
-        @keyframes lcPulse {
-          0%,100% { opacity:0.4; transform:scale(1); }
-          50%      { opacity:0.7; transform:scale(1.08); }
+        @keyframes lcGlow {
+          0%,100% { opacity: 0.35; transform: scale(1); }
+          50%      { opacity: 0.60; transform: scale(1.06); }
+        }
+        @keyframes lcShimmer {
+          0%   { background-position: -200% center; }
+          100% { background-position: 200% center; }
         }
 
-        /* Root container — canvas + card stacked vertically */
         .lc-root {
           display: flex;
           flex-direction: column;
           align-items: center;
           width: 100%;
-          max-width: 220px;
+          max-width: 210px;
           margin: 0 auto;
           user-select: none;
           -webkit-user-select: none;
+          touch-action: none;
         }
 
-        /* Canvas tali — sama lebar dengan root */
+        /* Canvas tali — no gap ke kartu */
         .lc-canvas {
           display: block;
           width: 100%;
-          cursor: grab;
           touch-action: none;
+          cursor: grab;
           flex-shrink: 0;
+          margin-bottom: 0;
         }
         .lc-canvas:active { cursor: grabbing; }
 
@@ -380,49 +386,52 @@ export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProp
           position: relative;
           width: 100%;
           aspect-ratio: 3 / 4;
-          margin-top: -4px; /* tempel ke ujung canvas */
+          margin-top: -1px;
         }
 
-        /* Glow ambient */
+        /* Ambient glow */
         .lc-glow {
           position: absolute;
-          inset: -36px;
-          border-radius: 28px;
+          inset: -40px -20px;
+          border-radius: 50%;
           background: radial-gradient(
-            circle at 50% 35%,
-            var(--brand-background-strong, rgba(99,102,241,0.4)) 0%,
-            var(--accent-background-strong, rgba(79,70,229,0.2)) 40%,
-            transparent 70%
+            ellipse at 50% 40%,
+            var(--brand-background-strong, rgba(99,102,241,0.35)) 0%,
+            var(--accent-background-strong, rgba(79,70,229,0.18)) 45%,
+            transparent 72%
           );
-          filter: blur(28px);
-          opacity: 0.45;
+          filter: blur(30px);
           pointer-events: none;
           z-index: 0;
-          animation: lcPulse 5s ease-in-out infinite;
+          animation: lcGlow 5.5s ease-in-out infinite;
         }
 
-        /* Frame kartu */
+        /* ── Frame utama kartu — elegan ── */
         .lc-card {
           position: absolute;
           inset: 0;
-          border-radius: 16px;
+          border-radius: 18px;
           overflow: hidden;
-          background: #0d0f1a;
-          border: 2px solid rgba(255,255,255,0.14);
-          box-shadow:
-            0 0 0 1px rgba(255,255,255,0.04),
-            0 20px 50px -6px rgba(0,0,0,0.75),
-            0 4px 16px -4px rgba(0,0,0,0.45),
-            inset 0 1px 0 rgba(255,255,255,0.08);
-          will-change: transform;
-          transform-style: preserve-3d;
           cursor: grab;
           z-index: 1;
-          animation: lcFloat 5.5s ease-in-out infinite;
+          will-change: transform;
+          transform-style: preserve-3d;
+          animation: lcFloat 6s ease-in-out infinite;
+
+          /* Multi-layer border untuk kesan premium */
+          box-shadow:
+            0 0 0 1px rgba(255,255,255,0.20),
+            0 0 0 2px rgba(255,255,255,0.06),
+            0 0 0 3px rgba(0,0,0,0.50),
+            0 28px 60px -8px rgba(0,0,0,0.80),
+            0 8px 24px -4px rgba(0,0,0,0.50),
+            inset 0 1px 0 rgba(255,255,255,0.14),
+            inset 0 -1px 0 rgba(0,0,0,0.3);
+          background: #0c0d14;
         }
         .lc-card:active { cursor: grabbing; }
 
-        /* Foto memenuhi kartu */
+        /* Foto memenuhi seluruh kartu */
         .lc-photo {
           position: absolute;
           inset: 0;
@@ -431,103 +440,170 @@ export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProp
           object-fit: cover;
           object-position: top center;
           display: block;
-          transition: opacity 0.4s ease;
+          transition: opacity 0.5s ease;
         }
 
-        /* Overlay ringan di bawah foto — supaya ring/lubang terlihat */
-        .lc-top-fade {
+        /* Vignette halus di tepi */
+        .lc-vignette {
+          position: absolute;
+          inset: 0;
+          border-radius: 18px;
+          background: radial-gradient(
+            ellipse at 50% 50%,
+            transparent 55%,
+            rgba(0,0,0,0.55) 100%
+          );
+          pointer-events: none;
+          z-index: 2;
+        }
+
+        /* Overlay atas tipis — supaya ring kelihatan */
+        .lc-top-overlay {
           position: absolute;
           top: 0; left: 0; right: 0;
-          height: 22%;
-          background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
-          z-index: 2;
-          pointer-events: none;
-        }
-
-        /* Kilau glare */
-        .lc-glare {
-          position: absolute;
-          inset: 0;
-          opacity: 0;
-          mix-blend-mode: overlay;
+          height: 20%;
+          background: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%);
           pointer-events: none;
           z-index: 3;
-          transition: opacity 0.3s ease;
-          border-radius: 16px;
         }
 
-        /* Border edge highlight */
-        .lc-edge {
+        /* Shimmer border — subtle animated */
+        .lc-shimmer {
           position: absolute;
           inset: 0;
-          border-radius: 16px;
-          border: 1px solid rgba(255,255,255,0.09);
+          border-radius: 18px;
+          background: linear-gradient(
+            105deg,
+            transparent 30%,
+            rgba(255,255,255,0.06) 50%,
+            transparent 70%
+          );
+          background-size: 200% 100%;
+          animation: lcShimmer 4s ease-in-out infinite;
           pointer-events: none;
           z-index: 4;
         }
 
+        /* Glare hover */
+        .lc-glare {
+          position: absolute;
+          inset: 0;
+          border-radius: 18px;
+          opacity: 0;
+          mix-blend-mode: overlay;
+          pointer-events: none;
+          z-index: 5;
+          transition: opacity 0.25s ease;
+        }
+
+        /* Inner border edge highlight */
+        .lc-edge {
+          position: absolute;
+          inset: 0;
+          border-radius: 18px;
+          border: 1px solid rgba(255,255,255,0.10);
+          pointer-events: none;
+          z-index: 6;
+        }
+
+        /* Corner accents — elegan */
+        .lc-corner {
+          position: absolute;
+          width: 16px;
+          height: 16px;
+          z-index: 7;
+          pointer-events: none;
+        }
+        .lc-corner::before, .lc-corner::after {
+          content: "";
+          position: absolute;
+          background: rgba(255,255,255,0.40);
+        }
+        .lc-corner::before { width: 100%; height: 1.5px; top: 0; left: 0; }
+        .lc-corner::after  { width: 1.5px; height: 100%; top: 0; left: 0; }
+        .lc-corner.tl { top: 10px; left: 10px; }
+        .lc-corner.tr { top: 10px; right: 10px; transform: scaleX(-1); }
+        .lc-corner.bl { bottom: 10px; left: 10px; transform: scaleY(-1); }
+        .lc-corner.br { bottom: 10px; right: 10px; transform: scale(-1); }
+
         /* Lubang gantungan */
         .lc-hole {
           position: absolute;
-          top: 8px;
+          top: 10px;
           left: 50%;
           transform: translateX(-50%);
-          width: 28px;
+          width: 26px;
           height: 8px;
           border-radius: 5px;
-          background: rgba(0,0,0,0.65);
-          border: 1px solid rgba(255,255,255,0.12);
-          z-index: 5;
+          background: rgba(0,0,0,0.75);
+          border: 1px solid rgba(255,255,255,0.14);
+          z-index: 8;
         }
 
-        /* Metal ring di lubang */
+        /* Metal ring — detail premium */
         .lc-ring {
           position: absolute;
-          top: 4px;
+          top: 5px;
           left: 50%;
           transform: translateX(-50%);
-          width: 18px;
-          height: 18px;
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
           border: 2.5px solid #9ca3af;
-          background: radial-gradient(circle at 38% 38%, #e5e7eb, #6b7280);
-          z-index: 6;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+          background: conic-gradient(
+            from 135deg,
+            #6b7280 0deg,
+            #e5e7eb 90deg,
+            #9ca3af 180deg,
+            #374151 270deg,
+            #6b7280 360deg
+          );
+          z-index: 9;
+          box-shadow:
+            0 2px 6px rgba(0,0,0,0.6),
+            inset 0 1px 2px rgba(255,255,255,0.3);
+        }
+        /* Lubang dalam ring */
+        .lc-ring::after {
+          content: "";
+          position: absolute;
+          inset: 4px;
+          border-radius: 50%;
+          background: rgba(0,0,0,0.80);
+          border: 1px solid rgba(255,255,255,0.08);
         }
 
         @media (max-width: 680px) {
-          .lc-root { max-width: 185px; }
+          .lc-root { max-width: 175px; }
         }
       `}</style>
 
       <div className="lc-root" ref={rootRef}>
-        {/* ── Canvas tali ── */}
+        {/* ── Canvas tali fisika ── */}
         <canvas
           ref={canvasRef}
           className="lc-canvas"
-          onMouseDown={onCanvasDown}
-          onMouseMove={onCanvasMove}
+          style={{ height: `${sizeRef.current.canvasH}px` }}
+          onMouseDown={onCMD}
+          onMouseMove={onCMM}
           onMouseUp={stopDrag}
           onMouseLeave={stopDrag}
-          onTouchStart={onCanvasTDown}
-          onTouchMove={onCanvasTMove}
+          onTouchStart={onCTD}
+          onTouchMove={onCTM}
           onTouchEnd={stopDrag}
         />
 
-        {/* ── Kartu ID ── */}
-        <div className="lc-card-wrap">
+        {/* ── ID Card ── */}
+        <div className="lc-card-wrap" ref={cardWrapRef}>
           <div className="lc-glow" aria-hidden="true" />
           <div
-            ref={cardRef}
             className="lc-card"
             style={{
-              transform: `perspective(880px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
-              transition: dragRef.current.active
-                ? "none"
-                : "transform 0.28s cubic-bezier(0.22,1,0.36,1)",
+              transform: `perspective(900px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
+              transition: dragRef.current.active ? "none" : "transform 0.30s cubic-bezier(0.22,1,0.36,1)",
             }}
-            onMouseDown={onCardDown}
-            onTouchStart={onCardTouchDown}
+            onMouseDown={onCardMD}
+            onTouchStart={onCardTD}
             onMouseMove={onCardHover}
             onMouseLeave={onCardHoverLeave}
             role="img"
@@ -542,11 +618,17 @@ export function Tilt3DCard({ src, alt, onLoad, onError, loaded }: Tilt3DCardProp
               onError={onError}
               style={{ opacity: loaded ? 1 : 0 }}
             />
-            <div className="lc-top-fade" aria-hidden="true" />
-            <div className="lc-glare"   aria-hidden="true" />
-            <div className="lc-edge"    aria-hidden="true" />
-            <div className="lc-hole"    aria-hidden="true" />
-            <div className="lc-ring"    aria-hidden="true" />
+            <div className="lc-vignette"     aria-hidden="true" />
+            <div className="lc-top-overlay"  aria-hidden="true" />
+            <div className="lc-shimmer"      aria-hidden="true" />
+            <div className="lc-glare"        aria-hidden="true" />
+            <div className="lc-edge"         aria-hidden="true" />
+            <div className="lc-corner tl"    aria-hidden="true" />
+            <div className="lc-corner tr"    aria-hidden="true" />
+            <div className="lc-corner bl"    aria-hidden="true" />
+            <div className="lc-corner br"    aria-hidden="true" />
+            <div className="lc-hole"         aria-hidden="true" />
+            <div className="lc-ring"         aria-hidden="true" />
           </div>
         </div>
       </div>
