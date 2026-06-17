@@ -40,7 +40,12 @@ export async function generateMetadata() {
       canonical: "https://rezarefka.web.id",
     },
     icons: {
-      icon: [{ url: `/api/favicon?v=${faviconTs}`, type: "image/png" }],
+      icon: [
+        // Fallback statis .ico — langsung tampil di tab browser tanpa tunggu API
+        { url: "/favicon.ico", type: "image/x-icon", sizes: "any" },
+        // Dinamis dari CMS (dengan cache-bust)
+        { url: `/api/favicon?v=${faviconTs}`, type: "image/png", sizes: "256x256" },
+      ],
       apple: [{ url: `/api/icon?size=192&v=${faviconTs}`, sizes: "192x192", type: "image/png" }],
       shortcut: `/api/favicon?v=${faviconTs}`,
     },

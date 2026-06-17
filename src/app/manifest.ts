@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Reza Refka Kurniawan – Portfolio",
     short_name: "Reza Refka",
-    description: "Portfolio Reza Refka Kurniawan – Full Stack Developer & Data Engineer",
+    description: "Portfolio Reza Refka Kurniawan – Creative Technologist & Developer dari Makassar",
     start_url: "/",
     display: "standalone",
     background_color: "#0a0a0a",
