@@ -3,22 +3,14 @@ import { MetadataRoute } from "next";
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://rezarefka.web.id";
 
-  const routes = [
-    "",
-    "/about",
-    "/work",
-    "/blog",
-    "/gallery",
-    "/contact",
-    "/jurnal",
-    "/certificate",
-    "/project",
+  // Hanya homepage yang diprioritaskan di Google Search
+  // Halaman lain di-noindex via metadata robots
+  return [
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 1.0,
+    },
   ];
-
-  return routes.map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: route === "" ? "weekly" : "monthly",
-    priority: route === "" ? 1 : 0.8,
-  }));
 }

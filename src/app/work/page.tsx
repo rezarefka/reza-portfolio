@@ -6,13 +6,16 @@ import { WorkPageClient } from "@/components/work/WorkPageClient";
 import { getPublishedProjects, getSettings } from "@/lib/db";
 
 export async function generateMetadata() {
-  return Meta.generate({
-    title: work.title,
-    description: work.description,
-    baseURL: baseURL,
-    image: `/api/og/generate?title=${encodeURIComponent(work.title)}`,
-    path: work.path,
-  });
+  return {
+    ...Meta.generate({
+      title: work.title,
+      description: work.description,
+      baseURL: baseURL,
+      image: `/api/og/generate?title=${encodeURIComponent(work.title)}`,
+      path: work.path,
+    }),
+    robots: { index: false, follow: false },
+  };
 }
 
 export default async function Work() {

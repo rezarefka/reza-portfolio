@@ -42,13 +42,16 @@ import { AvatarFromCms } from "@/components/about/AvatarFromCms";
 import { SkillsGrid } from "@/components/about/SkillsGrid";
 
 export async function generateMetadata() {
-  return Meta.generate({
-    title: about.title,
-    description: about.description,
-    baseURL,
-    image: `/api/og/generate?title=${encodeURIComponent(about.title)}`,
-    path: about.path,
-  });
+  return {
+    ...Meta.generate({
+      title: about.title,
+      description: about.description,
+      baseURL,
+      image: `/api/og/generate?title=${encodeURIComponent(about.title)}`,
+      path: about.path,
+    }),
+    robots: { index: false, follow: false },
+  };
 }
 
 export default async function About() {

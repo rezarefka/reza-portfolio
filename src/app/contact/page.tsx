@@ -2,12 +2,15 @@ import { Column, Heading, Text, Button, Row, Icon, Meta } from "@once-ui-system/
 import { baseURL, person, social } from "@/resources";
 
 export async function generateMetadata() {
-  return Meta.generate({
-    title: `Contact – ${person.name}`,
-    description: `Hubungi ${person.name}`,
-    baseURL,
-    path: "/contact",
-  });
+  return {
+    ...Meta.generate({
+      title: `Contact – ${person.name}`,
+      description: `Hubungi ${person.name}`,
+      baseURL,
+      path: "/contact",
+    }),
+    robots: { index: false, follow: false },
+  };
 }
 
 export default function Contact() {

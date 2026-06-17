@@ -42,7 +42,7 @@ export default async function Home() {
     givenName: "Reza",
     familyName: "Refka Kurniawan",
     jobTitle: person.role,
-    description: "Full Stack Developer & Data Engineer dari Makassar, Indonesia. Spesialis Next.js, React, TypeScript, Supabase, dan Data Engineering.",
+    description: "Creative Technologist & Developer dari Makassar, Indonesia. Membangun pengalaman digital yang menggabungkan teknologi, desain, dan kreativitas.",
     url: baseURL,
     image: {
       "@type": "ImageObject",
@@ -67,10 +67,11 @@ export default async function Home() {
       "React",
       "TypeScript",
       "Supabase",
-      "Data Engineering",
-      "Machine Learning",
       "Graphic Design",
       "Videography",
+      "Machine Learning",
+      "Data Science",
+      "Creative Technology",
     ],
     sameAs: [
       "https://github.com/rezarefka",

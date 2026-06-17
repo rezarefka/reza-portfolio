@@ -6,13 +6,16 @@ import { BlogListClient } from "@/components/blog/BlogListClient";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
-  return Meta.generate({
-    title: blog.title,
-    description: blog.description,
-    baseURL: baseURL,
-    image: `/api/og/generate?title=${encodeURIComponent(blog.title)}`,
-    path: blog.path,
-  });
+  return {
+    ...Meta.generate({
+      title: blog.title,
+      description: blog.description,
+      baseURL: baseURL,
+      image: `/api/og/generate?title=${encodeURIComponent(blog.title)}`,
+      path: blog.path,
+    }),
+    robots: { index: false, follow: false },
+  };
 }
 
 export default async function Blog() {
