@@ -36,6 +36,9 @@ export async function generateMetadata() {
 
   return {
     ...base,
+    alternates: {
+      canonical: "https://rezarefka.web.id",
+    },
     icons: {
       icon: [{ url: `/api/favicon?v=${faviconTs}`, type: "image/png" }],
       apple: [{ url: `/api/icon?size=192&v=${faviconTs}`, sizes: "192x192", type: "image/png" }],
