@@ -30,8 +30,15 @@ export async function GET(request: Request) {
     if (!res.ok) throw new Error("fetch failed");
     const inputBuf = await res.arrayBuffer();
 
+    const image = sharp(Buffer.from(inputBuf));
+    const meta = await image.metadata();
+
+    // Flatten transparan ke putih supaya logo/tanda tangan gelap tetap visible
+    const hasAlpha = meta.channels === 4 || meta.hasAlpha;
+
     const pngBuffer = await sharp(Buffer.from(inputBuf))
-      .resize(size, size, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .flatten(hasAlpha ? { background: { r: 255, g: 255, b: 255 } } : false)
+      .resize(size, size, { fit: "contain", background: { r: 255, g: 255, b: 255 } })
       .png()
       .toBuffer();
 
