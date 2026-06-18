@@ -55,9 +55,10 @@ function VideoSlide({
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState(false);
   const [showCtrl, setShowCtrl] = useState(true);
-  // ratio terkunci setelah metadata loaded — default 16/9 supaya container tidak blank
-  const [videoRatio, setVideoRatio] = useState<string>("16 / 9");
-  const [ratioReady, setRatioReady] = useState(false);
+  // Frame pertama sudah siap ditampilkan? (bukan soal rasio lagi — rasio sekarang DIKUNCI
+  // 16:9 secara permanen, jadi box tidak akan pernah melebar/menyusut baik sebelum maupun
+  // sesudah video diputar). Dipakai untuk menyembunyikan shimmer begitu video benar2 tampil.
+  const [frameReady, setFrameReady] = useState(false);
   const hideRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const proxySrc =
@@ -132,12 +133,9 @@ function VideoSlide({
         background: "#000",
         overflow: "hidden",
         cursor: "pointer",
-        // aspect ratio terkunci — tidak akan melebar/collapse saat play
-        aspectRatio: videoRatio,
-        // Sebelum ratio asli diketahui, tampilkan shimmer agar tidak blank
-        ...(ratioReady ? {} : {
-          background: "linear-gradient(90deg,#111 0%,#1a1a1a 50%,#111 100%)",
-        }),
+        // Rasio dikunci PERMANEN 16:9 — tidak pernah dihitung ulang dari metadata video,
+        // jadi box tidak akan melebar/menyusut baik sebelum, sesudah, maupun saat ganti video.
+        aspectRatio: "16 / 9",
       }}
       onClick={togglePlay}
       onMouseMove={resetHide}
@@ -150,23 +148,18 @@ function VideoSlide({
         loop
         playsInline
         muted={muted}
-        // preload="auto" agar frame pertama langsung terrender (tidak blank hitam)
+        // preload="auto" agar frame pertama langsung dibuffer
         preload="auto"
-        onLoadedMetadata={(e) => {
-          const v = e.currentTarget;
-          setDuration(v.duration);
-          if (v.videoWidth && v.videoHeight) {
-            setVideoRatio(`${v.videoWidth} / ${v.videoHeight}`);
-            setRatioReady(true);
-          }
-        }}
+        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+        // frame pertama benar2 sudah bisa digambar di layar → baru sembunyikan shimmer
+        onLoadedData={() => setFrameReady(true)}
         onTimeUpdate={(e) => {
           const v = e.currentTarget;
           setCurrentTime(v.currentTime);
           setProgress(v.duration ? v.currentTime / v.duration : 0);
         }}
         onError={() => setError(true)}
-        onPlay={() => { setPlaying(true); resetHide(); }}
+        onPlay={() => { setPlaying(true); setFrameReady(true); resetHide(); }}
         onPause={() => setPlaying(false)}
         style={{
           width: "100%",
@@ -177,6 +170,17 @@ function VideoSlide({
         }}
         title={title}
       />
+
+      {/* Shimmer animasi nyata (bukan gradien diam) — tampil sampai frame pertama siap,
+          supaya yang terlihat adalah "sedang memuat", bukan kotak hitam kosong/rusak */}
+      {!error && !frameReady && (
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(100deg, #0c0c12 30%, #1d1d2e 50%, #0c0c12 70%)",
+          backgroundSize: "200% 100%",
+          animation: "pgShimmer 1.4s infinite",
+        }} />
+      )}
 
       {error && (
         <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, color: "rgba(255,255,255,0.45)", fontSize: 13 }}>
