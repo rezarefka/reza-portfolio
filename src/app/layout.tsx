@@ -21,14 +21,17 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function generateMetadata() {
-  const settings = await getSettings();
+  const settings = await getSettings().catch(() => null);
   const faviconTs = settings?.updated_at
     ? new Date(settings.updated_at).getTime()
     : Date.now();
 
+  const title = settings?.meta_title_id || home.title;
+  const description = settings?.meta_description_id || home.description;
+
   const base = Meta.generate({
-    title: home.title,
-    description: home.description,
+    title,
+    description,
     baseURL: baseURL,
     path: home.path,
     image: home.image,
@@ -41,10 +44,10 @@ export async function generateMetadata() {
     },
     icons: {
       icon: [
-        // Fallback statis .ico — langsung tampil di tab browser tanpa tunggu API
-        { url: "/favicon.ico", type: "image/x-icon", sizes: "any" },
-        // Dinamis dari CMS (dengan cache-bust)
+        // Dinamis dari CMS (dengan cache-bust) — diutamakan, ini sumber kebenaran favicon
         { url: `/api/favicon?v=${faviconTs}`, type: "image/png", sizes: "256x256" },
+        // Fallback statis .ico — hanya dipakai browser/crawler yang tidak baca entry PNG di atas
+        { url: "/favicon.ico", type: "image/x-icon", sizes: "any" },
       ],
       apple: [{ url: `/api/icon?size=192&v=${faviconTs}`, sizes: "192x192", type: "image/png" }],
       shortcut: `/api/favicon?v=${faviconTs}`,

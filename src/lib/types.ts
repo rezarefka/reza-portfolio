@@ -130,6 +130,11 @@ export interface SiteSettings {
   blog_title_en: string | null;
   blog_description_id: string | null;
   blog_description_en: string | null;
+  // Home page SEO meta (judul/deskripsi yang muncul di hasil pencarian Google)
+  meta_title_id: string | null;
+  meta_title_en: string | null;
+  meta_description_id: string | null;
+  meta_description_en: string | null;
   updated_at: string;
 }
 

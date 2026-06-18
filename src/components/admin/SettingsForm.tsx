@@ -52,6 +52,11 @@ const defaultSettings: Omit<SiteSettings, "id" | "updated_at"> = {
   blog_title_en: "Insight & Perspectives from the Dev World",
   blog_description_id: "Perspektif, pengalaman, dan insight dari Reza Refka Kurniawan seputar dunia pengembangan perangkat lunak.",
   blog_description_en: "Perspectives, experiences, and insights from Reza Refka Kurniawan about software development.",
+  // Home page SEO meta
+  meta_title_id: "Reza Refka Kurniawan – Full Stack Developer & Data Engineer",
+  meta_title_en: "Reza Refka Kurniawan – Full Stack Developer & Data Engineer",
+  meta_description_id: "Portfolio Reza Refka Kurniawan – Full Stack Developer & Data Engineer dari Makassar, Indonesia.",
+  meta_description_en: "Portfolio of Reza Refka Kurniawan – Full Stack Developer & Data Engineer from Makassar, Indonesia.",
 };
 
 export function SettingsForm({ settings }: SettingsFormProps) {
@@ -291,6 +296,38 @@ export function SettingsForm({ settings }: SettingsFormProps) {
           {field("Teks Footer (ID)", "footer_text_id", "Dibuat dengan ❤️ di Makassar")}
           {field("Footer Text (EN)", "footer_text_en", "Made with ❤️ in Makassar")}
         </Row>
+      )}
+
+      {/* SEO Meta - Home Page */}
+      {section("SEO — Judul & Deskripsi di Hasil Pencarian Google",
+        <Column gap="m">
+          <Text variant="body-default-s" onBackground="neutral-weak">
+            Teks ini yang muncul sebagai judul biru & deskripsi di hasil pencarian Google (search snippet)
+            untuk halaman utama website kamu. Beda dari Tagline di atas yang hanya tampil di UI website.
+            Setelah disimpan, butuh waktu beberapa hari sampai minggu sampai Google re-crawl dan
+            menampilkan versi terbaru — kamu bisa minta re-index lebih cepat lewat Google Search Console.
+          </Text>
+          <Row gap="m" s={{ direction: "column" }}>
+            {field("Meta Title (ID)", "meta_title_id", "Reza Refka Kurniawan – Full Stack Developer & Data Engineer")}
+            {field("Meta Title (EN)", "meta_title_en", "Reza Refka Kurniawan – Full Stack Developer & Data Engineer")}
+          </Row>
+          <Column gap="s">
+            <Text variant="label-strong-s">Meta Description (ID)</Text>
+            <textarea value={(form as Record<string, unknown>).meta_description_id as string ?? ""}
+              onChange={(e) => set("meta_description_id", e.target.value)} rows={2}
+              style={{ background: "var(--neutral-background-medium)", border: "1px solid var(--neutral-alpha-medium)",
+                borderRadius: 8, padding: "10px 12px", color: "var(--neutral-on-background-strong)",
+                fontSize: 14, width: "100%", resize: "vertical", fontFamily: "inherit" }} />
+          </Column>
+          <Column gap="s">
+            <Text variant="label-strong-s">Meta Description (EN)</Text>
+            <textarea value={(form as Record<string, unknown>).meta_description_en as string ?? ""}
+              onChange={(e) => set("meta_description_en", e.target.value)} rows={2}
+              style={{ background: "var(--neutral-background-medium)", border: "1px solid var(--neutral-alpha-medium)",
+                borderRadius: 8, padding: "10px 12px", color: "var(--neutral-on-background-strong)",
+                fontSize: 14, width: "100%", resize: "vertical", fontFamily: "inherit" }} />
+          </Column>
+        </Column>
       )}
 
       {/* Work Page */}

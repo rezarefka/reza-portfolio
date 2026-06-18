@@ -18,12 +18,17 @@ import { ScrollAnimate } from "@/components/ScrollAnimate";
 import { getSettings, getPublishedProjectsCount, getPublishedBlogsCount } from "@/lib/db";
 
 export async function generateMetadata() {
+  const settings = await getSettings().catch(() => null);
+
+  const title = settings?.meta_title_id || home.title;
+  const description = settings?.meta_description_id || home.description;
+
   return Meta.generate({
-    title: home.title,
-    description: home.description,
+    title,
+    description,
     baseURL: baseURL,
     path: home.path,
-    image: `/api/og/generate?title=${encodeURIComponent(home.title)}`,
+    image: `/api/og/generate?title=${encodeURIComponent(title)}`,
   });
 }
 
@@ -34,6 +39,9 @@ export default async function Home() {
     getPublishedBlogsCount().catch(() => 0),
   ]);
 
+  const metaTitle = settings?.meta_title_id || home.title;
+  const metaDescription = settings?.meta_description_id || home.description;
+
   const personJsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -42,7 +50,7 @@ export default async function Home() {
     givenName: "Reza",
     familyName: "Refka Kurniawan",
     jobTitle: person.role,
-    description: "Creative Technologist & Developer dari Makassar, Indonesia. Membangun pengalaman digital yang menggabungkan teknologi, desain, dan kreativitas.",
+    description: metaDescription,
     url: baseURL,
     image: {
       "@type": "ImageObject",
@@ -91,9 +99,9 @@ export default async function Home() {
         as="webPage"
         baseURL={baseURL}
         path={home.path}
-        title={home.title}
-        description={home.description}
-        image={`/api/og/generate?title=${encodeURIComponent(home.title)}`}
+        title={metaTitle}
+        description={metaDescription}
+        image={`/api/og/generate?title=${encodeURIComponent(metaTitle)}`}
         author={{
           name: person.name,
           url: `${baseURL}${about.path}`,
