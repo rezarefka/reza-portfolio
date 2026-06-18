@@ -145,8 +145,9 @@ export async function GET(request: Request) {
             )}
           </div>
 
-          {/* Bottom: person info */}
-          <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+          {/* Bottom: person info + CTA */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
             <img
               src={person.avatar}
               style={{
@@ -176,6 +177,23 @@ export async function GET(request: Request) {
                 }}
               >
                 {person.role}
+              </span>
+            </div>
+            </div>
+            {/* CTA Badge */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                background: "rgba(0,188,212,0.15)",
+                border: "1px solid rgba(0,188,212,0.4)",
+                borderRadius: "999px",
+                padding: "12px 28px",
+              }}
+            >
+              <span style={{ color: "#00bcd4", fontSize: "18px", fontFamily: "Geist", fontWeight: 700 }}>
+                View Portfolio →
               </span>
             </div>
           </div>

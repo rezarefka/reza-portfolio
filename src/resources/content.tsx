@@ -47,9 +47,9 @@ const social: Social = [
 
 const home: Home = {
   path: "/",
-  image: `/api/og/generate?title=${encodeURIComponent("Reza Refka Kurniawan – Creative Technologist & Developer")}`,
+  image: `/api/og/generate?title=${encodeURIComponent("Reza Refka – Creative Technologist & Developer")}`,
   label: "Home",
-  title: `Reza Refka Kurniawan – Creative Technologist & Developer`,
+  title: `Reza Refka – Creative Technologist & Developer`,
   description: `Portfolio Reza Refka Kurniawan – Creative Technologist & Developer dari Makassar, Indonesia. Membangun solusi digital yang menggabungkan teknologi, desain, dan kreativitas.`,
   headline: <>Teknologi bertemu kreativitas</>,
   featured: {

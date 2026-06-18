@@ -39,6 +39,10 @@ export async function generateMetadata() {
 
   return {
     ...base,
+    openGraph: {
+      ...(base.openGraph ?? {}),
+      siteName: "Reza Refka Kurniawan",
+    },
     alternates: {
       canonical: "https://rezarefka.web.id",
     },
