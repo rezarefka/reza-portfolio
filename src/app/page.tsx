@@ -19,13 +19,31 @@ import { getSettings, getPublishedProjectsCount, getPublishedBlogsCount } from "
 import { T } from "@/components/T";
 
 export async function generateMetadata() {
-  return Meta.generate({
+  const base = Meta.generate({
     title: home.title,
     description: home.description,
     baseURL: baseURL,
     path: home.path,
-    image: `/api/og/generate?title=${encodeURIComponent(home.title)}`,
   });
+  return {
+    ...base,
+    openGraph: {
+      ...(base.openGraph ?? {}),
+      siteName: "Reza Refka Kurniawan",
+      images: [
+        {
+          url: "https://rezarefka.web.id/og-image.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Reza Refka Kurniawan – Creative Technologist & Developer",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: ["https://rezarefka.web.id/og-image.jpg"],
+    },
+  };
 }
 
 export default async function Home() {
