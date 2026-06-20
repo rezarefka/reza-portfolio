@@ -34,7 +34,6 @@ export async function generateMetadata() {
     description,
     baseURL: baseURL,
     path: home.path,
-    image: home.image,
   });
 
   return {
