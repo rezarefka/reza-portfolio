@@ -65,6 +65,7 @@ export default async function ProjectGalleryPage({
   return (
     <GalleryViewer
       title={project.title_id}
+      titleEn={project.title_en}
       slug={slug}
       items={mediaItems}
     />

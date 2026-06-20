@@ -17,7 +17,9 @@ export async function RelatedProjectsCarousel({ excludeSlug }: RelatedProjectsCa
   const items = projects.map((p) => ({
     slug: p.slug,
     title: p.title_id,
+    titleEn: p.title_en,
     description: p.description_id,
+    descriptionEn: p.description_en,
     thumbnail: p.thumbnail ? p.thumbnail.split("?")[0] : "",
     category: p.category ?? "",
     tools: p.tools ?? [],

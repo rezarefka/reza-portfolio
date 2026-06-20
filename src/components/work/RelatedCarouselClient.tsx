@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLang } from "@/lib/lang-context";
 
 interface CarouselItem {
   slug: string;
   title: string;
+  titleEn?: string;
   description: string;
+  descriptionEn?: string;
   thumbnail: string;
   category: string;
   tools: string[];
@@ -28,7 +31,10 @@ const toolStyle = (t: string) =>
   TOOL_COLORS[t] ?? { bg: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.65)" };
 
 function RelatedCard({ item }: { item: CarouselItem }) {
+  const { t, lang } = useLang();
   const router = useRouter();
+  const displayTitle = lang === "en" && item.titleEn ? item.titleEn : item.title;
+  const displayDescription = lang === "en" && item.descriptionEn ? item.descriptionEn : item.description;
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -60,7 +66,7 @@ function RelatedCard({ item }: { item: CarouselItem }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={item.thumbnail}
-            alt={item.title}
+            alt={displayTitle}
             style={{
               width: "100%", height: "100%", objectFit: "cover", display: "block",
               transition: "transform 0.4s ease",
@@ -88,7 +94,7 @@ function RelatedCard({ item }: { item: CarouselItem }) {
             background: "rgba(255,255,255,0.15)", backdropFilter: "blur(10px)",
             color: "#fff", fontSize: 10, fontWeight: 600,
             border: "1px solid rgba(255,255,255,0.2)",
-          }}>Lihat Detail →</span>
+          }}>{t("Lihat Detail", "View Detail")} →</span>
         </div>
 
         {/* Category badge */}
@@ -111,7 +117,7 @@ function RelatedCard({ item }: { item: CarouselItem }) {
           lineHeight: 1.35, letterSpacing: "-0.01em",
           overflow: "hidden", display: "-webkit-box",
           WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-        }}>{item.title}</h3>
+        }}>{displayTitle}</h3>
 
         {item.description?.trim() && (
           <p style={{
@@ -119,7 +125,7 @@ function RelatedCard({ item }: { item: CarouselItem }) {
             color: "var(--neutral-on-background-weak)",
             margin: 0, overflow: "hidden",
             display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-          }}>{item.description}</p>
+          }}>{displayDescription}</p>
         )}
 
         {item.tools.length > 0 && (

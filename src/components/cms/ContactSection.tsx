@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Column, Row, Text, RevealFx } from "@once-ui-system/core";
 import type { SiteSettings } from "@/lib/types";
 import type { ReactNode } from "react";
+import { useLang } from "@/lib/lang-context";
 
 // ── Icons ──────────────────────────────────────────────────────────────────────
 const icons: Record<string, ReactNode> = {
@@ -54,6 +55,7 @@ interface ContactSectionProps {
 type FormState = "idle" | "sending" | "sent" | "error";
 
 export function ContactSection({ settings }: ContactSectionProps) {
+  const { t } = useLang();
   const [name, setName] = useState("");
   const [senderEmail, setSenderEmail] = useState("");
   const [subject, setSubject] = useState("");
@@ -66,8 +68,8 @@ export function ContactSection({ settings }: ContactSectionProps) {
     if (!name || !senderEmail || !message) return;
     setFormState("sending");
 
-    const body = `Nama: ${name}\nEmail: ${senderEmail}\n\n${message}`;
-    const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject || "Pesan dari Portfolio")}&body=${encodeURIComponent(body)}`;
+    const body = `${t("Nama", "Name")}: ${name}\nEmail: ${senderEmail}\n\n${message}`;
+    const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject || t("Pesan dari Portfolio", "Message from Portfolio"))}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoLink;
 
     setTimeout(() => setFormState("sent"), 800);
@@ -173,17 +175,19 @@ export function ContactSection({ settings }: ContactSectionProps) {
             }}/>
             <Text variant="label-default-xs" onBackground="neutral-weak"
               style={{ letterSpacing: "0.1em", textTransform: "uppercase" }}>
-              Tersedia untuk kolaborasi
+              {t("Tersedia untuk kolaborasi", "Available for collaboration")}
             </Text>
           </Row>
 
           <Text variant="display-strong-m" style={{ textAlign: "center" }}>
-            Mari Terhubung
+            {t("Mari Terhubung", "Let's Connect")}
           </Text>
           <Text variant="body-default-m" onBackground="neutral-weak"
             style={{ textAlign: "center", maxWidth: 400, lineHeight: 1.65, padding: "0 8px" }}>
-            Punya proyek menarik atau ingin berdiskusi? Kirim pesan dan saya
-            akan merespons secepatnya.
+            {t(
+              "Punya proyek menarik atau ingin berdiskusi? Kirim pesan dan saya akan merespons secepatnya.",
+              "Have an interesting project or want to discuss something? Send a message and I'll respond as soon as possible."
+            )}
           </Text>
         </Column>
 
@@ -199,21 +203,21 @@ export function ContactSection({ settings }: ContactSectionProps) {
           {/* Nama + Email */}
           <div className="cf-fields-row">
             <Column flex={1} gap="0" style={{ minWidth: 0 }}>
-              <label className="cf-label">{icons.user} Nama Lengkap</label>
+              <label className="cf-label">{icons.user} {t("Nama Lengkap", "Full Name")}</label>
               <input
                 className="cf-input"
                 type="text"
-                placeholder="Nama Anda"
+                placeholder={t("Nama Anda", "Your name")}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </Column>
             <Column flex={1} gap="0" style={{ minWidth: 0 }}>
-              <label className="cf-label">{icons.email} Email Anda</label>
+              <label className="cf-label">{icons.email} {t("Email Anda", "Your Email")}</label>
               <input
                 className="cf-input"
                 type="email"
-                placeholder="email@anda.com"
+                placeholder={t("email@anda.com", "email@you.com")}
                 value={senderEmail}
                 onChange={(e) => setSenderEmail(e.target.value)}
               />
@@ -222,11 +226,11 @@ export function ContactSection({ settings }: ContactSectionProps) {
 
           {/* Subjek */}
           <Column gap="0">
-            <label className="cf-label">{icons.message} Subjek</label>
+            <label className="cf-label">{icons.message} {t("Subjek", "Subject")}</label>
             <input
               className="cf-input"
               type="text"
-              placeholder="Topik pesan Anda"
+              placeholder={t("Topik pesan Anda", "Topic of your message")}
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
             />
@@ -234,10 +238,10 @@ export function ContactSection({ settings }: ContactSectionProps) {
 
           {/* Pesan */}
           <Column gap="0">
-            <label className="cf-label">{icons.message} Pesan</label>
+            <label className="cf-label">{icons.message} {t("Pesan", "Message")}</label>
             <textarea
               className="cf-input cf-textarea"
-              placeholder="Ceritakan proyek atau ide Anda di sini..."
+              placeholder={t("Ceritakan proyek atau ide Anda di sini...", "Tell me about your project or idea here...")}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
@@ -247,7 +251,7 @@ export function ContactSection({ settings }: ContactSectionProps) {
           <div className="cf-submit-row">
             {recipientEmail && (
               <Text variant="body-default-xs" onBackground="neutral-weak" className="cf-email-hint">
-                Kirim ke: <span style={{ color: "var(--brand-on-background-medium)" }}>{recipientEmail}</span>
+                {t("Kirim ke", "Sending to")}: <span style={{ color: "var(--brand-on-background-medium)" }}>{recipientEmail}</span>
               </Text>
             )}
             <button
@@ -256,7 +260,7 @@ export function ContactSection({ settings }: ContactSectionProps) {
               disabled={!name || !senderEmail || !message || formState === "sending"}
             >
               {icons.send}
-              {formState === "sending" ? "Membuka..." : formState === "sent" ? "✓ Terkirim!" : "Kirim Pesan"}
+              {formState === "sending" ? t("Membuka...", "Opening...") : formState === "sent" ? t("✓ Terkirim!", "✓ Sent!") : t("Kirim Pesan", "Send Message")}
             </button>
           </div>
         </Column>
@@ -266,7 +270,7 @@ export function ContactSection({ settings }: ContactSectionProps) {
           <Column gap="12" align="center" horizontal="center">
             <Text variant="label-default-xs" onBackground="neutral-weak"
               style={{ textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              Atau temukan saya di
+              {t("Atau temukan saya di", "Or find me on")}
             </Text>
             <Row gap="8" wrap horizontal="center">
               {socialLinks.map((s) => (
@@ -279,7 +283,7 @@ export function ContactSection({ settings }: ContactSectionProps) {
         )}
 
         <Text variant="body-default-xs" onBackground="neutral-weak" style={{ textAlign: "center" }}>
-          Makassar, Indonesia · Remote friendly
+          Makassar, Indonesia · {t("Ramah remote", "Remote friendly")}
         </Text>
       </Column>
     </RevealFx>

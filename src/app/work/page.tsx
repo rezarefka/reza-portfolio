@@ -4,6 +4,7 @@ import { Column, Meta, Schema } from "@once-ui-system/core";
 import { baseURL, about, person, work } from "@/resources";
 import { WorkPageClient } from "@/components/work/WorkPageClient";
 import { getPublishedProjects, getSettings } from "@/lib/db";
+import { T } from "@/components/T";
 
 export async function generateMetadata() {
   return {
@@ -25,7 +26,9 @@ export default async function Work() {
   ]);
 
   const titleId = settings?.work_title_id || "Proyek & Kreasi";
+  const titleEn = settings?.work_title_en || "Projects & Creations";
   const descId = settings?.work_description_id || "Kumpulan karya nyata — dari web app, mobile, visualisasi data, hingga desain kreatif.";
+  const descEn = settings?.work_description_en || "A collection of real-world work — from web apps and mobile, to data visualization and creative design.";
 
   return (
     <Column maxWidth="m" paddingTop="0">
@@ -210,29 +213,29 @@ export default async function Work() {
         {/* Eyebrow */}
         <div className="work-eyebrow">
           <span className="work-eyebrow-dot" />
-          Portofolio Karya
+          <T id="Portofolio Karya" en="Work Portfolio" />
         </div>
 
         {/* Title — plain white, no gradient span */}
-        <h1 className="work-hero-title">{titleId}</h1>
+        <h1 className="work-hero-title"><T id={titleId} en={titleEn} /></h1>
 
         {/* Animated line */}
         <div className="work-hero-underline" />
 
         {/* Subtitle */}
-        <p className="work-hero-sub">{descId}</p>
+        <p className="work-hero-sub"><T id={descId} en={descEn} /></p>
 
         {/* Stats */}
         <div className="work-hero-stats">
           <div className="work-stat-item">
             <span className="work-stat-num">{projects.length}</span>
-            <span className="work-stat-label">Total Proyek</span>
+            <span className="work-stat-label"><T id="Total Proyek" en="Total Projects" /></span>
           </div>
           <div className="work-stat-item">
             <span className="work-stat-num">
               {new Set(projects.map((p) => p.category).filter(Boolean)).size}
             </span>
-            <span className="work-stat-label">Kategori</span>
+            <span className="work-stat-label"><T id="Kategori" en="Categories" /></span>
           </div>
           <div className="work-stat-item">
             <span className="work-stat-num">

@@ -18,6 +18,7 @@ import { getPosts } from "@/utils/utils";
 import { getBlogBySlug, getPublishedBlogs } from "@/lib/db";
 import { Metadata } from "next";
 import { SmallAvatarFromCms } from "@/components/SmallAvatarFromCms";
+import { T } from "@/components/T";
 import React from "react";
 import { Posts } from "@/components/blog/Posts";
 import { ShareSection } from "@/components/blog/ShareSection";
@@ -103,7 +104,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               {format(new Date(cmsPost.created_at), "d MMMM yyyy")}
             </Text>
             <Heading variant="display-strong-m" style={{ textAlign: "center" }}>
-              {cmsPost.title_id}
+              <T id={cmsPost.title_id} en={cmsPost.title_en || cmsPost.title_id} />
             </Heading>
           </Column>
 
@@ -136,7 +137,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           <Column fillWidth gap="40" horizontal="center" marginTop="40">
             <Line maxWidth="40" />
             <Text as="h2" id="recent-posts" variant="heading-strong-xl" marginBottom="24">
-              Artikel Terbaru
+              <T id="Artikel Terbaru" en="Recent Articles" />
             </Text>
             <Posts exclude={[cmsPost.slug]} range={[1, 2]} columns="2" thumbnail direction="column" />
           </Column>
@@ -207,7 +208,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           <Column fillWidth gap="40" horizontal="center" marginTop="40">
             <Line maxWidth="40" />
             <Text as="h2" id="recent-posts" variant="heading-strong-xl" marginBottom="24">
-              Artikel Terbaru
+              <T id="Artikel Terbaru" en="Recent Articles" />
             </Text>
             <Posts exclude={[post.slug]} range={[1, 2]} columns="2" thumbnail direction="column" />
           </Column>

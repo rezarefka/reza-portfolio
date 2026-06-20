@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import type { GalleryItem, GalleryDisplayMode } from "@/lib/types";
+import { useLang } from "@/lib/lang-context";
 
 interface ProjectGalleryInlineProps {
   thumbnail: string;
@@ -60,6 +61,7 @@ function VideoSlide({
   // sesudah video diputar). Dipakai untuk menyembunyikan shimmer begitu video benar2 tampil.
   const [frameReady, setFrameReady] = useState(false);
   const hideRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { t } = useLang();
 
   const proxySrc =
     src.includes("supabase.co") || src.includes("supabase.in")
@@ -185,7 +187,7 @@ function VideoSlide({
       {error && (
         <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, color: "rgba(255,255,255,0.45)", fontSize: 13 }}>
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Video tidak dapat dimuat
+          {t("Video tidak dapat dimuat", "Video could not be loaded")}
         </div>
       )}
 
@@ -200,7 +202,7 @@ function VideoSlide({
       {playing && muted && (
         <div style={{ position: "absolute", top: 12, right: 12, display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 99, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.7)", letterSpacing: "0.04em" }}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-          Tap untuk suara
+          {t("Tap untuk suara", "Tap for sound")}
         </div>
       )}
 
@@ -344,6 +346,7 @@ function LightboxModal({
   const [idx, setIdx] = useState(startIdx);
   const total = items.length;
   const current = items[idx];
+  const { t } = useLang();
 
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
@@ -395,7 +398,7 @@ function LightboxModal({
           }}>
             {current.type === "video"
               ? <><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg>VIDEO</>
-              : <><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>FOTO</>
+              : <><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>{t("FOTO", "PHOTO")}</>
             }
           </span>
           <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.8)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -562,6 +565,7 @@ function SliderGallery({
   const [activeIdx, setActiveIdx] = useState(0);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const touchStartX = useRef<number | null>(null);
+  const { t } = useLang();
 
   const total = mediaItems.length;
   const current = mediaItems[activeIdx];
@@ -704,7 +708,7 @@ function SliderGallery({
                   transform: i === activeIdx ? "scale(1.06)" : "scale(1)",
                   position: "relative", overflow: "hidden",
                 }}
-                title={item.caption || `Gambar ${i + 1}`}
+                title={item.caption || `${t("Gambar", "Image")} ${i + 1}`}
               >
                 {item.type === "image" ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -764,6 +768,7 @@ function ScrollHorizontalGallery({
   const isDragging = useRef(false);
   const dragStartX = useRef(0);
   const dragScrollLeft = useRef(0);
+  const { t } = useLang();
 
   const total = mediaItems.length;
 
@@ -836,7 +841,7 @@ function ScrollHorizontalGallery({
               SCROLL HORIZONTAL
             </div>
             <span style={{ fontSize: 11, color: "var(--neutral-on-background-weak)", fontWeight: 500 }}>
-              {total} item · geser atau drag
+              {total} item · {t("geser atau drag", "swipe or drag")}
             </span>
           </div>
           <div style={{ display: "flex", gap: 6 }}>
@@ -939,7 +944,7 @@ function ScrollHorizontalGallery({
                       color: "rgba(255,255,255,0.8)",
                       cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
                     }}
-                    title="Buka fullscreen"
+                    title={t("Buka fullscreen", "Open fullscreen")}
                   >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                       <path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>
@@ -1020,6 +1025,7 @@ function ScrollVerticalGallery({
 }) {
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const total = mediaItems.length;
+  const { t } = useLang();
 
   return (
     <>
@@ -1049,7 +1055,7 @@ function ScrollVerticalGallery({
               SCROLL VERTIKAL
             </div>
             <span style={{ fontSize: 11, color: "var(--neutral-on-background-weak)", fontWeight: 500 }}>
-              {total} item · scroll ke bawah
+              {total} item · {t("scroll ke bawah", "scroll down")}
             </span>
           </div>
         </div>
@@ -1101,7 +1107,7 @@ function ScrollVerticalGallery({
                       color: "rgba(255,255,255,0.85)",
                       cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
                     }}
-                    title="Buka fullscreen"
+                    title={t("Buka fullscreen", "Open fullscreen")}
                   >
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                       <path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>
@@ -1133,7 +1139,7 @@ function ScrollVerticalGallery({
                   </span>
                 ) : (
                   <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)" }}>
-                    {item.type === "video" ? "Video" : "Gambar"} {i + 1} dari {total}
+                    {item.type === "video" ? "Video" : t("Gambar", "Image")} {i + 1} {t("dari", "of")} {total}
                   </span>
                 )}
               </div>

@@ -16,19 +16,15 @@ import { StatisticsSection } from "@/components/cms/StatisticsSection";
 import { ContactSection } from "@/components/cms/ContactSection";
 import { ScrollAnimate } from "@/components/ScrollAnimate";
 import { getSettings, getPublishedProjectsCount, getPublishedBlogsCount } from "@/lib/db";
+import { T } from "@/components/T";
 
 export async function generateMetadata() {
-  const settings = await getSettings().catch(() => null);
-
-  const title = settings?.meta_title_id || home.title;
-  const description = settings?.meta_description_id || home.description;
-
   return Meta.generate({
-    title,
-    description,
+    title: home.title,
+    description: home.description,
     baseURL: baseURL,
     path: home.path,
-    image: `/api/og/generate?title=${encodeURIComponent(title)}`,
+    image: `/api/og/generate?title=${encodeURIComponent(home.title)}`,
   });
 }
 
@@ -39,9 +35,6 @@ export default async function Home() {
     getPublishedBlogsCount().catch(() => 0),
   ]);
 
-  const metaTitle = settings?.meta_title_id || home.title;
-  const metaDescription = settings?.meta_description_id || home.description;
-
   const personJsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -50,7 +43,7 @@ export default async function Home() {
     givenName: "Reza",
     familyName: "Refka Kurniawan",
     jobTitle: person.role,
-    description: metaDescription,
+    description: "Creative Technologist & Developer dari Makassar, Indonesia. Membangun pengalaman digital yang menggabungkan teknologi, desain, dan kreativitas.",
     url: baseURL,
     image: {
       "@type": "ImageObject",
@@ -99,9 +92,9 @@ export default async function Home() {
         as="webPage"
         baseURL={baseURL}
         path={home.path}
-        title={metaTitle}
-        description={metaDescription}
-        image={`/api/og/generate?title=${encodeURIComponent(metaTitle)}`}
+        title={home.title}
+        description={home.description}
+        image={`/api/og/generate?title=${encodeURIComponent(home.title)}`}
         author={{
           name: person.name,
           url: `${baseURL}${about.path}`,
@@ -133,7 +126,7 @@ export default async function Home() {
             <ScrollAnimate direction="left" delay={80} duration={650} style={{ flex: 1 }}>
               <Row flex={1} paddingLeft="l" paddingTop="24">
                 <Heading as="h2" variant="display-strong-xs" wrap="balance">
-                  Tulisan Terbaru
+                  <T id="Tulisan Terbaru" en="Latest Writing" />
                 </Heading>
               </Row>
             </ScrollAnimate>

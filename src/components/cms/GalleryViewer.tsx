@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useLang } from "@/lib/lang-context";
 
 interface MediaItem {
   url: string;
@@ -10,6 +11,7 @@ interface MediaItem {
 
 interface GalleryViewerProps {
   title: string;
+  titleEn?: string;
   slug: string;
   items: MediaItem[];
 }
@@ -146,6 +148,7 @@ function ImageItem({ url, title, index }: { url: string; title: string; index: n
 }
 
 function PdfItem({ url, title }: { url: string; title: string }) {
+  const { t } = useLang();
   return (
     <div style={{ width: "100%", borderRadius: 16, overflow: "hidden", border: "1px solid var(--neutral-alpha-weak)", boxShadow: "0 4px 24px rgba(0,0,0,0.2)" }}>
       <div style={{
@@ -167,7 +170,7 @@ function PdfItem({ url, title }: { url: string; title: string }) {
           padding: "5px 12px", borderRadius: 8, background: "var(--brand-background-strong)",
           color: "var(--brand-on-background-strong)", fontSize: 12, fontWeight: 600, textDecoration: "none",
         }}>
-          Buka PDF
+          {t("Buka PDF", "Open PDF")}
         </a>
       </div>
       <iframe src={`${url}#toolbar=1`} title={title} style={{ width: "100%", height: "60vh", border: "none", display: "block" }} />
@@ -175,8 +178,10 @@ function PdfItem({ url, title }: { url: string; title: string }) {
   );
 }
 
-export function GalleryViewer({ title, slug, items }: GalleryViewerProps) {
+export function GalleryViewer({ title, titleEn, slug, items }: GalleryViewerProps) {
   const router = useRouter();
+  const { t, lang } = useLang();
+  const displayTitle = lang === "en" && titleEn ? titleEn : title;
   const [filter, setFilter] = useState<"all" | "image" | "video" | "pdf">("all");
 
   const counts = {
@@ -207,7 +212,7 @@ export function GalleryViewer({ title, slug, items }: GalleryViewerProps) {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
-          Kembali ke Detail
+          {t("Kembali ke Detail", "Back to Detail")}
         </button>
 
         <h1 style={{
@@ -215,10 +220,10 @@ export function GalleryViewer({ title, slug, items }: GalleryViewerProps) {
           color: "var(--neutral-on-background-strong)", margin: "0 0 6px",
           letterSpacing: "-0.02em", lineHeight: 1.2,
         }}>
-          Galeri Karya
+          {t("Galeri Karya", "Project Gallery")}
         </h1>
         <p style={{ fontSize: 14, color: "var(--neutral-on-background-weak)", margin: 0 }}>
-          {title} · {items.length} media
+          {displayTitle} · {items.length} media
         </p>
       </div>
 
@@ -227,7 +232,7 @@ export function GalleryViewer({ title, slug, items }: GalleryViewerProps) {
         <div style={{ display: "flex", gap: 8, marginBottom: 28, flexWrap: "wrap" }}>
           {(["all", "image", "video", "pdf"] as const).map((f) => {
             if (f !== "all" && counts[f] === 0) return null;
-            const labels = { all: "Semua", image: "Gambar", video: "Video", pdf: "PDF" };
+            const labels = { all: t("Semua", "All"), image: t("Gambar", "Image"), video: "Video", pdf: "PDF" };
             const icons = {
               all: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>,
               image: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
@@ -267,7 +272,7 @@ export function GalleryViewer({ title, slug, items }: GalleryViewerProps) {
       {/* Media list — scrollable vertical stack */}
       {filtered.length === 0 ? (
         <div style={{ textAlign: "center", padding: "60px 0", color: "var(--neutral-on-background-weak)" }}>
-          Tidak ada media untuk filter ini.
+          {t("Tidak ada media untuk filter ini.", "No media for this filter.")}
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>

@@ -4,8 +4,10 @@ import { createClient } from "@/lib/supabase/client";
 import { person } from "@/resources";
 import { useEffect, useState } from "react";
 import { Tilt3DCard } from "./Tilt3DCard";
+import { useLang } from "@/lib/lang-context";
 
 export function AvatarFromCms() {
+  const { t, lang } = useLang();
   const [src, setSrc]             = useState<string>(person.avatar);
   const [cvUrl, setCvUrl]         = useState<string | null>(null);
   const [cvUpdatedAt, setCvUpdatedAt] = useState<string | null>(null);
@@ -211,7 +213,7 @@ export function AvatarFromCms() {
           {/* Lokasi */}
           <div className="av-location">
             <div className="av-loc-dot" />
-            <span className="av-loc-text">Makassar, Indonesia</span>
+            <span className="av-loc-text">{t("Makassar, Indonesia", "Makassar, Indonesia")}</span>
           </div>
 
           {/* Hubungi */}
@@ -220,7 +222,7 @@ export function AvatarFromCms() {
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
               <polyline points="22,6 12,13 2,6"/>
             </svg>
-            Hubungi Saya
+            {t("Hubungi Saya", "Contact Me")}
           </a>
 
           {/* Resume */}
@@ -230,7 +232,7 @@ export function AvatarFromCms() {
                 type="button"
                 className={`av-resume${cvClicked ? " av-resume-ok" : ""}`}
                 onClick={handleCvDownload}
-                aria-label="Unduh Resume"
+                aria-label={t("Unduh Resume", "Download Resume")}
               >
                 {cvClicked ? (
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -243,11 +245,11 @@ export function AvatarFromCms() {
                     <line x1="12" y1="15" x2="12" y2="3"/>
                   </svg>
                 )}
-                {cvClicked ? "Tersimpan!" : "Resume"}
+                {cvClicked ? t("Tersimpan!", "Saved!") : "Resume"}
               </button>
               {cvUpdatedAt && (
                 <span className="av-cv-updated">
-                  Update: {new Date(cvUpdatedAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                  {t("Update", "Updated")}: {new Date(cvUpdatedAt).toLocaleDateString(lang === "en" ? "en-US" : "id-ID", { day: "numeric", month: "short", year: "numeric" })}
                 </span>
               )}
             </>

@@ -3,7 +3,7 @@
 import { useLang } from "@/lib/lang-context";
 import type { Certificate } from "@/lib/types";
 import { format } from "date-fns";
-import { id as localeId } from "date-fns/locale";
+import { id as localeId, enUS as localeEn } from "date-fns/locale";
 
 function safeDate(d: string | null | undefined, fmt: string, opts?: Parameters<typeof format>[2]): string {
   if (!d) return "—";
@@ -23,7 +23,7 @@ export function CertificateInfo({ cert }: CertificateInfoProps) {
 
   const title    = lang === "en" && cert.title_en       ? cert.title_en       : cert.title_id;
   const desc     = lang === "en" && cert.description_en ? cert.description_en : cert.description_id;
-  const dateStr  = safeDate(cert.issue_date, "d MMMM yyyy", { locale: localeId });
+  const dateStr  = safeDate(cert.issue_date, "d MMMM yyyy", { locale: lang === "en" ? localeEn : localeId });
 
   const labelSertifikat = lang === "en" ? "Certificate"   : "Sertifikat";
   const labelPenerbit   = lang === "en" ? "Issuer"        : "Penerbit";

@@ -47,9 +47,9 @@ const social: Social = [
 
 const home: Home = {
   path: "/",
-  image: `/api/og/generate?title=${encodeURIComponent("Reza Refka – Creative Technologist & Developer")}`,
+  image: `/api/og/generate?title=${encodeURIComponent("Reza Refka Kurniawan – Creative Technologist & Developer")}`,
   label: "Home",
-  title: `Reza Refka – Creative Technologist & Developer`,
+  title: `Reza Refka Kurniawan – Creative Technologist & Developer`,
   description: `Portfolio Reza Refka Kurniawan – Creative Technologist & Developer dari Makassar, Indonesia. Membangun solusi digital yang menggabungkan teknologi, desain, dan kreativitas.`,
   headline: <>Teknologi bertemu kreativitas</>,
   featured: {
@@ -91,6 +91,14 @@ const about: About = {
         videografi, dan riset AI/ML, Reza membangun solusi digital yang tidak hanya fungsional
         tetapi juga memiliki nilai estetika — dari antarmuka yang intuitif hingga karya visual
         yang komunikatif.
+      </>
+    ),
+    description_en: (
+      <>
+        Reza Refka Kurniawan is a Creative Technologist and Developer based in Makassar,
+        Indonesia. With a background spanning web development, graphic design, videography, and
+        AI/ML research, Reza builds digital solutions that are not only functional but also
+        carry aesthetic value — from intuitive interfaces to communicative visual work.
       </>
     ),
   },

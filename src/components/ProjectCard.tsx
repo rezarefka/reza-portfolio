@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import NextImage from "next/image";
+import { useLang } from "@/lib/lang-context";
 
 interface ProjectCardProps {
   href: string;
@@ -10,8 +11,10 @@ interface ProjectCardProps {
   images: string[];
   thumbnail?: string;
   title: string;
+  titleEn?: string;
   content: string;
   description: string;
+  descriptionEn?: string;
   avatars: { src: string }[];
   link: string;
   tools?: string[];
@@ -68,6 +71,7 @@ function getAspect(ratio: Ratio): string {
 
 // ─── Thumbnail ───────────────────────────────────────────────────────────────
 function ThumbnailDisplay({ src, title, priority }: { src: string; title: string; priority?: boolean }) {
+  const { t } = useLang();
   const type = getMediaType(src);
   const ratio = useImageRatio(src, type);
   const aspect = getAspect(ratio);
@@ -121,7 +125,7 @@ function ThumbnailDisplay({ src, title, priority }: { src: string; title: string
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
         </svg>
-        <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, fontWeight: 500 }}>Dokumen PDF</span>
+        <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, fontWeight: 500 }}>{t("Dokumen PDF", "PDF Document")}</span>
       </div>
     );
   }
@@ -182,6 +186,7 @@ function CardShareMenu({
   href: string;
   onClose: () => void;
 }) {
+  const { t } = useLang();
   const [copied, setCopied] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const shareUrl = typeof window !== "undefined"
@@ -290,7 +295,7 @@ function CardShareMenu({
       <div style={{ padding: "5px 0" }}>
         {[
           {
-            label: copied ? "✓ Tersalin!" : "Salin link",
+            label: copied ? t("✓ Tersalin!", "✓ Copied!") : t("Salin link", "Copy link"),
             onClick: copyLink,
             icon: (
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -364,8 +369,11 @@ function CardShareMenu({
 // ─── Main Card ───────────────────────────────────────────────────────────────
 export const ProjectCard: React.FC<ProjectCardProps> = ({
   href, priority, images = [], thumbnail: thumbnailProp,
-  title, description, link, tools = [], category, attachment, slug,
+  title, titleEn, description, descriptionEn, link, tools = [], category, attachment, slug,
 }) => {
+  const { t, lang } = useLang();
+  const displayTitle = lang === "en" && titleEn ? titleEn : title;
+  const displayDescription = lang === "en" && descriptionEn ? descriptionEn : description;
   const router = useRouter();
   const cardRef = useRef<HTMLDivElement>(null);
   const [shareOpen, setShareOpen] = useState(false);
@@ -487,7 +495,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 border: "1px solid rgba(255,255,255,0.2)",
                 boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
               }}>
-                Lihat Detail
+                {t("Lihat Detail", "View Detail")}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
@@ -513,7 +521,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               fontSize: 18, fontWeight: 700, lineHeight: 1.3,
               color: "var(--neutral-on-background-strong)",
               margin: 0, letterSpacing: "-0.01em",
-            }}>{title}</h3>
+            }}>{displayTitle}</h3>
 
             {description?.trim() && (
               <p style={{
@@ -521,7 +529,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 color: "var(--neutral-on-background-weak)",
                 margin: 0, overflow: "hidden",
                 display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-              }}>{description}</p>
+              }}>{displayDescription}</p>
             )}
 
             {tools.length > 0 && (
@@ -548,7 +556,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 onMouseEnter={(e) => { e.currentTarget.style.background = "var(--brand-alpha-medium)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = "var(--brand-alpha-weak)"; }}
               >
-                Detail Karya
+                {t("Detail Karya", "View Project")}
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
@@ -558,7 +566,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               <div style={{ position: "relative" }}>
                 <button
                   className={`share-icon-btn${shareOpen ? " active" : ""}`}
-                  title="Bagikan karya ini"
+                  title={t("Bagikan karya ini", "Share this project")}
                   onClick={(e) => { e.stopPropagation(); setShareOpen((v) => !v); }}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -569,7 +577,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
                 {shareOpen && (
                   <CardShareMenu
-                    title={title}
+                    title={displayTitle}
                     thumbnail={thumbnail}
                     href={href}
                     onClose={() => setShareOpen(false)}

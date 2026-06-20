@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { AboutSkill } from "@/lib/types";
+import { useLang } from "@/lib/lang-context";
 
 interface SkillsGridProps {
   initialSkills: AboutSkill[];
@@ -11,6 +12,7 @@ interface SkillsGridProps {
 export function SkillsGrid({ initialSkills }: SkillsGridProps) {
   const [skills, setSkills] = useState<AboutSkill[]>(initialSkills);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const { lang } = useLang();
 
   useEffect(() => {
     const supabase = createClient();
@@ -108,7 +110,9 @@ export function SkillsGrid({ initialSkills }: SkillsGridProps) {
       `}</style>
 
       <div className="skills-wrap">
-        {skills.map((skill, i) => (
+        {skills.map((skill, i) => {
+          const title = lang === "en" && skill.title_en ? skill.title_en : skill.title_id;
+          return (
           <div
             key={skill.id}
             className="skill-pill"
@@ -120,15 +124,16 @@ export function SkillsGrid({ initialSkills }: SkillsGridProps) {
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={skill.icon}
-                alt={skill.title_id}
+                alt={title}
                 className="skill-pill-icon"
               />
             ) : (
               <span className="skill-pill-fallback">⚡</span>
             )}
-            <span className="skill-pill-label">{skill.title_id}</span>
+            <span className="skill-pill-label">{title}</span>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

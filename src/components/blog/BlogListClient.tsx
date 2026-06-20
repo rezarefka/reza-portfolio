@@ -6,6 +6,7 @@ import CmsPost from "@/components/blog/CmsPost";
 import { BlogCardSkeleton } from "@/components/Skeletons";
 import { createClient } from "@/lib/supabase/client";
 import type { Blog } from "@/lib/types";
+import { useLang } from "@/lib/lang-context";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -14,6 +15,7 @@ interface BlogListClientProps {
 }
 
 export function BlogListClient({ initialBlogs }: BlogListClientProps) {
+  const { t } = useLang();
   const [blogs, setBlogs] = useState<Blog[]>(initialBlogs);
   const [page, setPage] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -107,7 +109,7 @@ export function BlogListClient({ initialBlogs }: BlogListClientProps) {
           </Grid>
         ) : paginated.length === 0 ? (
           <div style={{ textAlign: "center", padding: "48px 24px", color: "var(--neutral-on-background-weak)" }}>
-            Belum ada artikel.
+            {t("Belum ada artikel.", "No articles yet.")}
           </div>
         ) : (
           <>

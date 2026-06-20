@@ -10,6 +10,7 @@ import { id as localeId } from "date-fns/locale";
 import { ScrollToHash } from "@/components";
 import { CertificateSlider } from "@/components/certificate/CertificateSlider";
 import { CertificateInfo } from "@/components/certificate/CertificateInfo";
+import { T } from "@/components/T";
 
 function safeDate(d: string | null | undefined, fmt: string, opts?: Parameters<typeof format>[2]): string {
   if (!d) return "—";
@@ -62,7 +63,7 @@ export default async function CertificatePage({
 
       {/* ── Breadcrumb ─────────────────────────────────────────── */}
       <SmartLink href="/about#sertifikat">
-        <Text variant="label-strong-m">← Kembali ke Sertifikat</Text>
+        <Text variant="label-strong-m">← <T id="Kembali ke Sertifikat" en="Back to Certificates" /></Text>
       </SmartLink>
 
       {/* ── Styles ──────────────────────────────────────────────── */}
@@ -192,7 +193,7 @@ export default async function CertificatePage({
       {otherCerts.length > 0 && (
         <Column fillWidth gap="20" marginTop="24"
           style={{ borderTop: "1px solid var(--neutral-alpha-weak)", paddingTop: 32 }}>
-          <Heading as="h2" variant="heading-strong-l">Sertifikat Lainnya</Heading>
+          <Heading as="h2" variant="heading-strong-l"><T id="Sertifikat Lainnya" en="Other Certificates" /></Heading>
           <div className="other-grid">
             {otherCerts.map((c) => (
               <a key={c.id} href={`/certificate/${c.id}`} className="other-card">
@@ -209,7 +210,7 @@ export default async function CertificatePage({
                     </svg>
                     {c.issuer}
                   </div>
-                  <div className="other-title">{c.title_id}</div>
+                  <div className="other-title"><T id={c.title_id} en={c.title_en || c.title_id} /></div>
                   <div className="other-date">
                     {safeDate(c.issue_date, "MMMM yyyy", { locale: localeId })}
                   </div>

@@ -164,7 +164,7 @@ export default function CmsPost({ post, thumbnail, direction, featured }: CmsPos
                 <span className="cmspost-meta-sep" />
                 <span>{dateStr}</span>
                 <span className="cmspost-meta-sep" />
-                <span>{readMin} mnt baca</span>
+                <span>{readMin} {lang === "en" ? "min read" : "mnt baca"}</span>
               </div>
               <div className="cmspost-featured-read">
                 Baca artikel
@@ -291,7 +291,7 @@ export default function CmsPost({ post, thumbnail, direction, featured }: CmsPos
             <p className="cmspost-card-desc">{description}</p>
           )}
           <div className="cmspost-card-footer">
-            <span>{readMin} mnt baca</span>
+            <span>{readMin} {lang === "en" ? "min read" : "mnt baca"}</span>
             <span className="cmspost-card-readmore">
               Baca
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">

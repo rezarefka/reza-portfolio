@@ -10,13 +10,15 @@ interface LangContextType {
 }
 
 const LangContext = createContext<LangContextType>({
-  lang: "id",
+  lang: "en",
   setLang: () => {},
-  t: (id) => id,
+  t: (_id, en) => en,
 });
 
 export function LangProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Language>("id");
+  // Default bahasa situs: English. Kalau pengunjung sudah pernah pilih bahasa
+  // sebelumnya (tersimpan di localStorage), pilihan itu yang dipakai (lihat useEffect di bawah).
+  const [lang, setLangState] = useState<Language>("en");
 
   useEffect(() => {
     const saved = localStorage.getItem("lang") as Language;

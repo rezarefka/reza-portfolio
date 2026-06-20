@@ -8,7 +8,18 @@ import { Fade, Row, ToggleButton } from "@once-ui-system/core";
 import { routes, display, person, about, blog, work, gallery } from "@/resources";
 import { ThemeToggle } from "./ThemeToggle";
 import { LangToggle } from "./LangToggle";
+import { useLang } from "@/lib/lang-context";
 import styles from "./Header.module.scss";
+
+// Label nav disimpan dalam bahasa Inggris di resources/content.tsx;
+// versi Indonesia dipetakan di sini supaya nav ikut berubah saat toggle bahasa.
+const NAV_LABEL_ID: Record<string, string> = {
+  Home: "Beranda",
+  About: "Tentang",
+  Work: "Karya",
+  Blog: "Blog",
+  Gallery: "Galeri",
+};
 
 type TimeDisplayProps = {
   timeZone: string;
@@ -43,6 +54,8 @@ export default TimeDisplay;
 export const Header = () => {
   const pathname = usePathname() ?? "";
   const [scrolled, setScrolled] = useState(false);
+  const { t } = useLang();
+  const navLabel = (en: string) => t(NAV_LABEL_ID[en] || en, en);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -85,7 +98,7 @@ export const Header = () => {
               selected={isActive("/", true)}
               className={`${styles.navBtn} ${isActive("/", true) ? styles.active : ""}`}
             >
-              <span className={styles.label}>Home</span>
+              <span className={styles.label}>{navLabel("Home")}</span>
             </ToggleButton>
           )}
 
@@ -98,7 +111,7 @@ export const Header = () => {
                 selected={isActive("/about", true)}
                 className={`${styles.navBtn} ${isActive("/about", true) ? styles.active : ""}`}
               >
-                <span className={styles.label}>{about.label}</span>
+                <span className={styles.label}>{navLabel(about.label)}</span>
               </ToggleButton>
             </>
           )}
@@ -112,7 +125,7 @@ export const Header = () => {
                 selected={isActive("/work")}
                 className={`${styles.navBtn} ${isActive("/work") ? styles.active : ""}`}
               >
-                <span className={styles.label}>{work.label}</span>
+                <span className={styles.label}>{navLabel(work.label)}</span>
               </ToggleButton>
             </>
           )}
@@ -126,7 +139,7 @@ export const Header = () => {
                 selected={isActive("/blog")}
                 className={`${styles.navBtn} ${isActive("/blog") ? styles.active : ""}`}
               >
-                <span className={styles.label}>{blog.label}</span>
+                <span className={styles.label}>{navLabel(blog.label)}</span>
               </ToggleButton>
             </>
           )}
@@ -140,7 +153,7 @@ export const Header = () => {
                 selected={isActive("/gallery")}
                 className={`${styles.navBtn} ${isActive("/gallery") ? styles.active : ""}`}
               >
-                <span className={styles.label}>{gallery.label}</span>
+                <span className={styles.label}>{navLabel(gallery.label)}</span>
               </ToggleButton>
             </>
           )}

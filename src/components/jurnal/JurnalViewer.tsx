@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useLang } from "@/lib/lang-context";
 
 /* ─── pdf.js loader via npm dynamic import ─── */
 interface PdfjsLib {
@@ -43,6 +44,7 @@ interface JurnalViewerProps {
 }
 
 export function JurnalViewer({ proxyUrl, title }: JurnalViewerProps) {
+  const { t } = useLang();
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
@@ -184,7 +186,7 @@ export function JurnalViewer({ proxyUrl, title }: JurnalViewerProps) {
         }
       } catch (e) {
         if (!cancelled) {
-          setErrorMsg(e instanceof Error ? e.message : "Gagal memuat PDF");
+          setErrorMsg(e instanceof Error ? e.message : t("Gagal memuat PDF", "Failed to load PDF"));
           setStatus("error");
         }
       }
@@ -396,8 +398,8 @@ export function JurnalViewer({ proxyUrl, title }: JurnalViewerProps) {
             </svg>
             <div className="jv-loading-text">
               {status === "loading"
-                ? "Memuat dokumen…"
-                : `Merender halaman ${renderedPages} / ${totalPages}`}
+                ? t("Memuat dokumen…", "Loading document…")
+                : t(`Merender halaman ${renderedPages} / ${totalPages}`, `Rendering page ${renderedPages} / ${totalPages}`)}
             </div>
             {status === "rendering" && (
               <div className="jv-progress-track">
@@ -415,7 +417,7 @@ export function JurnalViewer({ proxyUrl, title }: JurnalViewerProps) {
               <line x1="12" y1="8" x2="12" y2="12"/>
               <line x1="12" y1="16" x2="12.01" y2="16"/>
             </svg>
-            <p style={{ fontSize: 13, margin: 0 }}>Gagal memuat PDF</p>
+            <p style={{ fontSize: 13, margin: 0 }}>{t("Gagal memuat PDF", "Failed to load PDF")}</p>
             <p style={{ fontSize: 11, margin: 0, opacity: 0.6 }}>{errorMsg}</p>
           </div>
         )}

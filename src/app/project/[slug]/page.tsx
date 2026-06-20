@@ -17,10 +17,10 @@ import { RelatedProjectsCarousel } from "@/components/work/RelatedProjectsCarous
 import { ScrollToHash } from "@/components";
 import { ShareButton } from "@/components/ShareButton";
 import { ProjectContent } from "@/components/cms/ProjectContent";
-import { format } from "date-fns";
-import { id as localeId } from "date-fns/locale";
 import { ProjectGalleryInline } from "@/components/cms/ProjectGalleryInline";
 import { ProjectViewTracker } from "@/components/ProjectViewTracker";
+import { T } from "@/components/T";
+import { LocalizedDate } from "@/components/LocalizedDate";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -244,16 +244,16 @@ export default async function ProjectPage({
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
-            Kembali ke Projects
+            <T id="Kembali ke Projects" en="Back to Projects" />
           </a>
 
           {/* Date badge */}
           <span className="project-date-badge">
-            {format(new Date(project.created_at), "d MMMM yyyy", { locale: localeId })}
+            <LocalizedDate value={project.created_at} />
           </span>
 
           {/* Title */}
-          <h1 className="project-title">{project.title_id}</h1>
+          <h1 className="project-title"><T id={project.title_id} en={project.title_en || project.title_id} /></h1>
 
           {/* Category + tools */}
           <div className="project-tags-row">
@@ -284,7 +284,7 @@ export default async function ProjectPage({
             )}
             {attachClean && attachType !== "image" && (
               <Button href={attachClean} target="_blank" variant="secondary" size="m" prefixIcon="download">
-                {attachType === "pdf" ? "Lihat PDF" : attachType === "video" ? "Lihat Video" : "Unduh File"}
+                <T id={attachType === "pdf" ? "Lihat PDF" : attachType === "video" ? "Lihat Video" : "Unduh File"} en={attachType === "pdf" ? "View PDF" : attachType === "video" ? "View Video" : "Download File"} />
               </Button>
             )}
             <ShareButton
@@ -314,7 +314,7 @@ export default async function ProjectPage({
         {/* ── Related Projects ─────────────────────────────────── */}
         <div className="project-related-section">
           <hr className="project-section-divider" />
-          <h2 className="project-related-title">Proyek Terkait</h2>
+          <h2 className="project-related-title"><T id="Proyek Terkait" en="Related Projects" /></h2>
           <RelatedProjectsCarousel excludeSlug={project.slug} />
         </div>
 

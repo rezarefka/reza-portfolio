@@ -2,6 +2,7 @@ import { Column, Meta, Schema } from "@once-ui-system/core";
 import { baseURL, blog, person } from "@/resources";
 import { getPublishedBlogs, getSettings } from "@/lib/db";
 import { BlogListClient } from "@/components/blog/BlogListClient";
+import { T } from "@/components/T";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,9 @@ export default async function Blog() {
   ]);
 
   const titleId = settings?.blog_title_id || "Insight & Perspektif dari Dunia Dev";
+  const titleEn = settings?.blog_title_en || "Insights & Perspectives from the Dev World";
   const descId = settings?.blog_description_id || blog.description;
+  const descEn = settings?.blog_description_en || blog.description;
 
   return (
     <Column maxWidth="m" paddingTop="0">
@@ -184,16 +187,16 @@ export default async function Blog() {
           {/* Eyebrow */}
           <div className="blog-eyebrow">
             <div className="blog-eyebrow-line" />
-            <span className="blog-eyebrow-text">Blog &amp; Artikel</span>
+            <span className="blog-eyebrow-text"><T id="Blog & Artikel" en="Blog & Articles" /></span>
             <span className="blog-eyebrow-dot" />
-            <span className="blog-eyebrow-count">{blogs.length} tulisan</span>
+            <span className="blog-eyebrow-count">{blogs.length} <T id="tulisan" en="posts" /></span>
           </div>
 
           {/* Title — plain, no gradient em */}
-          <h1 className="blog-hero-title">{titleId}</h1>
+          <h1 className="blog-hero-title"><T id={titleId} en={titleEn} /></h1>
 
           {/* Description */}
-          <p className="blog-hero-desc">{descId}</p>
+          <p className="blog-hero-desc"><T id={descId} en={descEn} /></p>
         </div>
       </div>
 

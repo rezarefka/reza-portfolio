@@ -135,6 +135,8 @@ export interface About extends BasePageConfig {
     title: string;
     /** Description of the introduction section */
     description: React.ReactNode;
+    /** English version of the description, used when the site language is set to English */
+    description_en?: React.ReactNode;
   };
   /** Work experience section */
   work: {

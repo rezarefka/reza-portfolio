@@ -45,7 +45,9 @@ export async function Projects({ range, exclude }: ProjectsProps) {
               images={images}
               thumbnail={thumbClean}
               title={project.title_id}
+              titleEn={project.title_en}
               description={project.description_id}
+              descriptionEn={project.description_en}
               content=""
               avatars={[]}
               link={project.live_demo_url || ""}

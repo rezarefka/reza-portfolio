@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { gallery } from "@/resources";
 import { createClient } from "@/lib/supabase/client";
 import { GallerySkeletonGrid } from "@/components/Skeletons";
+import { useLang } from "@/lib/lang-context";
 
 interface GalleryPhoto {
   id: string;
@@ -173,6 +174,7 @@ function Lightbox({
 
 // ── Main GalleryView ─────────────────────────────────────────────────────────
 export default function GalleryView() {
+  const { t } = useLang();
   const [dbPhotos, setDbPhotos] = useState<GalleryPhoto[]>([]);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const [loaded, setLoaded] = useState<Set<number>>(new Set());
@@ -292,7 +294,7 @@ export default function GalleryView() {
                   <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                   <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
                 </svg>
-                {photo.caption || "Lihat foto"}
+                {photo.caption || t("Lihat foto", "View photo")}
               </div>
             </div>
           </div>
@@ -303,7 +305,7 @@ export default function GalleryView() {
             gridColumn: "1/-1", textAlign: "center", padding: "48px 24px",
             color: "var(--neutral-on-background-weak)",
           }}>
-            Belum ada foto di galeri.
+            {t("Belum ada foto di galeri.", "No photos in the gallery yet.")}
           </div>
         )}
       </div>

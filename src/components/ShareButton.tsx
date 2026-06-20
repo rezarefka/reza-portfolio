@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useLang } from "@/lib/lang-context";
 
 interface ShareButtonProps {
   title: string;
@@ -10,6 +11,7 @@ interface ShareButtonProps {
 }
 
 export function ShareButton({ title, description, url, ogImageUrl }: ShareButtonProps) {
+  const { t } = useLang();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [shareStatus, setShareStatus] = useState<string | null>(null);
@@ -34,10 +36,10 @@ export function ShareButton({ title, description, url, ogImageUrl }: ShareButton
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
-      setShareStatus("Link disalin!");
+      setShareStatus(t("Link disalin!", "Link copied!"));
       setTimeout(() => { setCopied(false); setShareStatus(null); }, 2500);
     } catch {
-      setShareStatus("Gagal menyalin");
+      setShareStatus(t("Gagal menyalin", "Copy failed"));
       setTimeout(() => setShareStatus(null), 2000);
     }
     setOpen(false);
@@ -68,11 +70,11 @@ export function ShareButton({ title, description, url, ogImageUrl }: ShareButton
     const isAndroid = /android/i.test(navigator.userAgent);
     if (isIOS || isAndroid) {
       window.location.href = `instagram-stories://share?background_image_url=${encodeURIComponent(imageUrl)}&content_url=${encodeURIComponent(shareUrl)}`;
-      setShareStatus("Membuka Instagram...");
+      setShareStatus(t("Membuka Instagram...", "Opening Instagram..."));
     } else {
       navigator.clipboard.writeText(shareUrl).then(
-        () => setShareStatus("Link disalin — buka IG Story & tempel!"),
-        () => setShareStatus("Buka IG, tempel link ini di Story"),
+        () => setShareStatus(t("Link disalin — buka IG Story & tempel!", "Link copied — open IG Story & paste!")),
+        () => setShareStatus(t("Buka IG, tempel link ini di Story", "Open IG, paste this link in your Story")),
       );
     }
     setTimeout(() => setShareStatus(null), 3000);
@@ -249,7 +251,7 @@ export function ShareButton({ title, description, url, ogImageUrl }: ShareButton
           <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
           <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
         </svg>
-        Bagikan
+        {t("Bagikan", "Share")}
       </button>
 
       {/* Dropdown */}
@@ -285,7 +287,7 @@ export function ShareButton({ title, description, url, ogImageUrl }: ShareButton
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
               </svg>
-              {copied ? "✓ Tersalin!" : "Salin link"}
+              {copied ? t("✓ Tersalin!", "✓ Copied!") : t("Salin link", "Copy link")}
             </button>
 
             {hasNativeShare && (
