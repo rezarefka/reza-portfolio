@@ -43,13 +43,14 @@ export async function generateMetadata({
   const project = await getProjectBySlug(slug);
   if (!project) return {};
 
-  return Meta.generate({
+  const meta = Meta.generate({
     title: project.title_id,
     description: project.description_id,
     baseURL,
     image: project.thumbnail?.split("?")[0] || `/api/og/generate?title=${project.title_id}`,
     path: `/project/${project.slug}`,
   });
+  return { ...meta, robots: { index: false, follow: false } };
 }
 
 function getMediaType(url: string): "image" | "video" | "pdf" | null {

@@ -17,6 +17,7 @@ export async function generateMetadata({
   return {
     title: `Galeri — ${project.title_id}`,
     description: project.description_id,
+    robots: { index: false, follow: false },
   };
 }
 

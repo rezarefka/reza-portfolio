@@ -29,13 +29,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const cert = await getCertificateBySlug(slug).catch(() => null);
   if (!cert) return {};
-  return Meta.generate({
+  const certMeta = Meta.generate({
     title: cert.title_id,
     description: cert.description_id || `Sertifikat dari ${cert.issuer}`,
     baseURL,
     image: cert.thumbnail || `/api/og/generate?title=${encodeURIComponent(cert.title_id)}`,
     path: `/certificate/${cert.id}`,
   });
+  return { ...certMeta, robots: { index: false, follow: false } };
 }
 
 export default async function CertificatePage({

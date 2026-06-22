@@ -27,6 +27,18 @@ const nextConfig = {
     ],
   },
 
+  async redirects() {
+    return [
+      // Redirect www → non-www (permanent 301)
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.rezarefka.web.id' }],
+        destination: 'https://rezarefka.web.id/:path*',
+        permanent: true,
+      },
+    ]
+  },
+
   async headers() {
     return [
       {
@@ -37,6 +49,23 @@ const nextConfig = {
             value: cspHeader,
           },
         ],
+      },
+      // Sub-pages: noindex via X-Robots-Tag (backup selain meta robots di page)
+      {
+        source: '/project/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+      },
+      {
+        source: '/blog/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+      },
+      {
+        source: '/certificate/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+      },
+      {
+        source: '/work/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
       },
     ]
   },

@@ -43,26 +43,28 @@ export async function generateMetadata({
 
   const cmsPost = await getBlogBySlug(slugPath).catch(() => null);
   if (cmsPost) {
-    return Meta.generate({
+    const cmsMeta = Meta.generate({
       title: cmsPost.title_id,
       description: cmsPost.description_id,
       baseURL,
       image: cmsPost.thumbnail || `/api/og/generate?title=${cmsPost.title_id}`,
       path: `${blog.path}/${cmsPost.slug}`,
     });
+    return { ...cmsMeta, robots: { index: false, follow: false } };
   }
 
   const posts = getPosts(["src", "app", "blog", "posts"]);
   const post = posts.find((p) => p.slug === slugPath);
   if (!post) return {};
 
-  return Meta.generate({
+  const mdxMeta = Meta.generate({
     title: post.metadata.title,
     description: post.metadata.summary,
     baseURL,
     image: post.metadata.image || `/api/og/generate?title=${post.metadata.title}`,
     path: `${blog.path}/${post.slug}`,
   });
+  return { ...mdxMeta, robots: { index: false, follow: false } };
 }
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string | string[] }> }) {

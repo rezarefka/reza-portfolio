@@ -15,6 +15,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
+        // Block yang memang private — sub-pages lain boleh di-crawl
+        // tapi di-noindex via meta tag & X-Robots-Tag header
+        // (Google harus bisa crawl untuk melihat noindex tag dan de-index yang sudah masuk)
         disallow: [
           "/reza-control/",
           "/api/",
