@@ -15,6 +15,14 @@ export function ShimmerButton({ href, avatarSrc, label, personName }: ShimmerBut
   return (
     <>
       <style>{`
+        /* ── P8: Reduced motion ── */
+        @media (prefers-reduced-motion: reduce) {
+          .lustre-btn, .lustre-btn::before, .lustre-btn::after, .lustre-arrow {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+
         /* ── Kilau utama — sapuan lembut dari kiri ke kanan ── */
         @keyframes lustreFlow {
           0%   { transform: translateX(-120%) rotate(-18deg); opacity: 0;   }
@@ -42,8 +50,18 @@ export function ShimmerButton({ href, avatarSrc, label, personName }: ShimmerBut
           animation: breathe 4s ease-in-out infinite;
           transition:
             background  0.3s ease,
-            transform   0.3s cubic-bezier(0.34,1.56,0.64,1),
+            transform   0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
             box-shadow  0.3s ease;
+          /* P7: cursor pointer explicit — semua state */
+          cursor: pointer !important;
+        }
+
+        /* P7: Focus visible — outline jelas untuk keyboard nav */
+        .lustre-btn:focus-visible {
+          outline: 2px solid var(--brand-solid-strong);
+          outline-offset: 4px;
+          border-radius: 999px;
+          animation: none;
         }
 
         /* Kilau utama */
@@ -85,11 +103,12 @@ export function ShimmerButton({ href, avatarSrc, label, personName }: ShimmerBut
           z-index: 2;
         }
 
-        /* Hover — kilau lebih cepat */
+        /* P7: Hover — shadow lebih tegas, transform lebih jelas */
         .lustre-btn:hover {
           background: rgba(255,255,255,0.11) !important;
           transform: translateY(-2px) scale(1.03);
-          box-shadow: 0 6px 28px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.22);
+          /* P7: shadow lebih dramatis dari breathe default */
+          box-shadow: 0 8px 32px rgba(0,0,0,0.36), 0 0 0 1.5px rgba(255,255,255,0.26);
           animation: none;
         }
         .lustre-btn:hover::before {
@@ -103,6 +122,27 @@ export function ShimmerButton({ href, avatarSrc, label, personName }: ShimmerBut
         /* Aktif / klik */
         .lustre-btn:active {
           transform: translateY(0) scale(0.98);
+          box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+        }
+
+        /* P7: Light mode — border gelap agar visible di background terang */
+        html[data-theme="light"] .lustre-btn {
+          border-color: rgba(0, 0, 0, 0.12) !important;
+          background: rgba(0, 0, 0, 0.05) !important;
+        }
+        html[data-theme="light"] .lustre-btn:hover {
+          background: rgba(0, 0, 0, 0.09) !important;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.14), 0 0 0 1.5px rgba(0,0,0,0.16);
+        }
+        @media (prefers-color-scheme: light) {
+          html:not([data-theme="dark"]) .lustre-btn {
+            border-color: rgba(0, 0, 0, 0.12) !important;
+            background: rgba(0, 0, 0, 0.05) !important;
+          }
+          html:not([data-theme="dark"]) .lustre-btn:hover {
+            background: rgba(0, 0, 0, 0.09) !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.14), 0 0 0 1.5px rgba(0,0,0,0.16);
+          }
         }
 
         /* Arrow icon ikut gerak saat hover */
@@ -110,7 +150,7 @@ export function ShimmerButton({ href, avatarSrc, label, personName }: ShimmerBut
           transform: translateX(3px);
         }
         .lustre-arrow {
-          transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+          transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
       `}</style>
 
@@ -123,16 +163,19 @@ export function ShimmerButton({ href, avatarSrc, label, personName }: ShimmerBut
           gap: 10,
           padding: "10px 22px 10px 8px",
           borderRadius: 999,
+          /* P7: border default dark-mode; overridden to dark in light mode via CSS */
           border: "1px solid rgba(255,255,255,0.13)",
           background: "rgba(255,255,255,0.07)",
           backdropFilter: "blur(20px) saturate(160%)",
           WebkitBackdropFilter: "blur(20px) saturate(160%)",
-          cursor: "pointer",
+          cursor: "pointer", /* P7: explicit cursor */
           color: "var(--neutral-on-background-strong)",
           fontSize: 14,
           fontWeight: 500,
           fontFamily: "inherit",
         }}
+        type="button"
+        tabIndex={0}
       >
         {/* Avatar */}
         {/* eslint-disable-next-line @next/next/no-img-element */}

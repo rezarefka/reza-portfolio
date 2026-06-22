@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Fragment } from "react";
 import { Column, Row, Text, RevealFx } from "@once-ui-system/core";
 import { useLang } from "@/lib/lang-context";
 import type { SiteSettings } from "@/lib/types";
@@ -76,10 +76,16 @@ const IconPen = () => (
   </svg>
 );
 
+/*
+ * P5: 60-30-10 Rule — ACCENTS
+ * - 1st (years): brand accent — one prominent accent point for this section
+ * - 2nd + 3rd: calmer neutral shades — tidak terlalu colorful
+ * Sesuai rule: "ganti warna ke-2 dan ke-3 yang terlalu colorful ke nuansa neutral yang lebih kalem"
+ */
 const ACCENTS = [
-  "var(--brand-solid-strong, #6366f1)",
-  "var(--accent-solid-strong, #06b6d4)",
-  "#a78bfa",
+  "var(--brand-solid-strong, #6366f1)",    // 1st stat: brand accent (1 titik aksen)
+  "var(--neutral-on-background-medium)",   // 2nd: calm neutral (was --accent-solid-strong cyan)
+  "var(--neutral-on-background-weak)",     // 3rd: subdued neutral (was #a78bfa purple)
 ];
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
@@ -119,6 +125,7 @@ function StatCard({
           cursor: default;
         }
 
+        /* Subtle top-border accent line */
         .pstat-card::before {
           content: "";
           position: absolute;
@@ -130,10 +137,11 @@ function StatCard({
             var(--pstat-accent) 50%,
             transparent 100%
           );
-          opacity: 0.45;
+          opacity: 0.35;
           pointer-events: none;
         }
 
+        /* Subtle glow blob — very low opacity per P5 */
         .pstat-card::after {
           content: "";
           position: absolute;
@@ -141,7 +149,7 @@ function StatCard({
           width: 100px; height: 100px;
           border-radius: 50%;
           background: var(--pstat-accent);
-          opacity: 0.05;
+          opacity: 0.04;
           filter: blur(18px);
           pointer-events: none;
           transition: opacity 0.3s ease;
@@ -151,9 +159,10 @@ function StatCard({
           background: var(--neutral-background-medium);
         }
         .pstat-row .pstat-card:hover::after {
-          opacity: 0.12;
+          opacity: 0.08;
         }
 
+        /* P5: Icon badge — neutral color (NOT accent) */
         .pstat-icon-badge {
           position: relative;
           z-index: 1;
@@ -163,7 +172,8 @@ function StatCard({
           border: 1px solid var(--neutral-alpha-medium);
           background: var(--neutral-background-medium);
           display: flex; align-items: center; justify-content: center;
-          color: var(--pstat-accent);
+          /* P5: Icon color is neutral, not accent */
+          color: var(--neutral-on-background-medium);
           transition: background 0.25s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
         }
         .pstat-card:hover .pstat-icon-badge {
@@ -178,12 +188,13 @@ function StatCard({
           flex: 1;
         }
 
+        /* P5: Number gets the accent color — "hanya angka yang pakai accent" */
         .pstat-number {
           font-size: clamp(28px, 4vw, 38px);
           font-weight: 800;
           line-height: 1;
           letter-spacing: -0.03em;
-          color: var(--neutral-on-background-strong);
+          color: var(--pstat-accent);  /* P5: accent on numbers */
           font-variant-numeric: tabular-nums;
           transition: color 0.25s ease;
           white-space: nowrap;
@@ -192,7 +203,7 @@ function StatCard({
         .pstat-label {
           font-size: 13px;
           font-weight: 600;
-          color: var(--neutral-on-background-strong);
+          color: var(--neutral-on-background-strong); /* P5: label neutral */
           margin-top: 6px;
           letter-spacing: 0.01em;
           line-height: 1.3;
@@ -200,7 +211,7 @@ function StatCard({
 
         .pstat-sublabel {
           font-size: 11px;
-          color: var(--neutral-on-background-weak);
+          color: var(--neutral-on-background-weak);  /* P5: sublabel neutral */
           letter-spacing: 0.01em;
           line-height: 1.4;
           word-break: break-word;
@@ -237,7 +248,7 @@ function StatCard({
         .pstat-header-dot {
           width: 5px; height: 5px;
           border-radius: 50%;
-          background: var(--neutral-on-background-weak);
+          background: var(--neutral-on-background-weak); /* P5: neutral dot, not accent */
           opacity: 0.5;
         }
 
@@ -262,7 +273,7 @@ function StatCard({
           gap: 0;
           width: 100%;
           border: 1px solid var(--neutral-alpha-weak);
-          border-radius: 22px;
+          border-radius: 16px; /* P3+P5: max 16px per aturan tambahan */
           overflow: hidden;
           background: var(--neutral-background-weak);
         }
@@ -397,20 +408,19 @@ export function StatisticsSection({
           </div>
         </div>
 
-        {/* Cards */}
+        {/* Cards — Fragment key fix for React warning */}
         <div className="pstat-row">
           {stats.map((s, i) => (
-            <>
+            <Fragment key={i}>
               <StatCard
-                key={i}
                 index={i}
                 accentColor={ACCENTS[i % ACCENTS.length]}
                 {...s}
               />
               {i < stats.length - 1 && (
-                <div key={`div-${i}`} className="pstat-divider" />
+                <div className="pstat-divider" />
               )}
-            </>
+            </Fragment>
           ))}
         </div>
       </div>

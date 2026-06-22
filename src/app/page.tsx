@@ -101,82 +101,101 @@ export default async function Home() {
   };
 
   return (
-    <Column maxWidth="m" gap="xl" paddingY="12" horizontal="center">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
-      />
-      <Schema
-        as="webPage"
-        baseURL={baseURL}
-        path={home.path}
-        title={home.title}
-        description={home.description}
-        image={`/api/og/generate?title=${encodeURIComponent(home.title)}`}
-        author={{
-          name: person.name,
-          url: `${baseURL}${about.path}`,
-          image: `${baseURL}${person.avatar}`,
-        }}
-      />
+    <>
+      {/* P2: Responsive section gap — 96px desktop, 58px mobile (60% rule) */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .home-main-col { gap: 96px; }
+        @media (max-width: 640px) { .home-main-col { gap: 58px; } }
+      `}} />
 
-      {/* ── 1. Hero — fade dari bawah ──────────────────────────────── */}
-      <ScrollAnimate direction="up" duration={800} threshold={0.01}>
-        <HeroSection settings={settings} />
-      </ScrollAnimate>
+      <Column
+        maxWidth="m"
+        className="home-main-col"
+        paddingY="12"
+        horizontal="center"
+      >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
+        <Schema
+          as="webPage"
+          baseURL={baseURL}
+          path={home.path}
+          title={home.title}
+          description={home.description}
+          image={`/api/og/generate?title=${encodeURIComponent(home.title)}`}
+          author={{
+            name: person.name,
+            url: `${baseURL}${about.path}`,
+            image: `${baseURL}${person.avatar}`,
+          }}
+        />
 
-      {/* ── 2. Card Karya — tiap card muncul saat di-scroll (via ProjectsWithAnimation) */}
-      <Projects />
+        {/* ── 1. Hero ──────────────────────────────────────────────── */}
+        <ScrollAnimate direction="up" duration={800} threshold={0.01}>
+          <HeroSection settings={settings} />
+        </ScrollAnimate>
 
-      {/* ── 3. Tulisan Terbaru ──────────────────────────────────────── */}
-      {routes["/blog"] && (
-        <Column fillWidth gap="24" marginBottom="l">
+        {/* ── 2. Card Karya ──────────────────────────────────────── */}
+        <Projects />
 
-          {/* Garis kiri — masuk dari kiri */}
-          <ScrollAnimate direction="left" duration={600} delay={0}>
-            <Row fillWidth paddingRight="64">
-              <Line maxWidth={48} />
-            </Row>
-          </ScrollAnimate>
+        {/* ── 3. Tulisan Terbaru ──────────────────────────────────── */}
+        {routes["/blog"] && (
+          <Column fillWidth gap="24">
 
-          <Row fillWidth gap="24" marginTop="40" s={{ direction: "column" }}>
-            {/* Judul — masuk dari kiri */}
-            <ScrollAnimate direction="left" delay={80} duration={650} style={{ flex: 1 }}>
-              <Row flex={1} paddingLeft="l" paddingTop="24">
-                <Heading as="h2" variant="display-strong-xs" wrap="balance">
-                  <T id="Tulisan Terbaru" en="Latest Writing" />
-                </Heading>
+            {/* P2: Line separator — min 64px padding above */}
+            <ScrollAnimate direction="left" duration={600} delay={0}>
+              <Row fillWidth paddingRight="64" style={{ paddingTop: "64px" }}>
+                <Line maxWidth={48} />
               </Row>
             </ScrollAnimate>
 
-            {/* Post cards — masuk dari kanan */}
-            <ScrollAnimate direction="right" delay={180} duration={650} style={{ flex: 3 }}>
-              <Row flex={3} paddingX="20">
-                <Posts range={[1, 2]} columns="2" />
+            <Row fillWidth gap="24" marginTop="40" s={{ direction: "column" }}>
+              {/* Judul — masuk dari kiri */}
+              <ScrollAnimate direction="left" delay={80} duration={650} style={{ flex: 1 }}>
+                <Row flex={1} paddingLeft="l" paddingTop="24">
+                  <Heading as="h2" variant="display-strong-xs" wrap="balance">
+                    <T id="Tulisan Terbaru" en="Latest Writing" />
+                  </Heading>
+                </Row>
+              </ScrollAnimate>
+
+              {/* Post cards — masuk dari kanan */}
+              <ScrollAnimate direction="right" delay={180} duration={650} style={{ flex: 3 }}>
+                <Row flex={3} paddingX="20">
+                  <Posts range={[1, 2]} columns="2" />
+                </Row>
+              </ScrollAnimate>
+            </Row>
+
+            {/* P2: Line separator — min 64px padding below */}
+            <ScrollAnimate direction="right" duration={600} delay={0}>
+              <Row fillWidth paddingLeft="64" horizontal="end" style={{ paddingBottom: "64px" }}>
+                <Line maxWidth={48} />
               </Row>
             </ScrollAnimate>
-          </Row>
 
-          {/* Garis kanan — masuk dari kanan */}
-          <ScrollAnimate direction="right" duration={600} delay={0}>
-            <Row fillWidth paddingLeft="64" horizontal="end">
-              <Line maxWidth={48} />
-            </Row>
-          </ScrollAnimate>
+          </Column>
+        )}
 
-        </Column>
-      )}
+        {/* ── 4. Statistik — masuk dari bawah ─────────────────────── */}
+        {/* P2: 96px gap sudah di-handle oleh home-main-col CSS */}
+        <ScrollAnimate direction="up" delay={0} duration={750} threshold={0.08}>
+          <StatisticsSection
+            settings={settings}
+            projectsCount={projectsCount}
+            blogsCount={blogsCount}
+          />
+        </ScrollAnimate>
 
-      {/* ── 4. Statistik — masuk dari bawah ────────────────────────── */}
-      <ScrollAnimate direction="up" delay={0} duration={750} threshold={0.08}>
-        <StatisticsSection settings={settings} projectsCount={projectsCount} blogsCount={blogsCount} />
-      </ScrollAnimate>
+        {/* ── 5. Kontak — masuk dari bawah ─────────────────────────── */}
+        {/* P2: margin-top 96px antara Statistics dan Contact via outer gap */}
+        <ScrollAnimate direction="up" delay={60} duration={800} threshold={0.06}>
+          <ContactSection settings={settings} />
+        </ScrollAnimate>
 
-      {/* ── 5. Kontak — masuk dari bawah dengan sedikit delay ──────── */}
-      <ScrollAnimate direction="up" delay={60} duration={800} threshold={0.06}>
-        <ContactSection settings={settings} />
-      </ScrollAnimate>
-
-    </Column>
+      </Column>
+    </>
   );
 }

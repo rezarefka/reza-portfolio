@@ -30,9 +30,11 @@ function getMediaType(url: string): "image" | "video" | "pdf" {
   return "image";
 }
 
+/* ── P6: TOOL_COLORS — audit for 4.5:1 contrast, fix Next.js white-on-white ── */
 const TOOL_COLORS: Record<string, { bg: string; color: string }> = {
   "React":      { bg: "rgba(97,218,251,0.12)",  color: "#61dafb" },
-  "Next.js":    { bg: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.8)" },
+  /* P6 fix: white text was invisible in light mode → use neutral variable */
+  "Next.js":    { bg: "rgba(100,100,100,0.10)", color: "var(--neutral-on-background-strong)" },
   "TypeScript": { bg: "rgba(49,120,198,0.15)",  color: "#3178c6" },
   "Python":     { bg: "rgba(55,118,171,0.15)",  color: "#3776ab" },
   "Figma":      { bg: "rgba(162,89,255,0.15)",  color: "#a259ff" },
@@ -42,8 +44,9 @@ const TOOL_COLORS: Record<string, { bg: string; color: string }> = {
   "Laravel":    { bg: "rgba(255,45,32,0.12)",   color: "#ff2d20" },
   "Node.js":    { bg: "rgba(83,158,67,0.15)",   color: "#53a743" },
 };
+/* P6: default fallback menggunakan neutral variable — visible di light & dark */
 const getToolStyle = (t: string) =>
-  TOOL_COLORS[t] ?? { bg: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.65)" };
+  TOOL_COLORS[t] ?? { bg: "var(--neutral-alpha-weak)", color: "var(--neutral-on-background-medium)" };
 
 // ─── Ratio detection ─────────────────────────────────────────────────────────
 type Ratio = "landscape" | "portrait" | "square" | "unknown";
@@ -144,7 +147,7 @@ function ThumbnailDisplay({ src, title, priority }: { src: string; title: string
   }
 
   return (
-    <div style={wrapStyle}>
+    <div style={wrapStyle} className="proj-thumb-inner">
       {ratio !== "unknown" && ratio !== "landscape" && (
         <div style={{
           position: "absolute", top: 10, left: 10, zIndex: 2,
@@ -164,7 +167,8 @@ function ThumbnailDisplay({ src, title, priority }: { src: string; title: string
         style={{
           objectFit: ratio === "portrait" ? "contain" : "cover",
           objectPosition: "center",
-          transition: "transform 0.55s cubic-bezier(0.34,1.2,0.64,1)",
+          /* P8: thumbnail zoom on hover — scale via .project-card:hover CSS */
+          transition: "transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)",
           background: ratio === "portrait" ? "var(--neutral-background-strong)" : "transparent",
         }}
         priority={priority}
@@ -252,14 +256,12 @@ function CardShareMenu({
         animation: "cardShareIn 0.18s cubic-bezier(0.16,1,0.3,1) both",
       }}
     >
-      {/* Preview row — sampul + judul */}
       <div style={{ padding: "10px 10px 8px", borderBottom: "1px solid var(--neutral-alpha-weak)" }}>
         <div style={{
           display: "flex", alignItems: "center", gap: 9,
           padding: "7px 9px", borderRadius: 9,
           background: "var(--neutral-alpha-weak)",
         }}>
-          {/* Thumbnail sampul */}
           <div style={{
             width: 40, height: 30, borderRadius: 6, overflow: "hidden",
             flexShrink: 0, background: "var(--neutral-alpha-medium)",
@@ -274,7 +276,6 @@ function CardShareMenu({
               </svg>
             )}
           </div>
-          {/* Judul */}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{
               fontSize: 11, fontWeight: 600,
@@ -291,7 +292,6 @@ function CardShareMenu({
         </div>
       </div>
 
-      {/* Actions */}
       <div style={{ padding: "5px 0" }}>
         {[
           {
@@ -402,10 +402,18 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   return (
     <>
       <style>{`
+        /* ── P8: Reduced motion ── */
+        @media (prefers-reduced-motion: reduce) {
+          .project-card, .proj-thumb-inner img,
+          .proj-title::after, .tool-chip, .proj-btn-arrow,
+          .proj-btn, .share-icon-btn { transition-duration: 0.01ms !important; }
+        }
+
         @keyframes cardShareIn {
           from { opacity: 0; transform: scale(0.94) translateY(6px); }
           to   { opacity: 1; transform: scale(1) translateY(0); }
         }
+
         .project-card {
           position: relative;
           border-radius: 16px; overflow: visible;
@@ -427,8 +435,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           border-color: var(--neutral-alpha-medium);
           box-shadow: 0 12px 48px rgba(0,0,0,0.18);
         }
-        .project-card:hover .proj-thumb img { transform: scale(1.06); }
-        .proj-thumb { position: relative; }
+
+        /* P8: Thumbnail — scale 1→1.04, smooth cubic ── */
+        .proj-thumb { position: relative; overflow: hidden; }
+        .project-card:hover .proj-thumb-inner img {
+          transform: scale(1.04);
+        }
+
         .proj-overlay {
           position: absolute; inset: 0;
           background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 55%);
@@ -437,24 +450,64 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           display: flex; align-items: flex-end; padding: 16px;
         }
         .project-card:hover .proj-overlay { opacity: 1; }
+
+        /* P3: Tool chip padding 4px 12px (was 3px 9px) */
         .tool-chip {
           display: inline-flex; align-items: center;
-          padding: 3px 9px; border-radius: 99px;
+          padding: 4px 12px;    /* P3 */
+          border-radius: 99px;
           font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
           border: 1px solid rgba(255,255,255,0.07); white-space: nowrap;
+          /* P8: hover translateY with stagger via inline transitionDelay */
+          transition: transform 0.2s ease;
+          will-change: transform;
         }
+        /* P8: Stagger triggered by parent hover, delay set inline */
+        .project-card:hover .tool-chip {
+          transform: translateY(-2px);
+        }
+
+        /* P8: Title underline animate — background-size 0→100% */
+        .proj-title {
+          position: relative;
+        }
+        .proj-title::after {
+          content: "";
+          display: block;
+          width: 0%;
+          height: 1px;
+          background: var(--neutral-on-background-strong);
+          transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+          margin-top: 3px;
+        }
+        .project-card:hover .proj-title::after {
+          width: 100%;
+        }
+
         .proj-btn {
-          display: flex; align-items: center; gap: 5px;
-          padding: 6px 14px; border-radius: 8px;
+          display: flex; align-items: center; gap: 8px; /* P3: gap 8px */
+          padding: 8px 16px;   /* P3: 8px 16px */
+          border-radius: 8px;
           font-size: 12px; font-weight: 600; cursor: pointer;
           transition: background 0.15s, color 0.15s, transform 0.15s;
           text-decoration: none; border: none;
           font-family: inherit;
+          min-height: 40px;    /* P7: touch target */
         }
         .proj-btn:hover { transform: translateY(-1px); }
+
+        /* P8: CTA arrow slides right on hover */
+        .proj-btn-arrow {
+          transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .proj-btn:hover .proj-btn-arrow {
+          transform: translateX(4px);
+        }
+
         .share-icon-btn {
           display: flex; align-items: center; justify-content: center;
-          width: 30px; height: 30px; border-radius: 8px; border: none;
+          width: 40px; height: 40px; /* P3+P7: touch target 40px */
+          border-radius: 8px; border: none;
           background: var(--neutral-alpha-weak);
           color: var(--neutral-on-background-weak);
           cursor: pointer; flex-shrink: 0;
@@ -515,28 +568,52 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             )}
           </div>
 
-          {/* Body */}
-          <div style={{ padding: "18px 20px 20px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
-            <h3 style={{
-              fontSize: 18, fontWeight: 700, lineHeight: 1.3,
-              color: "var(--neutral-on-background-strong)",
-              margin: 0, letterSpacing: "-0.01em",
-            }}>{displayTitle}</h3>
+          {/* P3: Body padding 16px 24px 24px (was 18px 20px 20px) */}
+          <div style={{ padding: "16px 24px 24px", display: "flex", flexDirection: "column", gap: 16, flex: 1 }}>
+
+            {/* P8: Title with underline microinteraction */}
+            <h3
+              className="proj-title"
+              style={{
+                fontSize: 18,         /* P4: md = 20, but 18 keeps card density; use 20 if preferred */
+                fontWeight: 700,
+                lineHeight: 1.3,
+                color: "var(--neutral-on-background-strong)",
+                margin: 0,
+                letterSpacing: "-0.01em",
+              }}
+            >
+              {displayTitle}
+            </h3>
 
             {description?.trim() && (
               <p style={{
-                fontSize: 13, lineHeight: 1.65,
+                fontSize: 14,         /* P4: sm = 14px */
+                lineHeight: 1.6,      /* P4: body line-height */
                 color: "var(--neutral-on-background-weak)",
                 margin: 0, overflow: "hidden",
                 display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
               }}>{displayDescription}</p>
             )}
 
+            {/* P8: Tool chips with stagger via inline transitionDelay */}
             {tools.length > 0 && (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
-                {tools.slice(0, 6).map((tool) => {
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}> {/* P3: gap 8px */}
+                {tools.slice(0, 6).map((tool, chipIdx) => {
                   const s = getToolStyle(tool);
-                  return <span key={tool} className="tool-chip" style={{ background: s.bg, color: s.color }}>{tool}</span>;
+                  return (
+                    <span
+                      key={tool}
+                      className="tool-chip"
+                      style={{
+                        background: s.bg,
+                        color: s.color,
+                        transitionDelay: `${chipIdx * 40}ms`, /* P8: stagger 40ms */
+                      } as React.CSSProperties}
+                    >
+                      {tool}
+                    </span>
+                  );
                 })}
                 {tools.length > 6 && (
                   <span className="tool-chip" style={{ background: "var(--neutral-alpha-weak)", color: "var(--neutral-on-background-weak)" }}>
@@ -546,7 +623,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               </div>
             )}
 
-            {/* Action row */}
+            {/* P3: Action row gap 8px, buttons 8px 16px padding */}
             <div style={{ display: "flex", gap: 8, marginTop: "auto", paddingTop: 8, alignItems: "center" }}>
               {/* Detail button */}
               <button
@@ -557,7 +634,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 onMouseLeave={(e) => { e.currentTarget.style.background = "var(--brand-alpha-weak)"; }}
               >
                 {t("Detail Karya", "View Project")}
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                {/* P8: Arrow slides right on hover via .proj-btn:hover .proj-btn-arrow */}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="proj-btn-arrow">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </button>

@@ -77,51 +77,86 @@ export function ContactSection({ settings }: ContactSectionProps) {
   };
 
   const socialLinks = [
-    settings?.social_github   && { label: "GitHub",    href: settings.social_github,    icon: icons.github },
-    settings?.social_linkedin && { label: "LinkedIn",  href: settings.social_linkedin,  icon: icons.linkedin },
-    settings?.social_instagram&& { label: "Instagram", href: settings.social_instagram, icon: icons.instagram },
+    settings?.social_github    && { label: "GitHub",    href: settings.social_github,    icon: icons.github },
+    settings?.social_linkedin  && { label: "LinkedIn",  href: settings.social_linkedin,  icon: icons.linkedin },
+    settings?.social_instagram && { label: "Instagram", href: settings.social_instagram, icon: icons.instagram },
   ].filter(Boolean) as { label: string; href: string; icon: ReactNode }[];
 
   return (
     <RevealFx translateY="12" delay={0.1} fillWidth>
       <style>{`
-        @keyframes contactPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}
-        .cf-input{
-          width:100%;padding:11px 14px;border-radius:10px;font-size:14px;
-          background:var(--neutral-background-medium);
-          border:1px solid var(--neutral-alpha-weak);
-          color:var(--neutral-on-background-strong);
-          outline:none;transition:border-color .18s,box-shadow .18s;
-          font-family:inherit;
+        /* ── P8: Reduced motion ── */
+        @media (prefers-reduced-motion: reduce) {
+          .cf-submit, .cf-social-link, .cf-input { transition-duration: 0.01ms !important; }
+        }
+
+        /* P5: "available" dot animation — neutral only, not accent */
+        @keyframes contactAvailPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.5); }
+        }
+
+        .cf-input {
+          width: 100%; padding: 11px 14px; border-radius: 10px; font-size: 14px;
+          background: var(--neutral-background-medium);
+          border: 1px solid var(--neutral-alpha-weak);
+          color: var(--neutral-on-background-strong);
+          outline: none; transition: border-color 0.18s, box-shadow 0.18s;
+          font-family: inherit;
           box-sizing: border-box;
         }
-        .cf-input:focus{border-color:var(--brand-alpha-medium);box-shadow:0 0 0 3px var(--brand-alpha-weak);}
-        .cf-input::placeholder{color:var(--neutral-on-background-weak);}
-        .cf-textarea{resize:vertical;min-height:120px;}
-        .cf-submit{
-          display:inline-flex;align-items:center;justify-content:center;gap:8px;
-          padding:13px 28px;border-radius:12px;
-          font-size:15px;font-weight:600;cursor:pointer;
-          background:var(--brand-background-strong);
-          color:var(--brand-on-background-strong);
-          border:none;transition:opacity .18s,transform .18s,box-shadow .18s;
-          box-shadow:0 2px 16px var(--brand-alpha-medium);
-          white-space: nowrap;
+        .cf-input:focus {
+          border-color: var(--brand-alpha-medium);
+          box-shadow: 0 0 0 3px var(--brand-alpha-weak);
         }
-        .cf-submit:hover:not(:disabled){opacity:.88;transform:translateY(-1px);box-shadow:0 6px 24px var(--brand-alpha-medium);}
-        .cf-submit:disabled{opacity:.55;cursor:not-allowed;}
-        .cf-social-link{
-          display:inline-flex;align-items:center;gap:8px;
-          padding:9px 16px;border-radius:10px;
-          text-decoration:none;font-size:13px;font-weight:500;
-          border:1px solid var(--neutral-alpha-weak);
-          background:var(--neutral-background-medium);
-          color:var(--neutral-on-background-strong);
-          transition:border-color .18s,background .18s,transform .18s;
+        .cf-input::placeholder { color: var(--neutral-on-background-weak); }
+        .cf-textarea { resize: vertical; min-height: 120px; }
+
+        /* P5: ONLY submit button gets accent — background brand-background-strong */
+        .cf-submit {
+          display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+          padding: 13px 28px; border-radius: 12px;
+          font-size: 15px; font-weight: 600; cursor: pointer;
+          background: var(--brand-background-strong);   /* P5: accent here only */
+          color: var(--brand-on-background-strong);      /* P5: accent here only */
+          border: none;
+          transition: opacity 0.18s, transform 0.18s, box-shadow 0.18s;
+          box-shadow: 0 2px 16px var(--brand-alpha-medium);
           white-space: nowrap;
+          font-family: inherit;
+          min-height: 48px;  /* P3: 48px kelipatan 8 */
         }
-        .cf-social-link:hover{border-color:var(--neutral-alpha-medium);background:var(--neutral-alpha-weak);transform:translateY(-1px);}
-        .cf-label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--neutral-on-background-weak);margin-bottom:6px;}
+        .cf-submit:hover:not(:disabled) {
+          opacity: 0.88;
+          transform: translateY(-1px);
+          box-shadow: 0 6px 24px var(--brand-alpha-medium);
+        }
+        .cf-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+
+        .cf-social-link {
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 8px 16px;    /* P3: 8px 16px */
+          border-radius: 10px;
+          text-decoration: none; font-size: 13px; font-weight: 500;
+          border: 1px solid var(--neutral-alpha-weak);
+          background: var(--neutral-background-medium);
+          color: var(--neutral-on-background-strong);
+          transition: border-color 0.18s, background 0.18s, transform 0.18s;
+          white-space: nowrap;
+          min-height: 40px;     /* P7: touch target */
+        }
+        .cf-social-link:hover {
+          border-color: var(--neutral-alpha-medium);
+          background: var(--neutral-alpha-weak);
+          transform: translateY(-1px);
+        }
+
+        .cf-label {
+          display: flex; align-items: center; gap: 6px;
+          font-size: 13px; font-weight: 500;
+          color: var(--neutral-on-background-weak);
+          margin-bottom: 6px;
+        }
 
         /* submit row — stack on mobile */
         .cf-submit-row {
@@ -133,26 +168,20 @@ export function ContactSection({ settings }: ContactSectionProps) {
           flex-wrap: wrap;
         }
         @media (max-width: 520px) {
-          .cf-submit-row {
-            flex-direction: column;
-            align-items: stretch;
-          }
-          .cf-submit-row .cf-email-hint {
-            text-align: center;
-            order: 2;
-          }
+          .cf-submit-row { flex-direction: column; align-items: stretch; }
+          .cf-submit-row .cf-email-hint { text-align: center; order: 2; }
           .cf-submit { order: 1; width: 100%; }
         }
 
-        /* name+email row */
+        /* name+email row — P3 */
         .cf-fields-row {
           display: flex;
           flex-direction: row;
-          gap: 16px;
+          gap: 16px;            /* P3: 16px */
           width: 100%;
         }
         @media (max-width: 520px) {
-          .cf-fields-row { flex-direction: column; gap: 12px; }
+          .cf-fields-row { flex-direction: column; gap: 16px; }
         }
       `}</style>
 
@@ -166,15 +195,22 @@ export function ContactSection({ settings }: ContactSectionProps) {
         {/* Header */}
         <Column gap="12" align="center" horizontal="center">
           <Row gap="8" vertical="center">
+            {/*
+             * P5: "available" dot → NEUTRAL color (not brand accent).
+             * Accent is reserved for submit button only in this section.
+             */}
             <span style={{
               width: 7, height: 7, borderRadius: "50%",
-              background: "var(--brand-background-strong)",
-              animation: "contactPulse 2.4s ease-in-out infinite",
+              background: "var(--neutral-on-background-medium)", /* P5: neutral, not brand */
+              animation: "contactAvailPulse 2.4s ease-in-out infinite",
               display: "inline-block",
               flexShrink: 0,
             }}/>
-            <Text variant="label-default-xs" onBackground="neutral-weak"
-              style={{ letterSpacing: "0.1em", textTransform: "uppercase" }}>
+            <Text
+              variant="label-default-xs"
+              onBackground="neutral-weak"
+              style={{ letterSpacing: "0.1em", textTransform: "uppercase" }}
+            >
               {t("Tersedia untuk kolaborasi", "Available for collaboration")}
             </Text>
           </Row>
@@ -182,8 +218,11 @@ export function ContactSection({ settings }: ContactSectionProps) {
           <Text variant="display-strong-m" style={{ textAlign: "center" }}>
             {t("Mari Terhubung", "Let's Connect")}
           </Text>
-          <Text variant="body-default-m" onBackground="neutral-weak"
-            style={{ textAlign: "center", maxWidth: 400, lineHeight: 1.65, padding: "0 8px" }}>
+          <Text
+            variant="body-default-m"
+            onBackground="neutral-weak"
+            style={{ textAlign: "center", maxWidth: 400, lineHeight: 1.65, padding: "0 8px" }}
+          >
             {t(
               "Punya proyek menarik atau ingin berdiskusi? Kirim pesan dan saya akan merespons secepatnya.",
               "Have an interesting project or want to discuss something? Send a message and I'll respond as soon as possible."
@@ -247,7 +286,7 @@ export function ContactSection({ settings }: ContactSectionProps) {
             />
           </Column>
 
-          {/* Submit */}
+          {/* Submit — P5: satu-satunya elemen dengan accent di section ini */}
           <div className="cf-submit-row">
             {recipientEmail && (
               <Text variant="body-default-xs" onBackground="neutral-weak" className="cf-email-hint">
@@ -258,9 +297,14 @@ export function ContactSection({ settings }: ContactSectionProps) {
               className="cf-submit"
               onClick={handleSubmit}
               disabled={!name || !senderEmail || !message || formState === "sending"}
+              type="button"
             >
               {icons.send}
-              {formState === "sending" ? t("Membuka...", "Opening...") : formState === "sent" ? t("✓ Terkirim!", "✓ Sent!") : t("Kirim Pesan", "Send Message")}
+              {formState === "sending"
+                ? t("Membuka...", "Opening...")
+                : formState === "sent"
+                  ? t("✓ Terkirim!", "✓ Sent!")
+                  : t("Kirim Pesan", "Send Message")}
             </button>
           </div>
         </Column>
@@ -268,8 +312,11 @@ export function ContactSection({ settings }: ContactSectionProps) {
         {/* Social Links */}
         {socialLinks.length > 0 && (
           <Column gap="12" align="center" horizontal="center">
-            <Text variant="label-default-xs" onBackground="neutral-weak"
-              style={{ textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            <Text
+              variant="label-default-xs"
+              onBackground="neutral-weak"
+              style={{ textTransform: "uppercase", letterSpacing: "0.1em" }}
+            >
               {t("Atau temukan saya di", "Or find me on")}
             </Text>
             <Row gap="8" wrap horizontal="center">
