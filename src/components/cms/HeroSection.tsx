@@ -214,9 +214,9 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
 
         /* ── Description ── */
         @keyframes descFade {
-          0%   { opacity:0;    transform:translateY(16px) scale(0.985); filter: blur(8px); }
-          60%  { opacity:0.9;  filter: blur(1px); }
-          100% { opacity:0.82; transform:translateY(0)     scale(1);    filter: blur(0); }
+          0%   { opacity:0; transform:translateY(16px) scale(0.985); filter: blur(8px); }
+          60%  { opacity:1; filter: blur(1px); }
+          100% { opacity:1; transform:translateY(0)     scale(1);    filter: blur(0); }
         }
         .hero-desc {
           font-size: 1.125rem;
