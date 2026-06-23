@@ -214,8 +214,9 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
 
         /* ── Description ── */
         @keyframes descFade {
-          from { opacity:0; transform:translateY(12px); }
-          to   { opacity:0.82; transform:translateY(0); }
+          0%   { opacity:0;    transform:translateY(16px) scale(0.985); filter: blur(8px); }
+          60%  { opacity:0.9;  filter: blur(1px); }
+          100% { opacity:0.82; transform:translateY(0)     scale(1);    filter: blur(0); }
         }
         .hero-desc {
           font-size: 1.125rem;
@@ -225,8 +226,8 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
           text-align: center;
           max-width: 520px;
           margin: 0 0 40px;
-          animation: descFade 0.7s cubic-bezier(0.22,1,0.36,1) 0.45s both;
-          text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+          animation: descFade 1s cubic-bezier(0.22,1,0.36,1) 0.45s both;
+          will-change: opacity, transform, filter;
         }
 
         /* ── CTA ── */
