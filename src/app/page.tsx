@@ -61,7 +61,8 @@ export default async function Home() {
     givenName: "Reza",
     familyName: "Refka Kurniawan",
     jobTitle: person.role,
-    description: "Creative Technologist & Developer dari Makassar, Indonesia. Membangun pengalaman digital yang menggabungkan teknologi, desain, dan kreativitas.",
+    description:
+      "Creative Technologist & Developer dari Makassar, Indonesia. Membangun pengalaman digital yang menggabungkan teknologi, desain, dan kreativitas.",
     url: baseURL,
     image: {
       "@type": "ImageObject",
@@ -102,15 +103,21 @@ export default async function Home() {
 
   return (
     <>
-      {/* P2: Responsive section gap — 96px desktop, 58px mobile (60% rule) */}
+      {/*
+       * P2: Section gap 96px desktop → 58px mobile (60% rule).
+       * Injected as global style to override Once UI's "xl" token which is ambiguous.
+       */}
       <style dangerouslySetInnerHTML={{ __html: `
-        .home-main-col { gap: 96px; }
-        @media (max-width: 640px) { .home-main-col { gap: 58px; } }
+        .home-col { gap: 96px !important; }
+        @media (max-width: 640px) { .home-col { gap: 58px !important; } }
+
+        /* P2: Tulisan Terbaru block — 64px breathing room around Lines */
+        .tulisan-block { padding-top: 64px; padding-bottom: 64px; }
       `}} />
 
       <Column
         maxWidth="m"
-        className="home-main-col"
+        className="home-col"
         paddingY="12"
         horizontal="center"
       >
@@ -132,27 +139,26 @@ export default async function Home() {
           }}
         />
 
-        {/* ── 1. Hero ──────────────────────────────────────────────── */}
+        {/* ── 1. Hero ── */}
         <ScrollAnimate direction="up" duration={800} threshold={0.01}>
           <HeroSection settings={settings} />
         </ScrollAnimate>
 
-        {/* ── 2. Card Karya ──────────────────────────────────────── */}
+        {/* ── 2. Card Karya ── */}
         <Projects />
 
-        {/* ── 3. Tulisan Terbaru ──────────────────────────────────── */}
+        {/* ── 3. Tulisan Terbaru ── */}
         {routes["/blog"] && (
-          <Column fillWidth gap="24">
+          <Column fillWidth gap="24" className="tulisan-block">
 
-            {/* P2: Line separator — min 64px padding above */}
+            {/* P2: Line + 64px padding from above */}
             <ScrollAnimate direction="left" duration={600} delay={0}>
-              <Row fillWidth paddingRight="64" style={{ paddingTop: "64px" }}>
+              <Row fillWidth paddingRight="64">
                 <Line maxWidth={48} />
               </Row>
             </ScrollAnimate>
 
             <Row fillWidth gap="24" marginTop="40" s={{ direction: "column" }}>
-              {/* Judul — masuk dari kiri */}
               <ScrollAnimate direction="left" delay={80} duration={650} style={{ flex: 1 }}>
                 <Row flex={1} paddingLeft="l" paddingTop="24">
                   <Heading as="h2" variant="display-strong-xs" wrap="balance">
@@ -161,7 +167,6 @@ export default async function Home() {
                 </Row>
               </ScrollAnimate>
 
-              {/* Post cards — masuk dari kanan */}
               <ScrollAnimate direction="right" delay={180} duration={650} style={{ flex: 3 }}>
                 <Row flex={3} paddingX="20">
                   <Posts range={[1, 2]} columns="2" />
@@ -169,9 +174,9 @@ export default async function Home() {
               </ScrollAnimate>
             </Row>
 
-            {/* P2: Line separator — min 64px padding below */}
+            {/* P2: Line + 64px padding below */}
             <ScrollAnimate direction="right" duration={600} delay={0}>
-              <Row fillWidth paddingLeft="64" horizontal="end" style={{ paddingBottom: "64px" }}>
+              <Row fillWidth paddingLeft="64" horizontal="end">
                 <Line maxWidth={48} />
               </Row>
             </ScrollAnimate>
@@ -179,8 +184,8 @@ export default async function Home() {
           </Column>
         )}
 
-        {/* ── 4. Statistik — masuk dari bawah ─────────────────────── */}
-        {/* P2: 96px gap sudah di-handle oleh home-main-col CSS */}
+        {/* ── 4. Statistik ── */}
+        {/* P2: 96px gap from home-col class handles spacing above */}
         <ScrollAnimate direction="up" delay={0} duration={750} threshold={0.08}>
           <StatisticsSection
             settings={settings}
@@ -189,8 +194,8 @@ export default async function Home() {
           />
         </ScrollAnimate>
 
-        {/* ── 5. Kontak — masuk dari bawah ─────────────────────────── */}
-        {/* P2: margin-top 96px antara Statistics dan Contact via outer gap */}
+        {/* ── 5. Kontak ── */}
+        {/* P2: 96px gap from home-col class handles spacing — intentional whitespace */}
         <ScrollAnimate direction="up" delay={60} duration={800} threshold={0.06}>
           <ContactSection settings={settings} />
         </ScrollAnimate>
