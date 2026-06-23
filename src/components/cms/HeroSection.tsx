@@ -5,7 +5,7 @@ import { about, person } from "@/resources";
 import { useLang } from "@/lib/lang-context";
 import { createClient } from "@/lib/supabase/client";
 import type { SiteSettings } from "@/lib/types";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { ShimmerButton } from "./ShimmerButton";
 import { HeroSkeleton } from "@/components/Skeletons";
 
@@ -18,8 +18,6 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
   const [settings, setSettings] = useState<SiteSettings | null>(initialSettings);
   const [avatarSrc, setAvatarSrc] = useState<string>(person.avatar);
   const [isLoading, setIsLoading] = useState<boolean>(!initialSettings);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animRef = useRef<number>(0);
 
   /* ── Supabase refresh ── */
   useEffect(() => {
@@ -33,49 +31,6 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
         setIsLoading(false);
       });
   }, []);
-
-  /* ── Subtle dot-grid canvas ── */
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    let w = 0, h = 0;
-
-    const resize = () => {
-      const rect = canvas.getBoundingClientRect();
-      w = canvas.width  = rect.width;
-      h = canvas.height = rect.height;
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    type Dot = { x: number; y: number; alpha: number; dir: number; speed: number };
-    const dots: Dot[] = [];
-    const GAP = 40;
-    const rebuildDots = () => {
-      dots.length = 0;
-      for (let x = GAP; x < w; x += GAP)
-        for (let y = GAP; y < h; y += GAP)
-          dots.push({ x, y, alpha: Math.random() * 0.3 + 0.05, dir: Math.random() > 0.5 ? 1 : -1, speed: Math.random() * 0.003 + 0.001 });
-    };
-    rebuildDots();
-
-    const draw = () => {
-      ctx.clearRect(0, 0, w, h);
-      dots.forEach((d) => {
-        d.alpha += d.dir * d.speed;
-        if (d.alpha > 0.35 || d.alpha < 0.04) d.dir *= -1;
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(99,102,241,${d.alpha})`;
-        ctx.fill();
-      });
-      animRef.current = requestAnimationFrame(draw);
-    };
-    draw();
-    return () => { cancelAnimationFrame(animRef.current); window.removeEventListener("resize", resize); };
-  }, [isLoading]);
 
   if (isLoading) return <Column fillWidth horizontal="center" gap="m"><HeroSkeleton /></Column>;
 
@@ -109,22 +64,12 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
 
         /* ── Canvas bg ── */
         .hero-canvas {
-          position: absolute;
-          inset: 0;
-          width: 100%; height: 100%;
-          pointer-events: none;
-          z-index: 0;
-          opacity: 0.55;
+          display: none;
         }
 
-        /* ── Radial vignette to fade canvas at edges ── */
+        /* ── Radial vignette — dihapus ── */
         .hero-vignette {
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(ellipse 80% 70% at 50% 50%,
-            transparent 0%, var(--neutral-background-page, #09090b) 100%);
-          pointer-events: none;
-          z-index: 1;
+          display: none;
         }
 
         /* ── Content wrapper ── */
@@ -265,10 +210,7 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
         }
       `}</style>
 
-      {/* Dot-grid canvas */}
-      <canvas ref={canvasRef} className="hero-canvas" aria-hidden="true" />
-      <div className="hero-vignette" aria-hidden="true" />
-
+      {/* Dot-grid canvas — hidden */}
       <div className="hero-content">
         {/* Motto pill */}
         {heroMotto?.trim() && (
