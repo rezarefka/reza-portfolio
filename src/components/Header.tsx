@@ -96,7 +96,7 @@ export const Header = () => {
 
           {routes["/"] && (
             <div className="nav-item">
-              <ToggleButton prefixIcon="home" href="/" selected={isActive("/",true)}
+              <ToggleButton prefixIcon="home" href="/"
                 className={`${styles.navBtn} nav-item-btn${isActive("/",true)?" "+styles.active:""}`}>
                 <span className={styles.label}>{navLabel("Home")}</span>
               </ToggleButton>
@@ -107,7 +107,7 @@ export const Header = () => {
           {routes["/about"] && (<>
             <span className={styles.sep}/>
             <div className="nav-item">
-              <ToggleButton prefixIcon="person" href="/about" selected={isActive("/about",true)}
+              <ToggleButton prefixIcon="person" href="/about"
                 className={`${styles.navBtn} nav-item-btn${isActive("/about",true)?" "+styles.active:""}`}>
                 <span className={styles.label}>{navLabel(about.label)}</span>
               </ToggleButton>
@@ -118,7 +118,7 @@ export const Header = () => {
           {routes["/work"] && (<>
             <span className={styles.sep}/>
             <div className="nav-item">
-              <ToggleButton prefixIcon="grid" href="/work" selected={isActive("/work")}
+              <ToggleButton prefixIcon="grid" href="/work"
                 className={`${styles.navBtn} nav-item-btn${isActive("/work")?" "+styles.active:""}`}>
                 <span className={styles.label}>{navLabel(work.label)}</span>
               </ToggleButton>
@@ -129,7 +129,7 @@ export const Header = () => {
           {routes["/blog"] && (<>
             <span className={styles.sep}/>
             <div className="nav-item">
-              <ToggleButton prefixIcon="book" href="/blog" selected={isActive("/blog")}
+              <ToggleButton prefixIcon="book" href="/blog"
                 className={`${styles.navBtn} nav-item-btn${isActive("/blog")?" "+styles.active:""}`}>
                 <span className={styles.label}>{navLabel(blog.label)}</span>
               </ToggleButton>
@@ -140,7 +140,7 @@ export const Header = () => {
           {routes["/gallery"] && (<>
             <span className={styles.sep}/>
             <div className="nav-item">
-              <ToggleButton prefixIcon="gallery" href="/gallery" selected={isActive("/gallery")}
+              <ToggleButton prefixIcon="gallery" href="/gallery"
                 className={`${styles.navBtn} nav-item-btn${isActive("/gallery")?" "+styles.active:""}`}>
                 <span className={styles.label}>{navLabel(gallery.label)}</span>
               </ToggleButton>
