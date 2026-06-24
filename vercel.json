@@ -8,7 +8,7 @@
     {
       "source": "/reza-control/(.*)",
       "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noimageindex" },
         { "key": "Cache-Control", "value": "no-store, max-age=0" }
       ]
     },
@@ -16,6 +16,60 @@
       "source": "/api/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "no-store, max-age=0" }
+      ]
+    },
+    {
+      "source": "/project/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noimageindex" }
+      ]
+    },
+    {
+      "source": "/work/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noimageindex" }
+      ]
+    },
+    {
+      "source": "/gallery",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noimageindex" }
+      ]
+    },
+    {
+      "source": "/gallery/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noimageindex" }
+      ]
+    },
+    {
+      "source": "/blog/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noimageindex" }
+      ]
+    },
+    {
+      "source": "/certificate/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noimageindex" }
+      ]
+    },
+    {
+      "source": "/about",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noimageindex" }
+      ]
+    },
+    {
+      "source": "/contact",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noimageindex" }
+      ]
+    },
+    {
+      "source": "/jurnal/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noimageindex" }
       ]
     }
   ],

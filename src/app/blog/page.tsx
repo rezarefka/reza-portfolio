@@ -15,7 +15,7 @@ export async function generateMetadata() {
       image: `/api/og/generate?title=${encodeURIComponent(blog.title)}`,
       path: blog.path,
     }),
-    robots: { index: false, follow: false },
+    robots: { index: false, follow: false, googleBot: { index: false, follow: false, noimageindex: true } },
   };
 }
 

@@ -50,7 +50,7 @@ export async function generateMetadata({
     image: post.metadata.image || `/api/og/generate?title=${post.metadata.title}`,
     path: `${work.path}/${post.slug}`,
   });
-  return { ...workMeta, robots: { index: false, follow: false } };
+  return { ...workMeta, robots: { index: false, follow: false, googleBot: { index: false, follow: false, noimageindex: true } } };
 }
 
 export default async function Project({

@@ -50,22 +50,39 @@ const nextConfig = {
           },
         ],
       },
-      // Sub-pages: noindex via X-Robots-Tag (backup selain meta robots di page)
+      // Sub-pages: noindex + noimageindex via X-Robots-Tag
+      // noimageindex → Google Images tidak akan mengindeks gambar dari halaman ini
       {
         source: '/project/:path*',
-        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noimageindex' }],
       },
       {
         source: '/blog/:path*',
-        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noimageindex' }],
       },
       {
         source: '/certificate/:path*',
-        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noimageindex' }],
       },
       {
         source: '/work/:path*',
-        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noimageindex' }],
+      },
+      {
+        source: '/gallery/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noimageindex' }],
+      },
+      {
+        source: '/about',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noimageindex' }],
+      },
+      {
+        source: '/contact',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noimageindex' }],
+      },
+      {
+        source: '/jurnal/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noimageindex' }],
       },
     ]
   },

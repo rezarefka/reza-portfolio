@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: "Reza Control – CMS",
-    robots: { index: false, follow: false },
+    robots: { index: false, follow: false, googleBot: { index: false, follow: false, noimageindex: true } },
     icons: {
       icon: [{ url: `/api/favicon?v=${faviconTs}`, type: "image/png" }],
       shortcut: `/api/favicon?v=${faviconTs}`,

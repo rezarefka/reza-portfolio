@@ -50,7 +50,7 @@ export async function generateMetadata({
     image: project.thumbnail?.split("?")[0] || `/api/og/generate?title=${project.title_id}`,
     path: `/project/${project.slug}`,
   });
-  return { ...meta, robots: { index: false, follow: false } };
+  return { ...meta, robots: { index: false, follow: false, googleBot: { index: false, follow: false, noimageindex: true } } };
 }
 
 function getMediaType(url: string): "image" | "video" | "pdf" | null {

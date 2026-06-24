@@ -36,7 +36,7 @@ export async function generateMetadata({
     image: cert.thumbnail || `/api/og/generate?title=${encodeURIComponent(cert.title_id)}`,
     path: `/certificate/${cert.id}`,
   });
-  return { ...certMeta, robots: { index: false, follow: false } };
+  return { ...certMeta, robots: { index: false, follow: false, googleBot: { index: false, follow: false, noimageindex: true } } };
 }
 
 export default async function CertificatePage({

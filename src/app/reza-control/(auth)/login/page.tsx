@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Login – Reza Control",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: false, googleBot: { index: false, follow: false, noimageindex: true } },
 };
 
 export default function LoginPage() {

@@ -9,7 +9,7 @@ export async function generateMetadata() {
       baseURL,
       path: "/contact",
     }),
-    robots: { index: false, follow: false },
+    robots: { index: false, follow: false, googleBot: { index: false, follow: false, noimageindex: true } },
   };
 }
 

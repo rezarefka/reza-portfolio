@@ -59,12 +59,17 @@ export async function generateMetadata() {
     },
     icons: {
       icon: [
-        // Dinamis dari CMS (dengan cache-bust) — diutamakan, ini sumber kebenaran favicon
-        { url: `/api/favicon?v=${faviconTs}`, type: "image/png", sizes: "256x256" },
-        // Fallback statis .ico — hanya dipakai browser/crawler yang tidak baca entry PNG di atas
+        // Favicon dinamis dari CMS — cache-bust agresif supaya update langsung tampil
+        { url: `/api/favicon?v=${faviconTs}&t=${Math.floor(faviconTs / 60000)}`, type: "image/png", sizes: "256x256" },
+        { url: `/api/favicon?v=${faviconTs}&t=${Math.floor(faviconTs / 60000)}`, type: "image/png", sizes: "32x32" },
+        { url: `/api/favicon?v=${faviconTs}&t=${Math.floor(faviconTs / 60000)}`, type: "image/png", sizes: "16x16" },
+        // Fallback statis .ico — browser lama / crawler
         { url: "/favicon.ico", type: "image/x-icon", sizes: "any" },
       ],
-      apple: [{ url: `/api/icon?size=192&v=${faviconTs}`, sizes: "192x192", type: "image/png" }],
+      apple: [
+        { url: `/api/icon?size=192&v=${faviconTs}`, sizes: "192x192", type: "image/png" },
+        { url: `/api/icon?size=512&v=${faviconTs}`, sizes: "512x512", type: "image/png" },
+      ],
       shortcut: `/api/favicon?v=${faviconTs}`,
     },
   };
@@ -89,7 +94,12 @@ export default async function RootLayout({
       )}
     >
       <head>
-        {/* Favicon dihandle oleh generateMetadata() di atas — single source of truth */}
+        {/* Favicon — link tag eksplisit untuk browser yang skip metadata API */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link rel="icon" type="image/png" sizes="256x256" href="/api/favicon" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/api/icon?size=192" />
+        <meta name="robots" content="max-image-preview:none" />
         <script
           id="theme-init"
           dangerouslySetInnerHTML={{

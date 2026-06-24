@@ -50,7 +50,7 @@ export async function generateMetadata({
       image: cmsPost.thumbnail || `/api/og/generate?title=${cmsPost.title_id}`,
       path: `${blog.path}/${cmsPost.slug}`,
     });
-    return { ...cmsMeta, robots: { index: false, follow: false } };
+    return { ...cmsMeta, robots: { index: false, follow: false, googleBot: { index: false, follow: false, noimageindex: true } } };
   }
 
   const posts = getPosts(["src", "app", "blog", "posts"]);
@@ -64,7 +64,7 @@ export async function generateMetadata({
     image: post.metadata.image || `/api/og/generate?title=${post.metadata.title}`,
     path: `${blog.path}/${post.slug}`,
   });
-  return { ...mdxMeta, robots: { index: false, follow: false } };
+  return { ...mdxMeta, robots: { index: false, follow: false, googleBot: { index: false, follow: false, noimageindex: true } } };
 }
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string | string[] }> }) {
