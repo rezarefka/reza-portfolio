@@ -237,49 +237,64 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
         .gsap-slider-scrim {
           position: absolute;
           inset: 0;
-          background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.15) 45%, transparent 65%);
+          background: linear-gradient(
+            to top,
+            rgba(0,0,0,0.55) 0%,
+            rgba(0,0,0,0.32) 22%,
+            rgba(0,0,0,0.1) 42%,
+            transparent 62%
+          );
         }
         .gsap-slider-caption {
           position: absolute;
-          left: 22px;
-          right: 22px;
-          bottom: 22px;
+          left: 20px;
+          right: 20px;
+          bottom: 18px;
           color: #fff;
           pointer-events: none;
         }
         .gsap-slider-title {
           margin: 0;
           font-family: var(--font-heading);
-          font-size: clamp(1.15rem, 4vw, 1.7rem);
-          font-weight: 700;
-          letter-spacing: 0.01em;
-          text-transform: uppercase;
-          line-height: 1.15;
+          font-size: clamp(0.86rem, 2.3vw, 1.05rem);
+          font-weight: 500;
+          letter-spacing: 0.005em;
+          text-transform: none;
+          line-height: 1.42;
+          color: rgba(255,255,255,0.95);
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-shadow: 0 1px 8px rgba(0,0,0,0.35);
         }
         .gsap-slider-subtitle-row {
           display: flex;
           align-items: center;
-          gap: 8px;
-          margin-top: 8px;
+          gap: 7px;
+          margin: 0 0 7px;
         }
         .gsap-slider-subtitle-line {
-          width: 22px;
+          width: 14px;
           height: 1px;
-          background: rgba(255,255,255,0.6);
+          background: rgba(255,255,255,0.5);
           display: inline-block;
         }
         .gsap-slider-subtitle {
-          font-size: 0.72rem;
-          font-weight: 600;
+          font-family: var(--font-label);
+          font-size: 0.6rem;
+          font-weight: 500;
           letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: rgba(255,255,255,0.75);
+          color: rgba(255,255,255,0.65);
         }
         .gsap-slider-tagline {
-          margin: 10px 0 0;
-          font-size: 0.8rem;
+          margin: 6px 0 0;
+          font-size: 0.68rem;
+          font-weight: 400;
           font-style: italic;
-          color: rgba(255,255,255,0.6);
+          line-height: 1.5;
+          color: rgba(255,255,255,0.5);
         }
         .gsap-slider-counter {
           position: absolute;
@@ -358,6 +373,16 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
         }
         @media (max-width: 480px) {
           .gsap-slider-arrow { width: 38px; height: 38px; }
+          .gsap-slider-caption { left: 16px; right: 16px; bottom: 14px; }
+          .gsap-slider-title { font-size: 0.8rem; line-height: 1.4; -webkit-line-clamp: 3; }
+          .gsap-slider-subtitle { font-size: 0.56rem; letter-spacing: 0.12em; }
+          .gsap-slider-subtitle-row { margin-bottom: 5px; }
+          .gsap-slider-tagline { font-size: 0.64rem; margin-top: 5px; }
+          .gsap-slider-counter { top: 10px; left: 10px; font-size: 10px; padding: 3px 8px; }
+          .gsap-slider-zoomhint { top: 10px; right: 10px; width: 26px; height: 26px; }
+        }
+        @media (max-width: 360px) {
+          .gsap-slider-title { font-size: 0.75rem; -webkit-line-clamp: 2; }
         }
       `}</style>
 
