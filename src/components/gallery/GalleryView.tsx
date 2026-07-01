@@ -154,7 +154,7 @@ function Lightbox({
             maxWidth: "88vw",
             maxHeight: "78vh",
             objectFit: "contain",
-            borderRadius: 16,
+            borderRadius: 6,
             boxShadow: "0 32px 80px rgba(0,0,0,0.7)",
           }}
         />
