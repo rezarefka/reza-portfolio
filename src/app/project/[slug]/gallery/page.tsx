@@ -3,7 +3,7 @@ import { getProjectBySlug } from "@/lib/db";
 import { GalleryViewer } from "@/components/cms/GalleryViewer";
 import { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300; // ISR: was force-dynamic (hit Supabase on every request)
 export const dynamicParams = true;
 
 export async function generateMetadata({

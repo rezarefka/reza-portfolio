@@ -17,8 +17,7 @@ import { Footer, Header, RouteGuard, Providers } from "@/components";
 import { baseURL, effects, fonts, style, dataStyle, home } from "@/resources";
 import { getSettings } from "@/lib/db";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 300; // ISR: regenerate max every 5 min instead of on every request
 
 export async function generateMetadata() {
   const settings = await getSettings().catch(() => null);

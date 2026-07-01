@@ -4,7 +4,7 @@ import { getPublishedBlogs, getSettings } from "@/lib/db";
 import { BlogListClient } from "@/components/blog/BlogListClient";
 import { T } from "@/components/T";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300; // ISR: was force-dynamic (hit Supabase on every request)
 
 export async function generateMetadata() {
   return {

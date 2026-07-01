@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 300; // ISR: was force-dynamic (hit Supabase on every request)
 
 import {
   Column,

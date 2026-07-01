@@ -22,7 +22,7 @@ import { ProjectViewTracker } from "@/components/ProjectViewTracker";
 import { T } from "@/components/T";
 import { LocalizedDate } from "@/components/LocalizedDate";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300; // ISR: was force-dynamic (hit Supabase on every request)
 export const dynamicParams = true;
 
 export async function generateStaticParams() {

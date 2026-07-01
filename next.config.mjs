@@ -13,7 +13,7 @@ const nextConfig = {
   pageExtensions: ['ts', 'tsx', 'mdx'],
 
   images: {
-    unoptimized: true,
+    unoptimized: false,
     remotePatterns: [
       {
         protocol: 'https',
