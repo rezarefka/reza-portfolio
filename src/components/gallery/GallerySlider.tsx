@@ -201,15 +201,6 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
           perspective: 1400px;
         }
         .gsap-slider-stage:active { cursor: grabbing; }
-        .gsap-slider-bg {
-          position: absolute;
-          inset: 0;
-          z-index: 0;
-          pointer-events: none;
-          background:
-            radial-gradient(120% 90% at 50% 15%, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 55%),
-            linear-gradient(180deg, var(--page-background, #0a0a0f) 0%, var(--surface-background, #101014) 100%);
-        }
         .gsap-slider-card {
           position: absolute;
           top: 50%;
@@ -447,8 +438,6 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
         onPointerUp={onPointerUp}
         onPointerCancel={() => { dragRef.current = null; }}
       >
-        <div className="gsap-slider-bg" aria-hidden="true" />
-
         {visibleIndices.map((idx) => {
           const photo = photos[idx];
           const offset = shortestOffset(idx, active, total);
