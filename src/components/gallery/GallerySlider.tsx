@@ -62,8 +62,6 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
 
   const stageRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Map<number, HTMLDivElement>>(new Map());
-  const bgRefs = useRef<(HTMLDivElement | null)[]>([null, null]);
-  const bgFrontRef = useRef<0 | 1>(0);
   const isFirstRun = useRef(true);
   const dragRef = useRef<{ startX: number; dragging: boolean } | null>(null);
 
@@ -116,39 +114,10 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, total]);
 
-  // ── Ambient blurred backdrop — crossfade tiap ganti foto ───────────────────
-  useLayoutEffect(() => {
-    const front = bgFrontRef.current;
-    const back = front === 0 ? 1 : 0;
-    const frontEl = bgRefs.current[front];
-    const backEl = bgRefs.current[back];
-    if (!frontEl || !backEl) return;
-
-    if (isFirstRun.current) {
-      frontEl.style.backgroundImage = `url(${photos[active]?.url})`;
-      gsap.set(frontEl, { opacity: 1 });
-      gsap.set(backEl, { opacity: 0 });
-      return;
-    }
-
-    const reduceMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const dur = reduceMotion ? 0.01 : 1;
-
-    backEl.style.backgroundImage = `url(${photos[active]?.url})`;
-    gsap.set(backEl, { opacity: 0 });
-    gsap.to(backEl, { opacity: 1, duration: dur, ease: "power2.out" });
-    gsap.to(frontEl, { opacity: 0, duration: dur, ease: "power2.out" });
-    bgFrontRef.current = back;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active]);
-
   // Bersih-bersih tween pas komponen unmount
   useLayoutEffect(() => {
     return () => {
       gsap.killTweensOf(Array.from(cardRefs.current.values()));
-      gsap.killTweensOf(bgRefs.current.filter(Boolean) as HTMLDivElement[]);
     };
   }, []);
 
@@ -182,28 +151,6 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
           position: relative;
           width: 100%;
           padding: 8px 0 4px;
-        }
-        .gsap-slider-bgstage {
-          position: absolute;
-          inset: -10% -6%;
-          z-index: 0;
-          overflow: hidden;
-          border-radius: 28px;
-          pointer-events: none;
-        }
-        .gsap-slider-bglayer {
-          position: absolute;
-          inset: 0;
-          background-size: cover;
-          background-position: center;
-          filter: blur(48px) saturate(1.25) brightness(0.5);
-          transform: scale(1.2);
-        }
-        .gsap-slider-bgscrim {
-          position: absolute;
-          inset: 0;
-          background: var(--neutral-background-strong, #0a0a0f);
-          opacity: 0.35;
         }
         .gsap-slider-stage {
           position: relative;
@@ -385,16 +332,6 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
           .gsap-slider-title { font-size: 0.75rem; -webkit-line-clamp: 2; }
         }
       `}</style>
-
-      <div className="gsap-slider-bgstage" aria-hidden="true">
-        <div
-          ref={(el) => { bgRefs.current[0] = el; }}
-          className="gsap-slider-bglayer"
-          style={{ backgroundImage: `url(${photos[0]?.url})` }}
-        />
-        <div ref={(el) => { bgRefs.current[1] = el; }} className="gsap-slider-bglayer" />
-        <div className="gsap-slider-bgscrim" />
-      </div>
 
       <div
         ref={stageRef}
