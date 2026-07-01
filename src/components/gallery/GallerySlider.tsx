@@ -64,6 +64,8 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
   const cardRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const isFirstRun = useRef(true);
   const dragRef = useRef<{ startX: number; dragging: boolean } | null>(null);
+  const thumbTrackRef = useRef<HTMLDivElement>(null);
+  const thumbRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
 
   const goTo = useCallback(
     (newIndex: number) => {
@@ -120,6 +122,26 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
       gsap.killTweensOf(Array.from(cardRefs.current.values()));
     };
   }, []);
+
+  // ── Auto-scroll thumbnail strip biar thumbnail aktif selalu keliatan ───────
+  useLayoutEffect(() => {
+    const track = thumbTrackRef.current;
+    const activeThumb = thumbRefs.current.get(active);
+    if (!track || !activeThumb) return;
+
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Posisikan thumbnail aktif persis di tengah track, lalu scroll ke situ.
+    const targetLeft =
+      activeThumb.offsetLeft - track.clientWidth / 2 + activeThumb.clientWidth / 2;
+
+    track.scrollTo({
+      left: Math.max(0, targetLeft),
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+  }, [active]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (total <= 1) return;
@@ -342,6 +364,55 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
         @media (max-width: 360px) {
           .gsap-slider-title { font-size: 0.75rem; -webkit-line-clamp: 2; }
         }
+
+        /* ── Thumbnail strip ──────────────────────────────────────────────── */
+        .gsap-slider-thumbs {
+          display: flex;
+          gap: 10px;
+          margin-top: 22px;
+          padding: 6px 4px 10px;
+          overflow-x: auto;
+          overflow-y: hidden;
+          scroll-behavior: smooth;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          -webkit-overflow-scrolling: touch;
+        }
+        .gsap-slider-thumbs::-webkit-scrollbar { display: none; }
+        .gsap-slider-thumb {
+          position: relative;
+          flex: 0 0 auto;
+          width: 64px;
+          aspect-ratio: 3 / 4;
+          border-radius: 12px;
+          overflow: hidden;
+          padding: 0;
+          cursor: pointer;
+          border: 1.5px solid transparent;
+          background: var(--neutral-alpha-weak, rgba(255,255,255,0.06));
+          opacity: 0.55;
+          transform: scale(0.94);
+          transition: opacity 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+        }
+        .gsap-slider-thumb.is-active {
+          opacity: 1;
+          transform: scale(1);
+          border-color: var(--brand-solid-strong, #fff);
+          box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+        }
+        .gsap-slider-thumb:hover { opacity: 0.85; }
+        .gsap-slider-thumb-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          user-select: none;
+          pointer-events: none;
+        }
+        @media (max-width: 480px) {
+          .gsap-slider-thumbs { gap: 8px; margin-top: 18px; }
+          .gsap-slider-thumb { width: 52px; border-radius: 10px; }
+        }
       `}</style>
 
       <div
@@ -439,6 +510,27 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
               onClick={() => goTo(i)}
               aria-label={`${t("Foto", "Photo")} ${i + 1}`}
             />
+          ))}
+        </div>
+      )}
+
+      {total > 1 && (
+        <div ref={thumbTrackRef} className="gsap-slider-thumbs">
+          {photos.map((photo, i) => (
+            <button
+              key={i}
+              ref={(el) => {
+                if (el) thumbRefs.current.set(i, el);
+                else thumbRefs.current.delete(i);
+              }}
+              className={`gsap-slider-thumb ${i === active ? "is-active" : ""}`}
+              onClick={() => goTo(i)}
+              aria-label={`${t("Ke foto", "Go to photo")} ${i + 1}`}
+              aria-current={i === active}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={photo.url} alt="" className="gsap-slider-thumb-img" draggable={false} />
+            </button>
           ))}
         </div>
       )}
