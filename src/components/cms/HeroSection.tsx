@@ -9,6 +9,27 @@ import { useEffect, useState } from "react";
 import { ShimmerButton } from "./ShimmerButton";
 import { HeroSkeleton } from "@/components/Skeletons";
 
+/* ── Live clock, Makassar (UTC+8 / WITA) ── */
+function LiveClock() {
+  const [time, setTime] = useState("");
+  useEffect(() => {
+    const update = () => {
+      const now = new Intl.DateTimeFormat("id-ID", {
+        timeZone: "Asia/Makassar",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      }).format(new Date());
+      setTime(now);
+    };
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, []);
+  return <span suppressHydrationWarning>{time ? `${time} WITA` : ""}</span>;
+}
+
 interface HeroSectionProps {
   settings: SiteSettings | null;
 }
@@ -82,6 +103,35 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
           max-width: 720px;
           width: 100%;
           gap: 0;
+        }
+
+        /* ── Status bar: location (left) + live clock (right) ── */
+        .hero-statusbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          max-width: 720px;
+          margin-bottom: 20px;
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.04em;
+          color: var(--neutral-on-background-weak);
+        }
+        .hero-status-item {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          white-space: nowrap;
+        }
+        .hero-status-item svg {
+          width: 12px;
+          height: 12px;
+          flex-shrink: 0;
+          opacity: 0.75;
+        }
+        @media (max-width: 640px) {
+          .hero-statusbar { font-size: 10px; margin-bottom: 16px; }
         }
 
         /* ── Motto pill ── */
@@ -209,6 +259,24 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
           .hero-root { padding: 0 16px 48px; }
         }
       `}</style>
+
+      {/* Status bar: location left, live clock right */}
+      <div className="hero-statusbar">
+        <span className="hero-status-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          Makassar, Indonesia
+        </span>
+        <span className="hero-status-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 3" />
+          </svg>
+          <LiveClock />
+        </span>
+      </div>
 
       {/* Dot-grid canvas — hidden */}
       <div className="hero-content">

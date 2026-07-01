@@ -40,3 +40,15 @@
 .sep {
   display: none;
 }
+
+@media (max-width: 400px) {
+  .toggle {
+    height: 24px;
+    padding: 2px;
+  }
+  .btn {
+    padding: 0 5px;
+    height: 20px;
+    font-size: 10px;
+  }
+}

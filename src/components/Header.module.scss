@@ -50,6 +50,15 @@
   align-items: center;
   gap: 0;
 
+  /* Safety net: never let items get clipped/hidden on very narrow screens —
+     if the pill can't fit, it scrolls horizontally instead of losing items */
+  max-width: calc(100vw - 24px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+
   /* Size */
   padding: 5px 8px;
   height: 48px;
@@ -223,5 +232,29 @@
   .sep {
     height: 16px;
     margin: 0 2px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   EXTRA-NARROW PHONES (≤400 px) — squeeze further so the
+   full pill (5 nav icons + theme + lang + lock) still fits
+   without relying on the scroll fallback above.
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 400px) {
+  .glassNav {
+    padding: 4px 4px;
+  }
+
+  .navBtn {
+    padding: 0 7px !important;
+
+    svg, i {
+      width: 17px !important;
+      height: 17px !important;
+    }
+  }
+
+  .sep {
+    margin: 0 1px;
   }
 }
