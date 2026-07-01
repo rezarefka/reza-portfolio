@@ -66,6 +66,11 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
   const dragRef = useRef<{ startX: number; dragging: boolean } | null>(null);
   const thumbTrackRef = useRef<HTMLDivElement>(null);
   const thumbRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
+  const glowLayerRefs = useRef<(HTMLDivElement | null)[]>([null, null]);
+  const glowFrontRef = useRef(0);
+  const isGlowFirstRun = useRef(true);
+  const photosRef = useRef(photos);
+  photosRef.current = photos;
 
   const goTo = useCallback(
     (newIndex: number) => {
@@ -120,8 +125,39 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
   useLayoutEffect(() => {
     return () => {
       gsap.killTweensOf(Array.from(cardRefs.current.values()));
+      gsap.killTweensOf(glowLayerRefs.current.filter(Boolean));
     };
   }, []);
+
+  // ── Ambient glow di belakang stage — versi blur foto aktif, crossfade tiap
+  //    ganti slide (mirip "now playing" backdrop). Dua layer dipakai gantian
+  //    (front/back) supaya foto lama nggak ilang tiba-tiba pas foto baru masuk. ──
+  useLayoutEffect(() => {
+    const url = photosRef.current[active]?.url;
+    const layers = glowLayerRefs.current;
+    const frontEl = layers[glowFrontRef.current];
+    const backEl = layers[glowFrontRef.current === 0 ? 1 : 0];
+    if (!url || !frontEl || !backEl) return;
+
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (isGlowFirstRun.current) {
+      frontEl.style.backgroundImage = `url(${url})`;
+      gsap.set(frontEl, { opacity: 0.55 });
+      gsap.set(backEl, { opacity: 0 });
+      isGlowFirstRun.current = false;
+      return;
+    }
+
+    backEl.style.backgroundImage = `url(${url})`;
+    gsap.set(backEl, { opacity: 0 });
+    const dur = reduceMotion ? 0.01 : 0.8;
+    gsap.to(frontEl, { opacity: 0, duration: dur, ease: "power2.out" });
+    gsap.to(backEl, { opacity: 0.55, duration: dur, ease: "power2.out" });
+    glowFrontRef.current = glowFrontRef.current === 0 ? 1 : 0;
+  }, [active]);
 
   // ── Auto-scroll thumbnail strip biar thumbnail aktif selalu keliatan ───────
   useLayoutEffect(() => {
@@ -194,6 +230,27 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
           cursor: grab;
         }
         .gsap-slider-stage:active { cursor: grabbing; }
+        .gsap-slider-glow-wrap {
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          pointer-events: none;
+          overflow: hidden;
+          border-radius: 24px;
+        }
+        .gsap-slider-glow {
+          position: absolute;
+          inset: -20%;
+          background-size: cover;
+          background-position: center;
+          filter: blur(60px) saturate(1.5);
+          transform: scale(1.05);
+          opacity: 0;
+          will-change: opacity;
+        }
+        @media (max-width: 480px) {
+          .gsap-slider-glow { filter: blur(40px) saturate(1.4); }
+        }
         .gsap-slider-card {
           position: absolute;
           top: 50%;
@@ -427,6 +484,11 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
         onPointerUp={onPointerUp}
         onPointerCancel={() => { dragRef.current = null; }}
       >
+        <div className="gsap-slider-glow-wrap" aria-hidden="true">
+          <div ref={(el) => { glowLayerRefs.current[0] = el; }} className="gsap-slider-glow" />
+          <div ref={(el) => { glowLayerRefs.current[1] = el; }} className="gsap-slider-glow" />
+        </div>
+
         {visibleIndices.map((idx) => {
           const photo = photos[idx];
           const offset = shortestOffset(idx, active, total);
