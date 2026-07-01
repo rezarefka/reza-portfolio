@@ -79,7 +79,7 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 0 24px 24px;
+          padding: 56px 24px 24px;
           overflow: hidden;
         }
 
@@ -105,24 +105,41 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
           gap: 0;
         }
 
-        /* ── Status bar: location (left) + live clock (right) ── */
+        /* ── Status bar: location (fixed top-left) + live clock (fixed top-right) ── */
         .hero-statusbar {
+          position: fixed;
+          top: 26px;
+          left: 0;
+          right: 0;
           display: flex;
           justify-content: space-between;
           align-items: center;
           width: 100%;
-          max-width: 720px;
-          margin-bottom: 20px;
+          padding: 0 20px;
           font-size: 11px;
           font-weight: 500;
           letter-spacing: 0.04em;
           color: var(--neutral-on-background-weak);
+          z-index: 8;
+          pointer-events: none;
         }
         .hero-status-item {
           display: inline-flex;
           align-items: center;
           gap: 5px;
           white-space: nowrap;
+          pointer-events: auto;
+          padding: 7px 12px;
+          border-radius: 999px;
+          background: color-mix(in srgb, var(--page-background) 56%, transparent);
+          backdrop-filter: blur(20px) saturate(160%);
+          -webkit-backdrop-filter: blur(20px) saturate(160%);
+          border: 1px solid color-mix(in srgb, var(--brand-background-strong) 18%, transparent);
+          transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .hero-status-item:hover {
+          background: color-mix(in srgb, var(--page-background) 72%, transparent);
+          border-color: color-mix(in srgb, var(--brand-background-strong) 32%, transparent);
         }
         .hero-status-item svg {
           width: 12px;
@@ -131,8 +148,10 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
           opacity: 0.75;
         }
         @media (max-width: 640px) {
-          .hero-statusbar { font-size: 10px; margin-bottom: 16px; }
+          .hero-statusbar { top: 16px; padding: 0 12px; font-size: 10px; }
+          .hero-status-item { padding: 6px 10px; }
         }
+
 
         /* ── Motto pill ── */
         @keyframes pillSlideDown {
@@ -234,25 +253,6 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
           animation: ctaRise 0.65s cubic-bezier(0.34,1.56,0.64,1) 0.65s both;
         }
 
-        /* ── Scroll indicator ── */
-        @keyframes scrollBounce {
-          0%,100% { transform:translateY(0) translateX(-50%); opacity:0.6; }
-          50%      { transform:translateY(6px) translateX(-50%); opacity:1; }
-        }
-        .hero-scroll-hint {
-          position: absolute;
-          bottom: 0; left: 50%;
-          transform: translateX(-50%);
-          display: flex; flex-direction: column; align-items: center; gap: 4px;
-          animation: scrollBounce 2s ease-in-out infinite;
-          z-index: 2;
-          pointer-events: none;
-        }
-        .hero-scroll-line {
-          width: 1px; height: 32px;
-          background: linear-gradient(to bottom, var(--neutral-alpha-medium), transparent);
-        }
-
         @media (max-width: 640px) {
           .hero-word span { font-size: clamp(1.9rem, 7vw, 2.6rem); }
           .hero-desc { font-size: 1rem; margin-bottom: 32px; }
@@ -309,14 +309,6 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
             personName={person.name}
           />
         </div>
-      </div>
-
-      {/* Scroll hint */}
-      <div className="hero-scroll-hint" aria-hidden="true">
-        <div className="hero-scroll-line" />
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--neutral-alpha-strong)" strokeWidth="2" strokeLinecap="round">
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
       </div>
     </div>
   );
