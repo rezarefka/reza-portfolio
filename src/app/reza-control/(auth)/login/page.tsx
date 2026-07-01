@@ -1,4 +1,3 @@
-import { Column, Heading, Text } from "@once-ui-system/core";
 import { LoginForm } from "@/components/admin/LoginForm";
 import type { Metadata } from "next";
 
@@ -9,23 +8,20 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <Column
-      fillWidth
-      horizontal="center"
-      vertical="center"
-      style={{ minHeight: "100vh" }}
-      gap="xl"
-      paddingY="80"
+    <div
+      style={{
+        minHeight: "100vh",
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "48px 20px",
+        boxSizing: "border-box",
+        background:
+          "radial-gradient(120% 90% at 50% 0%, rgba(124,92,255,0.12) 0%, rgba(124,92,255,0) 55%), linear-gradient(180deg, #08080c 0%, #0d0d14 100%)",
+      }}
     >
-      <Column maxWidth="xs" gap="l" fillWidth paddingX="l">
-        <Column gap="8">
-          <Heading variant="display-strong-m">Reza Control</Heading>
-          <Text variant="body-default-m" onBackground="neutral-weak">
-            Masuk untuk mengelola konten portfolio.
-          </Text>
-        </Column>
-        <LoginForm />
-      </Column>
-    </Column>
+      <LoginForm />
+    </div>
   );
 }

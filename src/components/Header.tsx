@@ -159,6 +159,15 @@ export const Header = () => {
 
           <span className={styles.sep}/>
           <LangToggle/>
+
+          <span className={styles.sep}/>
+          <div className="nav-item">
+            <ToggleButton prefixIcon="lock" href="/reza-control"
+              className={`${styles.navBtn} nav-item-btn`}
+              aria-label="Reza Control">
+              <span className={styles.label}/>
+            </ToggleButton>
+          </div>
         </nav>
       </header>
     </>
