@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { gallery } from "@/resources";
 import { createClient } from "@/lib/supabase/client";
-import { GallerySkeletonGrid } from "@/components/Skeletons";
 import { useLang } from "@/lib/lang-context";
+import GallerySlider, { GallerySliderSkeleton } from "@/components/gallery/GallerySlider";
 
 interface GalleryPhoto {
   id: string;
@@ -177,7 +177,6 @@ export default function GalleryView() {
   const { t } = useLang();
   const [dbPhotos, setDbPhotos] = useState<GalleryPhoto[]>([]);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
-  const [loaded, setLoaded] = useState<Set<number>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
 
   // Load photos from Supabase (gallery_photos table)
@@ -210,105 +209,18 @@ export default function GalleryView() {
 
   return (
     <>
-      <style>{`
-        @keyframes galleryItemIn {
-          from { opacity: 0; transform: scale(0.95) translateY(12px); }
-          to   { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .gallery-item {
-          position: relative;
-          overflow: hidden;
-          border-radius: 14px;
-          cursor: zoom-in;
-          background: var(--neutral-alpha-weak);
-          transition: transform 0.32s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.28s ease;
-          break-inside: avoid;
-          margin-bottom: 12px;
-        }
-        .gallery-item:hover {
-          transform: scale(1.02) translateY(-2px);
-          box-shadow: 0 16px 48px rgba(0,0,0,0.22);
-          z-index: 2;
-        }
-        .gallery-item:hover .gallery-overlay {
-          opacity: 1;
-        }
-        .gallery-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%);
-          opacity: 0;
-          transition: opacity 0.25s ease;
-          display: flex;
-          align-items: flex-end;
-          padding: 14px 16px;
-          border-radius: inherit;
-        }
-        .gallery-img {
-          width: 100%;
-          display: block;
-          transition: transform 0.4s cubic-bezier(0.34,1.2,0.64,1);
-        }
-        .gallery-item:hover .gallery-img {
-          transform: scale(1.04);
-        }
-      `}</style>
-
       {/* Skeleton while loading */}
       {isLoading ? (
-        <GallerySkeletonGrid count={8} />
-      ) : (
+        <GallerySliderSkeleton />
+      ) : allPhotos.length === 0 ? (
         <div style={{
-          columns: "2 280px",
-          gap: 12,
-          width: "100%",
+          textAlign: "center", padding: "48px 24px",
+          color: "var(--neutral-on-background-weak)",
         }}>
-        {allPhotos.map((photo, idx) => (
-          <div
-            key={idx}
-            className="gallery-item"
-            onClick={() => openLightbox(idx)}
-            style={{
-              animation: `galleryItemIn 0.5s cubic-bezier(0.22,1,0.36,1) ${idx * 60}ms both`,
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={photo.url}
-              alt={photo.alt}
-              className="gallery-img"
-              style={{
-                aspectRatio: photo.orientation === "horizontal" ? "16/9" : "3/4",
-                objectFit: "cover",
-                opacity: loaded.has(idx) ? 1 : 0,
-                transition: "opacity 0.4s ease",
-              }}
-              onLoad={() => setLoaded((prev) => new Set([...prev, idx]))}
-            />
-            <div className="gallery-overlay">
-              <div style={{
-                display: "flex", alignItems: "center", gap: 6,
-                color: "#fff", fontSize: 12, fontWeight: 500,
-              }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                  <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
-                </svg>
-                {photo.caption || t("Lihat foto", "View photo")}
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {allPhotos.length === 0 && (
-          <div style={{
-            gridColumn: "1/-1", textAlign: "center", padding: "48px 24px",
-            color: "var(--neutral-on-background-weak)",
-          }}>
-            {t("Belum ada foto di galeri.", "No photos in the gallery yet.")}
-          </div>
-        )}
-      </div>
+          {t("Belum ada foto di galeri.", "No photos in the gallery yet.")}
+        </div>
+      ) : (
+        <GallerySlider photos={allPhotos} onOpenLightbox={openLightbox} />
       )}
 
       {lightboxIdx !== null && allPhotos[lightboxIdx] && (

@@ -1,0 +1,508 @@
+"use client";
+
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { useLang } from "@/lib/lang-context";
+
+export interface SliderPhoto {
+  url: string;
+  alt: string;
+  caption: string | null;
+}
+
+interface GallerySliderProps {
+  photos: SliderPhoto[];
+  onOpenLightbox: (index: number) => void;
+}
+
+interface CaptionMeta {
+  title: string | null;
+  subtitle: string | null;
+  tagline: string | null;
+}
+
+// Admin bisa isi caption sebagai "Judul | Lokasi | Tagline" — dipisah pakai "|".
+// Kalau cuma satu bagian, cuma judul yang tampil.
+function parseCaption(caption: string | null): CaptionMeta | null {
+  if (!caption) return null;
+  const parts = caption.split("|").map((p) => p.trim()).filter(Boolean);
+  if (parts.length === 0) return null;
+  return {
+    title: parts[0] ?? null,
+    subtitle: parts[1] ?? null,
+    tagline: parts[2] ?? null,
+  };
+}
+
+// Jarak melingkar terpendek dari `idx` ke `active` dalam rentang total foto,
+// dinormalisasi supaya wrap-around (foto pertama <-> terakhir) selalu mulus.
+function shortestOffset(idx: number, active: number, total: number): number {
+  if (total <= 0) return 0;
+  let diff = ((idx - active) % total + total) % total; // normalisasi ke [0, total)
+  if (diff > total / 2) diff -= total;
+  else if (diff === total / 2) diff = -diff; // tie-break foto "paling jauh" pada total genap
+  return diff;
+}
+
+function offsetToTransform(offset: number) {
+  const dir = Math.sign(offset);
+  const abs = Math.abs(offset);
+  if (abs === 0) return { xPercent: -50, yPercent: -50, scale: 1, opacity: 1, zIndex: 30 };
+  if (abs === 1) return { xPercent: -50 + dir * 74, yPercent: -50, scale: 0.82, opacity: 0.55, zIndex: 20 };
+  return { xPercent: -50 + dir * 138, yPercent: -50, scale: 0.64, opacity: 0, zIndex: 10 };
+}
+
+const RENDER_RANGE = 2;
+const SWIPE_THRESHOLD = 42;
+
+export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderProps) {
+  const { t } = useLang();
+  const total = photos.length;
+  const [active, setActive] = useState(0);
+
+  const stageRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const bgRefs = useRef<(HTMLDivElement | null)[]>([null, null]);
+  const bgFrontRef = useRef<0 | 1>(0);
+  const isFirstRun = useRef(true);
+  const dragRef = useRef<{ startX: number; dragging: boolean } | null>(null);
+
+  const goTo = useCallback(
+    (newIndex: number) => {
+      if (total <= 1) return;
+      setActive(((newIndex % total) + total) % total);
+    },
+    [total],
+  );
+  const next = useCallback(() => goTo(active + 1), [active, goTo]);
+  const prev = useCallback(() => goTo(active - 1), [active, goTo]);
+
+  const visibleIndices = photos
+    .map((_, idx) => idx)
+    .filter((idx) => Math.abs(shortestOffset(idx, active, total)) <= RENDER_RANGE);
+
+  // ── Animasi kartu (GSAP) tiap kali `active` berubah ────────────────────────
+  useLayoutEffect(() => {
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const dur = reduceMotion ? 0.01 : 0.65;
+
+    const currentSet = new Set(visibleIndices);
+    const prevSet = (cardRefs.current as unknown as { __prev?: Set<number> }).__prev ?? new Set<number>();
+
+    visibleIndices.forEach((idx) => {
+      const el = cardRefs.current.get(idx);
+      if (!el) return;
+      const offset = shortestOffset(idx, active, total);
+      const target = offsetToTransform(offset);
+
+      if (isFirstRun.current) {
+        gsap.set(el, target);
+        return;
+      }
+
+      if (!prevSet.has(idx)) {
+        // Kartu baru masuk jangkauan render — taruh dulu satu langkah lebih jauh
+        // supaya animasinya masuk dari arah yang benar, baru tween ke posisi target.
+        const entryOffset = offset + (Math.sign(offset) || 1);
+        gsap.set(el, offsetToTransform(entryOffset));
+      }
+      gsap.to(el, { ...target, duration: dur, ease: "power3.out", overwrite: "auto" });
+    });
+
+    (cardRefs.current as unknown as { __prev?: Set<number> }).__prev = currentSet;
+    isFirstRun.current = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, total]);
+
+  // ── Ambient blurred backdrop — crossfade tiap ganti foto ───────────────────
+  useLayoutEffect(() => {
+    const front = bgFrontRef.current;
+    const back = front === 0 ? 1 : 0;
+    const frontEl = bgRefs.current[front];
+    const backEl = bgRefs.current[back];
+    if (!frontEl || !backEl) return;
+
+    if (isFirstRun.current) {
+      frontEl.style.backgroundImage = `url(${photos[active]?.url})`;
+      gsap.set(frontEl, { opacity: 1 });
+      gsap.set(backEl, { opacity: 0 });
+      return;
+    }
+
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const dur = reduceMotion ? 0.01 : 1;
+
+    backEl.style.backgroundImage = `url(${photos[active]?.url})`;
+    gsap.set(backEl, { opacity: 0 });
+    gsap.to(backEl, { opacity: 1, duration: dur, ease: "power2.out" });
+    gsap.to(frontEl, { opacity: 0, duration: dur, ease: "power2.out" });
+    bgFrontRef.current = back;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
+
+  // Bersih-bersih tween pas komponen unmount
+  useLayoutEffect(() => {
+    return () => {
+      gsap.killTweensOf(Array.from(cardRefs.current.values()));
+      gsap.killTweensOf(bgRefs.current.filter(Boolean) as HTMLDivElement[]);
+    };
+  }, []);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (total <= 1) return;
+    dragRef.current = { startX: e.clientX, dragging: true };
+  };
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (!dragRef.current?.dragging) return;
+    const dx = e.clientX - dragRef.current.startX;
+    dragRef.current = null;
+    if (Math.abs(dx) < SWIPE_THRESHOLD) return;
+    if (dx < 0) next();
+    else prev();
+  };
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowRight") next();
+    else if (e.key === "ArrowLeft") prev();
+    else if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onOpenLightbox(active);
+    }
+  };
+
+  if (total === 0) return null;
+
+  return (
+    <div className="gsap-slider-root">
+      <style>{`
+        .gsap-slider-root {
+          position: relative;
+          width: 100%;
+          padding: 8px 0 4px;
+        }
+        .gsap-slider-bgstage {
+          position: absolute;
+          inset: -10% -6%;
+          z-index: 0;
+          overflow: hidden;
+          border-radius: 28px;
+          pointer-events: none;
+        }
+        .gsap-slider-bglayer {
+          position: absolute;
+          inset: 0;
+          background-size: cover;
+          background-position: center;
+          filter: blur(48px) saturate(1.25) brightness(0.5);
+          transform: scale(1.2);
+        }
+        .gsap-slider-bgscrim {
+          position: absolute;
+          inset: 0;
+          background: var(--neutral-background-strong, #0a0a0f);
+          opacity: 0.35;
+        }
+        .gsap-slider-stage {
+          position: relative;
+          z-index: 1;
+          width: 100%;
+          height: clamp(400px, 66vw, 620px);
+          touch-action: pan-y;
+          cursor: grab;
+        }
+        .gsap-slider-stage:active { cursor: grabbing; }
+        .gsap-slider-card {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: min(74vw, 440px);
+          aspect-ratio: 3 / 4;
+          border-radius: 20px;
+          overflow: hidden;
+          cursor: pointer;
+          background: #0a0a0f;
+          box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+          will-change: transform, opacity;
+        }
+        .gsap-slider-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          user-select: none;
+        }
+        .gsap-slider-scrim {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.15) 45%, transparent 65%);
+        }
+        .gsap-slider-caption {
+          position: absolute;
+          left: 22px;
+          right: 22px;
+          bottom: 22px;
+          color: #fff;
+          pointer-events: none;
+        }
+        .gsap-slider-title {
+          margin: 0;
+          font-family: var(--font-heading);
+          font-size: clamp(1.15rem, 4vw, 1.7rem);
+          font-weight: 700;
+          letter-spacing: 0.01em;
+          text-transform: uppercase;
+          line-height: 1.15;
+        }
+        .gsap-slider-subtitle-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-top: 8px;
+        }
+        .gsap-slider-subtitle-line {
+          width: 22px;
+          height: 1px;
+          background: rgba(255,255,255,0.6);
+          display: inline-block;
+        }
+        .gsap-slider-subtitle {
+          font-size: 0.72rem;
+          font-weight: 600;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.75);
+        }
+        .gsap-slider-tagline {
+          margin: 10px 0 0;
+          font-size: 0.8rem;
+          font-style: italic;
+          color: rgba(255,255,255,0.6);
+        }
+        .gsap-slider-counter {
+          position: absolute;
+          top: 14px;
+          left: 14px;
+          padding: 4px 10px;
+          border-radius: 99px;
+          background: var(--brand-alpha-medium, rgba(255,255,255,0.16));
+          color: var(--brand-on-background-strong, #fff);
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.03em;
+          pointer-events: none;
+        }
+        .gsap-slider-zoomhint {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background: rgba(0,0,0,0.45);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border: 1px solid rgba(255,255,255,0.18);
+          color: rgba(255,255,255,0.85);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+        }
+        .gsap-slider-arrow {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 46px;
+          height: 46px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.1);
+          border: 1px solid rgba(255,255,255,0.18);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          color: #fff;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.18s, transform 0.18s;
+          z-index: 25;
+        }
+        .gsap-slider-arrow:hover { background: rgba(255,255,255,0.22); transform: translateY(-50%) scale(1.06); }
+        .gsap-slider-arrow--left { left: 4px; }
+        .gsap-slider-arrow--right { right: 4px; }
+        .gsap-slider-dots {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          margin-top: 18px;
+          position: relative;
+          z-index: 1;
+        }
+        .gsap-slider-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 99px;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          background: var(--neutral-alpha-medium, rgba(255,255,255,0.25));
+          transition: width 0.25s ease, background 0.25s ease;
+        }
+        .gsap-slider-dot.is-active {
+          width: 22px;
+          background: var(--brand-solid-strong, #fff);
+        }
+        @media (max-width: 480px) {
+          .gsap-slider-arrow { width: 38px; height: 38px; }
+        }
+      `}</style>
+
+      <div className="gsap-slider-bgstage" aria-hidden="true">
+        <div
+          ref={(el) => { bgRefs.current[0] = el; }}
+          className="gsap-slider-bglayer"
+          style={{ backgroundImage: `url(${photos[0]?.url})` }}
+        />
+        <div ref={(el) => { bgRefs.current[1] = el; }} className="gsap-slider-bglayer" />
+        <div className="gsap-slider-bgscrim" />
+      </div>
+
+      <div
+        ref={stageRef}
+        className="gsap-slider-stage"
+        tabIndex={0}
+        role="region"
+        aria-roledescription="carousel"
+        aria-label={t("Galeri foto", "Photo gallery")}
+        onKeyDown={onKeyDown}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+        onPointerCancel={() => { dragRef.current = null; }}
+      >
+        {visibleIndices.map((idx) => {
+          const photo = photos[idx];
+          const offset = shortestOffset(idx, active, total);
+          const isActive = offset === 0;
+          const meta = isActive ? parseCaption(photo.caption) : null;
+
+          return (
+            <div
+              key={idx}
+              ref={(el) => {
+                if (el) cardRefs.current.set(idx, el);
+                else cardRefs.current.delete(idx);
+              }}
+              className="gsap-slider-card"
+              onClick={() => (isActive ? onOpenLightbox(idx) : goTo(idx))}
+              role="button"
+              aria-label={isActive ? (photo.caption || t("Perbesar foto", "Enlarge photo")) : t("Ke foto ini", "Go to this photo")}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={photo.url} alt={photo.alt} className="gsap-slider-img" draggable={false} />
+              {isActive && (
+                <>
+                  <div className="gsap-slider-scrim" />
+                  {meta && (meta.title || meta.subtitle || meta.tagline) && (
+                    <div className="gsap-slider-caption">
+                      {meta.title && <h3 className="gsap-slider-title">{meta.title}</h3>}
+                      {meta.subtitle && (
+                        <div className="gsap-slider-subtitle-row">
+                          <span className="gsap-slider-subtitle-line" />
+                          <span className="gsap-slider-subtitle">{meta.subtitle}</span>
+                        </div>
+                      )}
+                      {meta.tagline && <p className="gsap-slider-tagline">{meta.tagline}</p>}
+                    </div>
+                  )}
+                  {total > 1 && (
+                    <div className="gsap-slider-counter">{active + 1} / {total}</div>
+                  )}
+                  <div className="gsap-slider-zoomhint">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                      <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+                    </svg>
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })}
+
+        {total > 1 && (
+          <>
+            <button
+              className="gsap-slider-arrow gsap-slider-arrow--left"
+              onClick={prev}
+              aria-label={t("Sebelumnya", "Previous")}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            <button
+              className="gsap-slider-arrow gsap-slider-arrow--right"
+              onClick={next}
+              aria-label={t("Berikutnya", "Next")}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </>
+        )}
+      </div>
+
+      {total > 1 && (
+        <div className="gsap-slider-dots">
+          {photos.map((_, i) => (
+            <button
+              key={i}
+              className={`gsap-slider-dot ${i === active ? "is-active" : ""}`}
+              onClick={() => goTo(i)}
+              aria-label={`${t("Foto", "Photo")} ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Skeleton dipakai GalleryView saat data masih dimuat ──────────────────────
+export function GallerySliderSkeleton() {
+  return (
+    <div style={{ width: "100%", padding: "8px 0 4px" }}>
+      <style>{`
+        @keyframes gsapSliderPulse { 0%,100% { opacity: 0.5; } 50% { opacity: 0.9; } }
+      `}</style>
+      <div
+        style={{
+          width: "min(74vw, 440px)",
+          aspectRatio: "3 / 4",
+          margin: "0 auto",
+          borderRadius: 20,
+          background: "var(--neutral-alpha-weak)",
+          animation: "gsapSliderPulse 1.4s ease-in-out infinite",
+        }}
+      />
+      <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 18 }}>
+        {[0, 1, 2, 3].map((i) => (
+          <div
+            key={i}
+            style={{
+              width: i === 0 ? 22 : 7,
+              height: 7,
+              borderRadius: 99,
+              background: "var(--neutral-alpha-medium)",
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}

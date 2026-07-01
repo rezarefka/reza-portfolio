@@ -236,7 +236,7 @@ export function ContactSection({ settings }: ContactSectionProps) {
         )}
 
         <Text variant="body-default-xs" onBackground="neutral-weak" style={{textAlign:"center"}}>
-          Makassar, Indonesia · {t("Ramah remote","Remote friendly")}
+          Makassar, Indonesia · 
         </Text>
       </Column>
     </RevealFx>
