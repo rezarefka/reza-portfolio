@@ -162,7 +162,12 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
           width: 100%;
           max-width: 100%;
           margin: 0 auto;
-          height: clamp(400px, 66vw, 620px);
+          /* Tinggi stage selalu mengikuti tinggi kartu (width yang sama x rasio 4/3)
+             + sedikit ruang napas, supaya kartu tidak pernah lebih tinggi dari stage.
+             Sebelumnya stage pakai skala vw sendiri (66vw) yang beda skalanya dari
+             kartu (74vw x 4/3), jadi di lebar layar tertentu (±414px-890px) kartu
+             jadi lebih tinggi dari stage dan bagian atas gambar kepotong. */
+          height: clamp(360px, calc(min(74vw, 440px) * 4 / 3 + 40px), 660px);
           touch-action: pan-y;
           cursor: grab;
         }
