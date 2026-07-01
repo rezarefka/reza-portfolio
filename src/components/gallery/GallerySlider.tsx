@@ -150,12 +150,18 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
         .gsap-slider-root {
           position: relative;
           width: 100%;
+          max-width: 100%;
+          margin: 0 auto;
           padding: 8px 0 4px;
+          overflow: hidden;
+          box-sizing: border-box;
         }
         .gsap-slider-stage {
           position: relative;
           z-index: 1;
           width: 100%;
+          max-width: 100%;
+          margin: 0 auto;
           height: clamp(400px, 66vw, 620px);
           touch-action: pan-y;
           cursor: grab;
