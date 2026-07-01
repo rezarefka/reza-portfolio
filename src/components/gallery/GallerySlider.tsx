@@ -47,9 +47,13 @@ function shortestOffset(idx: number, active: number, total: number): number {
 function offsetToTransform(offset: number) {
   const dir = Math.sign(offset);
   const abs = Math.abs(offset);
-  if (abs === 0) return { xPercent: -50, yPercent: -50, scale: 1, opacity: 1, zIndex: 30 };
-  if (abs === 1) return { xPercent: -50 + dir * 74, yPercent: -50, scale: 0.82, opacity: 0.55, zIndex: 20 };
-  return { xPercent: -50 + dir * 138, yPercent: -50, scale: 0.64, opacity: 0, zIndex: 10 };
+  if (abs === 0) {
+    return { xPercent: -50, yPercent: -50, scale: 1, rotateY: 0, z: 0, opacity: 1, zIndex: 30 };
+  }
+  if (abs === 1) {
+    return { xPercent: -50 + dir * 74, yPercent: -50, scale: 0.82, rotateY: dir * -32, z: -120, opacity: 0.55, zIndex: 20 };
+  }
+  return { xPercent: -50 + dir * 138, yPercent: -50, scale: 0.64, rotateY: dir * -32, z: -260, opacity: 0, zIndex: 10 };
 }
 
 const RENDER_RANGE = 2;
@@ -66,9 +70,6 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
   const dragRef = useRef<{ startX: number; dragging: boolean } | null>(null);
   const thumbTrackRef = useRef<HTMLDivElement>(null);
   const thumbRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
-  const glowLayerRefs = useRef<(HTMLDivElement | null)[]>([null, null]);
-  const glowFrontRef = useRef(0);
-  const isGlowFirstRun = useRef(true);
   const photosRef = useRef(photos);
   photosRef.current = photos;
 
@@ -125,39 +126,8 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
   useLayoutEffect(() => {
     return () => {
       gsap.killTweensOf(Array.from(cardRefs.current.values()));
-      gsap.killTweensOf(glowLayerRefs.current.filter(Boolean));
     };
   }, []);
-
-  // ── Ambient glow di belakang stage — versi blur foto aktif, crossfade tiap
-  //    ganti slide (mirip "now playing" backdrop). Dua layer dipakai gantian
-  //    (front/back) supaya foto lama nggak ilang tiba-tiba pas foto baru masuk. ──
-  useLayoutEffect(() => {
-    const url = photosRef.current[active]?.url;
-    const layers = glowLayerRefs.current;
-    const frontEl = layers[glowFrontRef.current];
-    const backEl = layers[glowFrontRef.current === 0 ? 1 : 0];
-    if (!url || !frontEl || !backEl) return;
-
-    const reduceMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (isGlowFirstRun.current) {
-      frontEl.style.backgroundImage = `url(${url})`;
-      gsap.set(frontEl, { opacity: 0.55 });
-      gsap.set(backEl, { opacity: 0 });
-      isGlowFirstRun.current = false;
-      return;
-    }
-
-    backEl.style.backgroundImage = `url(${url})`;
-    gsap.set(backEl, { opacity: 0 });
-    const dur = reduceMotion ? 0.01 : 0.8;
-    gsap.to(frontEl, { opacity: 0, duration: dur, ease: "power2.out" });
-    gsap.to(backEl, { opacity: 0.55, duration: dur, ease: "power2.out" });
-    glowFrontRef.current = glowFrontRef.current === 0 ? 1 : 0;
-  }, [active]);
 
   // ── Auto-scroll thumbnail strip biar thumbnail aktif selalu keliatan ───────
   useLayoutEffect(() => {
@@ -228,28 +198,17 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
           height: clamp(360px, calc(min(74vw, 440px) * 4 / 3 + 40px), 660px);
           touch-action: pan-y;
           cursor: grab;
+          perspective: 1400px;
         }
         .gsap-slider-stage:active { cursor: grabbing; }
-        .gsap-slider-glow-wrap {
+        .gsap-slider-bg {
           position: absolute;
           inset: 0;
           z-index: 0;
           pointer-events: none;
-          overflow: hidden;
-          border-radius: 24px;
-        }
-        .gsap-slider-glow {
-          position: absolute;
-          inset: -20%;
-          background-size: cover;
-          background-position: center;
-          filter: blur(60px) saturate(1.5);
-          transform: scale(1.05);
-          opacity: 0;
-          will-change: opacity;
-        }
-        @media (max-width: 480px) {
-          .gsap-slider-glow { filter: blur(40px) saturate(1.4); }
+          background:
+            radial-gradient(120% 90% at 50% 15%, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 55%),
+            linear-gradient(180deg, var(--page-background, #0a0a0f) 0%, var(--surface-background, #101014) 100%);
         }
         .gsap-slider-card {
           position: absolute;
@@ -257,12 +216,14 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
           left: 50%;
           width: min(74vw, 440px);
           aspect-ratio: 3 / 4;
-          border-radius: 20px;
+          border-radius: 0;
           overflow: hidden;
           cursor: pointer;
           background: #0a0a0f;
           box-shadow: 0 24px 60px rgba(0,0,0,0.45);
           will-change: transform, opacity;
+          transform-style: preserve-3d;
+          backface-visibility: hidden;
         }
         .gsap-slider-img {
           width: 100%;
@@ -289,21 +250,23 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
           bottom: 18px;
           color: #fff;
           pointer-events: none;
+          transform-style: preserve-3d;
+          transform: translateZ(36px);
         }
         .gsap-slider-title {
           margin: 0;
           font-family: var(--font-heading);
           font-size: clamp(0.86rem, 2.3vw, 1.05rem);
-          font-weight: 500;
+          font-weight: 600;
           letter-spacing: 0.005em;
           text-transform: none;
           line-height: 1.42;
-          color: rgba(255,255,255,0.95);
+          color: rgba(255,255,255,0.97);
           display: -webkit-box;
           -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          text-shadow: 0 1px 8px rgba(0,0,0,0.35);
+          text-shadow: 0 2px 4px rgba(0,0,0,0.55), 0 12px 24px rgba(0,0,0,0.4);
         }
         .gsap-slider-subtitle-row {
           display: flex;
@@ -441,7 +404,7 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
           flex: 0 0 auto;
           width: 64px;
           aspect-ratio: 3 / 4;
-          border-radius: 12px;
+          border-radius: 0;
           overflow: hidden;
           padding: 0;
           cursor: pointer;
@@ -468,7 +431,7 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
         }
         @media (max-width: 480px) {
           .gsap-slider-thumbs { gap: 8px; margin-top: 18px; }
-          .gsap-slider-thumb { width: 52px; border-radius: 10px; }
+          .gsap-slider-thumb { width: 52px; border-radius: 0; }
         }
       `}</style>
 
@@ -484,10 +447,7 @@ export default function GallerySlider({ photos, onOpenLightbox }: GallerySliderP
         onPointerUp={onPointerUp}
         onPointerCancel={() => { dragRef.current = null; }}
       >
-        <div className="gsap-slider-glow-wrap" aria-hidden="true">
-          <div ref={(el) => { glowLayerRefs.current[0] = el; }} className="gsap-slider-glow" />
-          <div ref={(el) => { glowLayerRefs.current[1] = el; }} className="gsap-slider-glow" />
-        </div>
+        <div className="gsap-slider-bg" aria-hidden="true" />
 
         {visibleIndices.map((idx) => {
           const photo = photos[idx];
@@ -612,7 +572,7 @@ export function GallerySliderSkeleton() {
           width: "min(74vw, 440px)",
           aspectRatio: "3 / 4",
           margin: "0 auto",
-          borderRadius: 20,
+          borderRadius: 0,
           background: "var(--neutral-alpha-weak)",
           animation: "gsapSliderPulse 1.4s ease-in-out infinite",
         }}
