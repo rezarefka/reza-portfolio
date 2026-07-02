@@ -58,12 +58,19 @@ export async function getPublishedProjects(): Promise<Project[]> {
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("projects")
     .select("*")
     .eq("slug", slug)
     .eq("published", true)
     .single();
+  // PGRST116 = "no rows found" → project genuinely doesn't exist, show 404.
+  // Any other error (network blip, Supabase outage, egress limit, timeout, etc.)
+  // is rethrown so the route's error.tsx boundary can show a friendly
+  // "try again" screen instead of crashing into a raw 500 page.
+  if (error && error.code !== "PGRST116") {
+    throw new Error(`getProjectBySlug failed: ${error.message}`);
+  }
   return data ? normalizeProject(data) : null;
 }
 
