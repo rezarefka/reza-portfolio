@@ -5,47 +5,44 @@ import { usePathname } from "next/navigation";
 import gsap from "gsap";
 
 /**
- * Animasi perpindahan halaman ala "slider wipe" — dipasang sekali di root
- * layout, membungkus konten utama (bukan Header/Footer). Setiap kali
- * `pathname` berubah (klik link/button navigasi apapun), overlay warna
- * brand nyapu dari kiri ke kanan menutupi layar sebentar sambil konten
- * halaman baru fade-in di baliknya, lalu overlay lanjut menyapu keluar
- * ke kanan.
+ * Animasi perpindahan halaman — liquid glass blur-crossfade. Dipasang sekali
+ * di root layout, membungkus konten utama (bukan Header/Footer). Setiap kali
+ * `pathname` berubah, konten halaman baru masuk dengan blur→fokus + scale
+ * halus, senada dengan easing yang dipakai di HeroSection. Tidak ada panel
+ * yang menyapu layar — murni fade/blur di tempat.
  *
  * Tidak intercept klik / menunda navigasi — Next.js tetap navigasi normal,
  * animasi ini murni efek visual yang dipicu oleh perubahan route.
  */
 export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
 
   useEffect(() => {
     const content = contentRef.current;
-    const overlay = overlayRef.current;
     if (!content) return;
 
-    // Muat pertama kali: cukup fade-in halus, tanpa overlay sapuan.
+    const tl = gsap.timeline();
+
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      gsap.fromTo(
+      // Muat pertama kali: sedikit lebih ringan, tanpa blur berat.
+      tl.fromTo(
         content,
-        { opacity: 0, y: 14 },
-        { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+        { opacity: 0, y: 10, scale: 0.99, filter: "blur(6px)" },
+        { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.55, ease: "power2.out" },
       );
-      return;
+    } else {
+      tl.set(content, { opacity: 0, y: 14, scale: 0.985, filter: "blur(10px)" }).to(content, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: "blur(0px)",
+        duration: 0.65,
+        ease: "power3.out",
+      });
     }
-
-    if (!overlay) return;
-
-    const tl = gsap.timeline();
-    tl.set(overlay, { xPercent: -100, opacity: 1 })
-      .set(content, { opacity: 0, y: 14 })
-      .to(overlay, { xPercent: 0, duration: 0.32, ease: "power3.inOut" })
-      .to(content, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, "-=0.06")
-      .to(overlay, { xPercent: 100, duration: 0.38, ease: "power3.inOut" }, "-=0.16")
-      .set(overlay, { opacity: 0 });
 
     return () => {
       tl.kill();
@@ -54,11 +51,8 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   return (
-    <>
-      <div ref={overlayRef} className="page-transition-overlay" aria-hidden="true" />
-      <div ref={contentRef} key={pathname} style={{ width: "100%" }}>
-        {children}
-      </div>
-    </>
+    <div ref={contentRef} key={pathname} style={{ width: "100%" }}>
+      {children}
+    </div>
   );
 }

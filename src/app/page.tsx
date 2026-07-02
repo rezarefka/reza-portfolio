@@ -121,7 +121,7 @@ export default async function Home() {
           className="home-col"
           paddingY="12"
           horizontal="center"
-          style={{ position: "relative", zIndex: 1 }}
+          style={{ position: "relative", zIndex: 1, margin: "0 auto" }}
         >
         <script
           type="application/ld+json"

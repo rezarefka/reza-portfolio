@@ -612,29 +612,4 @@ img, video, iframe, svg { max-width: 100%; }
 
 
 
-/* ─── Page Transition — Slider Wipe ──────────────────────────────────────── */
-.page-transition-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  pointer-events: none;
-  opacity: 0;
-  background: linear-gradient(
-    115deg,
-    var(--brand-solid-strong) 0%,
-    var(--brand-solid-medium) 50%,
-    var(--brand-solid-strong) 100%
-  );
-  will-change: transform, opacity;
-}
-.page-transition-overlay::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    100deg,
-    transparent 40%,
-    rgba(255, 255, 255, 0.22) 50%,
-    transparent 60%
-  );
-}
+/* ─── Page Transition — handled inline via GSAP in PageTransition.tsx ──── */
