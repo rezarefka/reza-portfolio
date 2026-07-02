@@ -14,7 +14,10 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        // "/" = allow semua by default. "/api/favicon" & "/api/icon" di-list
+        // eksplisit karena lebih spesifik dari disallow "/api/" di bawah,
+        // supaya Googlebot tetap bisa crawl favicon terbaru dari CMS.
+        allow: ["/", "/api/favicon", "/api/icon"],
         // Block yang memang private — sub-pages lain boleh di-crawl
         // tapi di-noindex via meta tag & X-Robots-Tag header
         // (Google harus bisa crawl untuk melihat noindex tag dan de-index yang sudah masuk)
