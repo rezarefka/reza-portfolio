@@ -400,17 +400,33 @@ export function AdminShell({ children, user }: AdminShellProps) {
       }}>
         <style>{LIQUID_GLASS_CSS}</style>
 
-        {/* ── Top Header ── */}
+        {/* Ambient liquid-glass glow backdrop */}
         <div style={{
-          position: "sticky", top: 0, zIndex: 50,
-          width: "100%", height: 56,
+          position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden",
+        }}>
+          <div style={{
+            position: "absolute", top: "-10%", right: "-20%", width: "70%", paddingBottom: "70%",
+            borderRadius: "50%", background: "var(--brand-alpha-weak)", filter: "blur(60px)", opacity: 0.5,
+          }} />
+          <div style={{
+            position: "absolute", bottom: "-15%", left: "-25%", width: "65%", paddingBottom: "65%",
+            borderRadius: "50%", background: "var(--brand-alpha-weak)", filter: "blur(70px)", opacity: 0.35,
+          }} />
+        </div>
+
+        {/* ── Top Header — floating pill, same glass model as dock/sidebar ── */}
+        <div style={{
+          position: "fixed", top: 12, left: 12, right: 12, zIndex: 50,
+          height: 56,
           display: "flex", alignItems: "center",
-          justifyContent: "space-between", padding: "0 16px",
+          justifyContent: "space-between", padding: "0 14px",
+          borderRadius: 18,
           background: "var(--adm-glass-bg)",
           backdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
           WebkitBackdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
-          borderBottom: "1px solid var(--adm-glass-border)",
+          border: "1px solid var(--adm-glass-border)",
           boxShadow: "var(--adm-glass-shadow)",
+          overflow: "hidden",
         }}>
           {/* Shine */}
           <div style={{
@@ -606,29 +622,33 @@ export function AdminShell({ children, user }: AdminShellProps) {
         {/* ── Main Content ── */}
         <div style={{
           flex: 1, width: "100%", maxWidth: "100vw",
-          padding: "16px 16px 96px",
+          padding: "84px 16px 110px",
           overflowX: "hidden", boxSizing: "border-box",
+          position: "relative", zIndex: 1,
         }}>
           {children}
         </div>
 
-        {/* ── Bottom Nav Bar ── */}
+        {/* ── Bottom Dock — floating rounded, same glass model as desktop sidebar ── */}
         <nav style={{
           position: "fixed",
-          bottom: 0, left: 0, right: 0, zIndex: 50,
-          height: "calc(62px + env(safe-area-inset-bottom))",
-          paddingBottom: "env(safe-area-inset-bottom)",
+          left: 12, right: 12,
+          bottom: "max(env(safe-area-inset-bottom), 12px)",
+          zIndex: 50,
+          height: 62,
+          borderRadius: 20,
           background: "var(--adm-glass-bg)",
           backdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
           WebkitBackdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
-          borderTop: "1px solid var(--adm-glass-border)",
+          border: "1px solid var(--adm-glass-border)",
           boxShadow: "var(--adm-glass-shadow)",
-          display: "flex", alignItems: "stretch", width: "100%",
+          display: "flex", alignItems: "stretch",
+          overflow: "hidden",
         }}>
           {/* Shine line */}
           <div style={{
-            position: "absolute", top: 0, left: 0, right: 0, height: 1,
-            background: "linear-gradient(90deg, transparent, var(--adm-dot-top-color), transparent)",
+            position: "absolute", top: 0, left: 0, right: 0, height: "50%",
+            background: "linear-gradient(180deg, var(--adm-dot-top-color) 0%, transparent 100%)",
             pointerEvents: "none",
           }} />
 
@@ -667,14 +687,34 @@ export function AdminShell({ children, user }: AdminShellProps) {
     }}>
       <style>{LIQUID_GLASS_CSS}</style>
 
-      {/* ── Sidebar ── */}
+      {/* Ambient liquid-glass glow backdrop */}
+      <div style={{
+        position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden",
+      }}>
+        <div style={{
+          position: "absolute", top: "-15%", right: "-10%", width: "50%", paddingBottom: "50%",
+          borderRadius: "50%", background: "var(--brand-alpha-weak)", filter: "blur(80px)", opacity: 0.45,
+        }} />
+        <div style={{
+          position: "absolute", bottom: "-20%", left: "10%", width: "45%", paddingBottom: "45%",
+          borderRadius: "50%", background: "var(--brand-alpha-weak)", filter: "blur(90px)", opacity: 0.3,
+        }} />
+      </div>
+
+      {/* ── Sidebar (Velocity-style floating dock, edge toggle) ── */}
       <div
         style={{
           position: "fixed",
           left: 12, top: 12, bottom: 12,
-          width: collapsed ? 60 : 224,
+          width: collapsed ? 64 : 224,
           transition: "width 0.25s cubic-bezier(0.4,0,0.2,1)",
           zIndex: 100,
+          animation: "adminSidebarIn 0.30s cubic-bezier(0.34,1.56,0.64,1)",
+        }}
+      >
+        {/* Glass surface — clips shine & scroll, rounded */}
+        <div style={{
+          position: "absolute", inset: 0,
           borderRadius: 18,
           background: "var(--adm-glass-bg)",
           backdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
@@ -683,67 +723,41 @@ export function AdminShell({ children, user }: AdminShellProps) {
           boxShadow: "var(--adm-glass-shadow)",
           display: "flex", flexDirection: "column",
           overflow: "hidden",
-          animation: "adminSidebarIn 0.30s cubic-bezier(0.34,1.56,0.64,1)",
-        }}
-      >
-        {/* Shine top */}
-        <div style={{
-          position: "absolute", top: 0, left: 0, right: 0, height: 72,
-          background: "linear-gradient(180deg, var(--adm-dot-top-color) 0%, transparent 100%)",
-          borderRadius: "18px 18px 0 0", pointerEvents: "none",
-        }} />
+        }}>
+          {/* Shine top */}
+          <div style={{
+            position: "absolute", top: 0, left: 0, right: 0, height: 72,
+            background: "linear-gradient(180deg, var(--adm-dot-top-color) 0%, transparent 100%)",
+            borderRadius: "18px 18px 0 0", pointerEvents: "none",
+          }} />
 
-        <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "10px 7px", position: "relative" }}>
+          <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "10px 7px", position: "relative" }}>
 
-          {/* Header */}
+          {/* Header — logo only, toggle moved to floating edge button */}
           <div style={{
             display: "flex", alignItems: "center",
-            justifyContent: collapsed ? "center" : "space-between",
-            padding: "4px 5px 10px", gap: 8,
+            justifyContent: collapsed ? "center" : "flex-start",
+            padding: "4px 5px 10px", gap: 9,
           }}>
+            <div style={{
+              width: 26, height: 26, borderRadius: 8,
+              background: "var(--brand-background-strong)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "var(--brand-on-solid-strong)", flexShrink: 0,
+              boxShadow: "0 2px 10px rgba(0,0,0,0.18)",
+            }}>
+              {Icons.logo}
+            </div>
             {!collapsed && (
-              <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-                <div style={{
-                  width: 26, height: 26, borderRadius: 8,
-                  background: "var(--brand-background-strong)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  color: "var(--brand-on-solid-strong)", flexShrink: 0,
-                  boxShadow: "0 2px 10px rgba(0,0,0,0.18)",
-                }}>
-                  {Icons.logo}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--adm-text-strong)", lineHeight: 1.1 }}>
+                  Reza Control
                 </div>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--adm-text-strong)", lineHeight: 1.1 }}>
-                    Reza Control
-                  </div>
-                  <div style={{ fontSize: 9, color: "var(--adm-text-label)", letterSpacing: "0.04em", marginTop: 1 }}>
-                    CMS Panel
-                  </div>
+                <div style={{ fontSize: 9, color: "var(--adm-text-label)", letterSpacing: "0.04em", marginTop: 1 }}>
+                  CMS Panel
                 </div>
               </div>
             )}
-            <button
-              onClick={() => setCollapsed(!collapsed)}
-              style={{
-                display: "flex", alignItems: "center", justifyContent: "center",
-                width: 26, height: 26, borderRadius: 7,
-                background: "var(--adm-hover-bg)",
-                border: "1px solid var(--adm-glass-border)",
-                cursor: "pointer", color: "var(--adm-text-muted)",
-                transition: "background 0.14s, color 0.14s",
-                flexShrink: 0,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "var(--adm-active-bg)";
-                e.currentTarget.style.color = "var(--adm-active-color)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "var(--adm-hover-bg)";
-                e.currentTarget.style.color = "var(--adm-text-muted)";
-              }}
-            >
-              {collapsed ? Icons.chevronRight : Icons.chevronLeft}
-            </button>
           </div>
 
           <div style={{ height: 1, background: "var(--adm-divider)", margin: "0 4px 7px" }} />
@@ -868,20 +882,52 @@ export function AdminShell({ children, user }: AdminShellProps) {
               {!collapsed && <span>Sign Out</span>}
             </button>
           </div>
+          </div>
         </div>
+
+        {/* Floating edge toggle — Velocity-style circular button, vertically centered */}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          style={{
+            position: "absolute", top: "50%", right: -13,
+            transform: "translateY(-50%)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            width: 26, height: 26, borderRadius: "50%",
+            background: "var(--adm-glass-bg-deep)",
+            backdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
+            WebkitBackdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
+            border: "1px solid var(--adm-glass-border)",
+            boxShadow: "0 3px 14px rgba(0,0,0,0.28)",
+            cursor: "pointer", color: "var(--adm-text-muted)",
+            transition: "background 0.14s, color 0.14s, transform 0.14s",
+            zIndex: 101,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "var(--adm-active-bg)";
+            e.currentTarget.style.color = "var(--adm-active-color)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "var(--adm-glass-bg-deep)";
+            e.currentTarget.style.color = "var(--adm-text-muted)";
+          }}
+        >
+          {collapsed ? Icons.chevronRight : Icons.chevronLeft}
+        </button>
       </div>
 
       {/* ── Main Content ── */}
       <div style={{
         flex: 1,
-        marginLeft: collapsed ? 84 : 248,
+        marginLeft: collapsed ? 92 : 252,
         transition: "margin-left 0.25s cubic-bezier(0.4,0,0.2,1)",
         padding: "24px 24px 24px 0",
         minHeight: "100vh",
-        width: `calc(100vw - ${collapsed ? 84 : 248}px)`,
-        maxWidth: `calc(100vw - ${collapsed ? 84 : 248}px)`,
+        width: `calc(100vw - ${collapsed ? 92 : 252}px)`,
+        maxWidth: `calc(100vw - ${collapsed ? 92 : 252}px)`,
         overflowX: "hidden",
         boxSizing: "border-box",
+        position: "relative", zIndex: 1,
       }}>
         {children}
       </div>
