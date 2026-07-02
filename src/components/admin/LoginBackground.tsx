@@ -49,7 +49,7 @@ export function LoginBackground() {
       img.style.transform =
         `translate3d(${translateX}px, ${translateY}px, 0) ` +
         `rotateX(${rotateX}deg) rotateY(${rotateY}deg) ` +
-        `scale(${1.14 * driftScale})`;
+        `scale(${1.06 * driftScale})`;
 
       raf = requestAnimationFrame(tick);
     };
@@ -78,13 +78,13 @@ export function LoginBackground() {
         }
         .rc-bg-img {
           position: absolute;
-          inset: -6%;
+          inset: -4%;
           background-image: url('/rc-login-bg.jpg');
           background-size: cover;
-          background-position: center 20%;
+          background-position: 66% 38%;
           opacity: 0.5;
-          filter: saturate(0.9) contrast(1.02) blur(1.5px);
-          transform: scale(1.14);
+          filter: saturate(0.92) contrast(1.03) blur(1px);
+          transform: scale(1.06);
           transform-style: preserve-3d;
           will-change: transform;
         }
@@ -92,11 +92,11 @@ export function LoginBackground() {
           position: absolute;
           inset: 0;
           background:
-            radial-gradient(120% 90% at 50% 0%, rgba(124,92,255,0.16) 0%, rgba(124,92,255,0) 55%),
-            linear-gradient(180deg, rgba(8,8,12,0.55) 0%, rgba(8,8,12,0.82) 55%, rgba(8,8,12,0.94) 100%);
+            radial-gradient(120% 90% at 50% 0%, rgba(124,92,255,0.14) 0%, rgba(124,92,255,0) 55%),
+            linear-gradient(180deg, rgba(8,8,12,0.48) 0%, rgba(8,8,12,0.56) 55%, rgba(8,8,12,0.64) 100%);
         }
         @media (prefers-reduced-motion: reduce) {
-          .rc-bg-img { transform: scale(1.02) !important; filter: saturate(0.85) blur(2px); }
+          .rc-bg-img { transform: scale(1.02) !important; filter: saturate(0.85) blur(1.5px); }
         }
       `}</style>
       <div ref={imgRef} className="rc-bg-img" />

@@ -236,11 +236,12 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
-   EXTRA-NARROW PHONES (≤400 px) — squeeze further so the
-   full pill (5 nav icons + theme + lang + lock) still fits
-   without relying on the scroll fallback above.
+   NARROW PHONES (≤480 px) — squeeze further so the full pill
+   (5 nav icons + theme + lang + lock) always fits without
+   relying on horizontal scroll to reveal controls like the
+   theme toggle.
 ═══════════════════════════════════════════════════════════ */
-@media (max-width: 400px) {
+@media (max-width: 480px) {
   .glassNav {
     padding: 4px 4px;
   }
