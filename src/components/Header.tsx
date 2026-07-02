@@ -44,7 +44,7 @@ export const Header = () => {
     <>
       <style>{`
         @media(prefers-reduced-motion:reduce){
-          .nav-dot,.nav-item-btn,.nav-item-btn::before,.nav-item-btn svg,.theme-wrap svg
+          .nav-item-btn,.nav-item-btn svg,.theme-wrap svg
           { transition-duration:0.01ms!important; animation-duration:0.01ms!important; }
         }
 
@@ -54,40 +54,17 @@ export const Header = () => {
           flex-direction:column; align-items:center;
         }
 
-        /* ── Calm, understated hover: soft background fade + gentle icon scale ── */
+        /* ── Calm, understated hover: single background layer (SCSS) + gentle icon scale ── */
         .nav-item-btn {
-          position:relative; overflow:hidden;
+          position:relative;
           transition:color 0.3s ease!important;
         }
-        .nav-item-btn::before {
-          content:"";
-          position:absolute; inset:0; border-radius:inherit;
-          background:var(--neutral-alpha-weak);
-          opacity:0;
-          transition:opacity 0.3s ease;
-          pointer-events:none; z-index:0;
-        }
-        .nav-item-btn:not([data-selected="true"]):hover::before,
-        .nav-item-btn[aria-pressed="false"]:hover::before { opacity:1; }
         .nav-item-btn svg,
         .nav-item-btn i {
-          position:relative; z-index:1;
           transition:transform 0.3s ease!important;
         }
         .nav-item-btn:hover svg,
         .nav-item-btn:hover i { transform:scale(1.08); }
-        .nav-item-btn span { position:relative; z-index:1; }
-
-        /* ── P8: Active dot 4×4 below item, scale in on route change ── */
-        .nav-dot {
-          position:absolute; bottom:-9px; left:50%;
-          width:4px; height:4px; border-radius:50%;
-          background:var(--brand-solid-strong);
-          transform:translateX(-50%) scale(0);
-          transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
-          pointer-events:none;
-        }
-        .nav-dot.on { transform:translateX(-50%) scale(1); }
 
         /* ── P8: Theme toggle icon rotation ── */
         .theme-wrap { display:contents; }
@@ -109,7 +86,6 @@ export const Header = () => {
                 className={`${styles.navBtn} nav-item-btn${isActive("/",true)?" "+styles.active:""}`}>
                 <span className={styles.label}>{navLabel("Home")}</span>
               </ToggleButton>
-              <span className={`nav-dot${isActive("/",true)?" on":""}`}/>
             </div>
           )}
 
@@ -120,7 +96,6 @@ export const Header = () => {
                 className={`${styles.navBtn} nav-item-btn${isActive("/about",true)?" "+styles.active:""}`}>
                 <span className={styles.label}>{navLabel(about.label)}</span>
               </ToggleButton>
-              <span className={`nav-dot${isActive("/about",true)?" on":""}`}/>
             </div>
           </>)}
 
@@ -131,7 +106,6 @@ export const Header = () => {
                 className={`${styles.navBtn} nav-item-btn${isActive("/work")?" "+styles.active:""}`}>
                 <span className={styles.label}>{navLabel(work.label)}</span>
               </ToggleButton>
-              <span className={`nav-dot${isActive("/work")?" on":""}`}/>
             </div>
           </>)}
 
@@ -142,7 +116,6 @@ export const Header = () => {
                 className={`${styles.navBtn} nav-item-btn${isActive("/blog")?" "+styles.active:""}`}>
                 <span className={styles.label}>{navLabel(blog.label)}</span>
               </ToggleButton>
-              <span className={`nav-dot${isActive("/blog")?" on":""}`}/>
             </div>
           </>)}
 
@@ -153,7 +126,6 @@ export const Header = () => {
                 className={`${styles.navBtn} nav-item-btn${isActive("/gallery")?" "+styles.active:""}`}>
                 <span className={styles.label}>{navLabel(gallery.label)}</span>
               </ToggleButton>
-              <span className={`nav-dot${isActive("/gallery")?" on":""}`}/>
             </div>
           </>)}
 
