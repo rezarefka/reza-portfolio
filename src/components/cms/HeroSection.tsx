@@ -112,15 +112,15 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
         /* ── Status bar: location (fixed top-left) + live clock (fixed top-right) ── */
         .hero-statusbar {
           position: fixed;
-          top: 26px;
+          top: 28px;
           left: 0;
           right: 0;
           display: flex;
           justify-content: space-between;
           align-items: center;
           width: 100%;
-          padding: 0 20px;
-          font-size: 11px;
+          padding: 0 22px;
+          font-size: 10px;
           font-weight: 500;
           letter-spacing: 0.04em;
           color: var(--neutral-on-background-weak);
@@ -130,30 +130,21 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
         .hero-status-item {
           display: inline-flex;
           align-items: center;
-          gap: 5px;
+          gap: 4px;
           white-space: nowrap;
           pointer-events: auto;
-          padding: 7px 12px;
-          border-radius: 999px;
-          background: color-mix(in srgb, var(--page-background) 56%, transparent);
-          backdrop-filter: blur(20px) saturate(160%);
-          -webkit-backdrop-filter: blur(20px) saturate(160%);
-          border: 1px solid color-mix(in srgb, var(--brand-background-strong) 18%, transparent);
-          transition: background 0.3s ease, border-color 0.3s ease;
+          opacity: 0.8;
+          transition: opacity 0.3s ease;
         }
-        .hero-status-item:hover {
-          background: color-mix(in srgb, var(--page-background) 72%, transparent);
-          border-color: color-mix(in srgb, var(--brand-background-strong) 32%, transparent);
-        }
+        .hero-status-item:hover { opacity: 1; }
         .hero-status-item svg {
-          width: 12px;
-          height: 12px;
+          width: 11px;
+          height: 11px;
           flex-shrink: 0;
-          opacity: 0.75;
+          opacity: 0.7;
         }
         @media (max-width: 640px) {
-          .hero-statusbar { top: 16px; padding: 0 12px; font-size: 10px; }
-          .hero-status-item { padding: 6px 10px; }
+          .hero-statusbar { top: 18px; padding: 0 14px; font-size: 9px; }
         }
 
 
