@@ -1,4 +1,4 @@
-import { createClient } from "./supabase/server";
+import { createPublicClient as createClient } from "./supabase/public";
 import type { Project, Certificate, Blog, SiteSettings, Media, GalleryItem, AboutIntro } from "./types";
 
 // ─── SETTINGS ────────────────────────────────────────────────────────────────
