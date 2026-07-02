@@ -44,7 +44,7 @@ export const Header = () => {
     <>
       <style>{`
         @media(prefers-reduced-motion:reduce){
-          .nav-dot,.nav-item-btn,.nav-item-btn::before,.nav-item-btn::after,.nav-item-btn svg,.theme-wrap svg
+          .nav-dot,.nav-item-btn,.nav-item-btn::before,.nav-item-btn svg,.theme-wrap svg
           { transition-duration:0.01ms!important; animation-duration:0.01ms!important; }
         }
 
@@ -54,44 +54,28 @@ export const Header = () => {
           flex-direction:column; align-items:center;
         }
 
-        /* ── Elegant hover: soft glow bloom + gentle lift + icon pop ── */
+        /* ── Calm, understated hover: soft background fade + gentle icon scale ── */
         .nav-item-btn {
-          position:relative; overflow:visible;
-          transition:transform 0.4s cubic-bezier(0.22,1,0.36,1)!important;
+          position:relative; overflow:hidden;
+          transition:color 0.3s ease!important;
         }
         .nav-item-btn::before {
           content:"";
           position:absolute; inset:0; border-radius:inherit;
-          background:radial-gradient(circle at 50% 50%,
-            color-mix(in srgb, var(--brand-background-strong) 40%, transparent) 0%,
-            color-mix(in srgb, var(--brand-background-strong) 10%, transparent) 55%,
-            transparent 75%);
-          opacity:0; transform:scale(0.55);
-          transition:opacity 0.4s cubic-bezier(0.22,1,0.36,1), transform 0.45s cubic-bezier(0.22,1,0.36,1);
+          background:var(--neutral-alpha-weak);
+          opacity:0;
+          transition:opacity 0.3s ease;
           pointer-events:none; z-index:0;
         }
-        .nav-item-btn::after {
-          content:"";
-          position:absolute; left:14%; right:14%; bottom:3px; height:1.5px;
-          background:linear-gradient(90deg, transparent, var(--brand-solid-strong), transparent);
-          border-radius:2px;
-          transform:scaleX(0); opacity:0;
-          transition:transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease;
-          pointer-events:none; z-index:0;
-        }
-        .nav-item-btn:not([data-selected="true"]):hover,
-        .nav-item-btn[aria-pressed="false"]:hover { transform:translateY(-2px)!important; }
         .nav-item-btn:not([data-selected="true"]):hover::before,
-        .nav-item-btn[aria-pressed="false"]:hover::before { opacity:1; transform:scale(1); }
-        .nav-item-btn:not([data-selected="true"]):hover::after,
-        .nav-item-btn[aria-pressed="false"]:hover::after { transform:scaleX(1); opacity:0.85; }
+        .nav-item-btn[aria-pressed="false"]:hover::before { opacity:1; }
         .nav-item-btn svg,
         .nav-item-btn i {
           position:relative; z-index:1;
-          transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)!important;
+          transition:transform 0.3s ease!important;
         }
         .nav-item-btn:hover svg,
-        .nav-item-btn:hover i { transform:scale(1.14) translateY(-0.5px); }
+        .nav-item-btn:hover i { transform:scale(1.08); }
         .nav-item-btn span { position:relative; z-index:1; }
 
         /* ── P8: Active dot 4×4 below item, scale in on route change ── */

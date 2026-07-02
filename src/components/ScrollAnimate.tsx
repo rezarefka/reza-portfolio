@@ -23,7 +23,7 @@ const INIT: Record<Direction, CSSProperties> = {
 
 const DONE: CSSProperties = {
   opacity: 1,
-  transform: "translateY(0) translateX(0)",
+  transform: "none",
 };
 
 export function ScrollAnimate({

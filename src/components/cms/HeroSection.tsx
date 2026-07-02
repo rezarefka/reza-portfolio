@@ -6,6 +6,7 @@ import { useLang } from "@/lib/lang-context";
 import { createClient } from "@/lib/supabase/client";
 import type { SiteSettings } from "@/lib/types";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { ShimmerButton } from "./ShimmerButton";
 import { HeroSkeleton } from "@/components/Skeletons";
 
@@ -39,6 +40,9 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
   const [settings, setSettings] = useState<SiteSettings | null>(initialSettings);
   const [avatarSrc, setAvatarSrc] = useState<string>(person.avatar);
   const [isLoading, setIsLoading] = useState<boolean>(!initialSettings);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   /* ── Supabase refresh ── */
   useEffect(() => {
@@ -260,23 +264,31 @@ export function HeroSection({ settings: initialSettings }: HeroSectionProps) {
         }
       `}</style>
 
-      {/* Status bar: location left, live clock right */}
-      <div className="hero-statusbar">
-        <span className="hero-status-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
-          Makassar, Indonesia
-        </span>
-        <span className="hero-status-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 7v5l3 3" />
-          </svg>
-          <LiveClock />
-        </span>
-      </div>
+      {/* Status bar: location left, live clock right.
+          Rendered via portal straight into <body> so `position: fixed` is
+          always relative to the real viewport — HeroSection sits inside
+          <ScrollAnimate>, whose reveal animation leaves a lingering
+          `transform` on its wrapper div, which would otherwise hijack
+          fixed-position descendants and trap them inside that wrapper. */}
+      {mounted && createPortal(
+        <div className="hero-statusbar">
+          <span className="hero-status-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            Makassar, Indonesia
+          </span>
+          <span className="hero-status-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v5l3 3" />
+            </svg>
+            <LiveClock />
+          </span>
+        </div>,
+        document.body
+      )}
 
       {/* Dot-grid canvas — hidden */}
       <div className="hero-content">
