@@ -1,4 +1,5 @@
 import { LoginForm } from "@/components/admin/LoginForm";
+import { LoginBackground } from "@/components/admin/LoginBackground";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,6 +11,7 @@ export default function LoginPage() {
   return (
     <div
       style={{
+        position: "relative",
         minHeight: "100vh",
         width: "100%",
         display: "flex",
@@ -17,11 +19,14 @@ export default function LoginPage() {
         justifyContent: "center",
         padding: "48px 20px",
         boxSizing: "border-box",
-        background:
-          "radial-gradient(120% 90% at 50% 0%, rgba(124,92,255,0.12) 0%, rgba(124,92,255,0) 55%), linear-gradient(180deg, #08080c 0%, #0d0d14 100%)",
+        background: "#08080c",
+        overflow: "hidden",
       }}
     >
-      <LoginForm />
+      <LoginBackground />
+      <div style={{ position: "relative", zIndex: 1, width: "100%", display: "flex", justifyContent: "center" }}>
+        <LoginForm />
+      </div>
     </div>
   );
 }
