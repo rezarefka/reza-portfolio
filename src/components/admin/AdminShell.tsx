@@ -157,58 +157,64 @@ const LIQUID_GLASS_CSS = `
   ══════════════════════════════════════════════════════════ */
   :root,
   html[data-theme="dark"] {
-    --adm-glass-bg:       rgba(14, 16, 20, 0.72);
-    --adm-glass-bg-deep:  rgba(10, 12, 16, 0.88);
-    --adm-glass-border:   rgba(255, 255, 255, 0.07);
-    --adm-glass-shine:    rgba(255, 255, 255, 0.04);
-    --adm-glass-blur:     28px;
-    --adm-glass-shadow:   0 8px 40px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.05) inset;
-    --adm-active-bg:      rgba(var(--brand-rgb, 6,182,212), 0.14);
-    --adm-active-border:  rgba(var(--brand-rgb, 6,182,212), 0.28);
+    --adm-glass-bg:       linear-gradient(155deg, rgba(255,255,255,0.09) 0%, rgba(22,24,30,0.74) 45%, rgba(9,10,14,0.90) 100%);
+    --adm-glass-bg-deep:  linear-gradient(155deg, rgba(255,255,255,0.10) 0%, rgba(16,18,23,0.90) 100%);
+    --adm-glass-border:   rgba(255, 255, 255, 0.09);
+    --adm-glass-border-soft: rgba(255, 255, 255, 0.04);
+    --adm-glass-shine:    rgba(255, 255, 255, 0.05);
+    --adm-glass-blur:     30px;
+    --adm-glass-shadow:   0 20px 60px -12px rgba(0,0,0,0.65), 0 4px 20px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04) inset, 0 1px 0 rgba(255,255,255,0.09) inset;
+    --adm-glass-glow:     0 0 60px -8px rgba(var(--brand-rgb, 6,182,212), 0.16);
+    --adm-active-bg:      linear-gradient(135deg, rgba(var(--brand-rgb, 6,182,212), 0.20), rgba(var(--brand-rgb, 6,182,212), 0.08));
+    --adm-active-border:  rgba(var(--brand-rgb, 6,182,212), 0.30);
     --adm-active-color:   var(--brand-on-background-medium, #22d3ee);
     --adm-active-dot:     var(--brand-background-strong, #0891b2);
+    --adm-active-glow:    0 4px 16px -2px rgba(var(--brand-rgb, 6,182,212), 0.35), 0 0 0 1px rgba(var(--brand-rgb, 6,182,212), 0.12) inset;
     --adm-hover-bg:       rgba(255, 255, 255, 0.055);
-    --adm-text-strong:    rgba(248, 250, 252, 0.92);
-    --adm-text-muted:     rgba(148, 163, 184, 0.60);
-    --adm-text-label:     rgba(100, 116, 139, 0.55);
-    --adm-divider:        rgba(255, 255, 255, 0.07);
-    --adm-user-bg:        rgba(255, 255, 255, 0.04);
-    --adm-user-border:    rgba(255, 255, 255, 0.08);
+    --adm-text-strong:    rgba(248, 250, 252, 0.94);
+    --adm-text-muted:     rgba(148, 163, 184, 0.62);
+    --adm-text-label:     rgba(100, 116, 139, 0.58);
+    --adm-divider:        linear-gradient(90deg, transparent, rgba(255,255,255,0.12) 50%, transparent);
+    --adm-user-bg:        linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    --adm-user-border:    rgba(255, 255, 255, 0.09);
     --adm-tab-inactive:   rgba(148, 163, 184, 0.50);
-    --adm-drawer-bg:      rgba(12, 14, 20, 0.96);
+    --adm-drawer-bg:      linear-gradient(165deg, rgba(24,26,33,0.97), rgba(10,11,15,0.98));
     --adm-logout-bg:      rgba(239, 68, 68, 0.10);
     --adm-logout-border:  rgba(239, 68, 68, 0.20);
     --adm-logout-color:   rgba(252, 165, 165, 0.85);
-    --adm-dot-top-color:  rgba(255, 255, 255, 0.06);
+    --adm-dot-top-color:  rgba(255, 255, 255, 0.07);
   }
 
   /* ══════════════════════════════════════════════════════════
      LIGHT MODE
   ══════════════════════════════════════════════════════════ */
   html[data-theme="light"] {
-    --adm-glass-bg:       rgba(255, 255, 255, 0.62);
-    --adm-glass-bg-deep:  rgba(248, 250, 252, 0.90);
-    --adm-glass-border:   rgba(0, 0, 0, 0.07);
-    --adm-glass-shine:    rgba(255, 255, 255, 0.70);
-    --adm-glass-blur:     24px;
-    --adm-glass-shadow:   0 4px 32px rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.80) inset;
-    --adm-active-bg:      rgba(var(--brand-rgb, 8,145,178), 0.10);
-    --adm-active-border:  rgba(var(--brand-rgb, 8,145,178), 0.24);
+    --adm-glass-bg:       linear-gradient(155deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.66) 45%, rgba(240,242,247,0.78) 100%);
+    --adm-glass-bg-deep:  linear-gradient(155deg, rgba(255,255,255,0.96) 0%, rgba(246,248,251,0.92) 100%);
+    --adm-glass-border:   rgba(0, 0, 0, 0.075);
+    --adm-glass-border-soft: rgba(0, 0, 0, 0.03);
+    --adm-glass-shine:    rgba(255, 255, 255, 0.85);
+    --adm-glass-blur:     26px;
+    --adm-glass-shadow:   0 20px 50px -14px rgba(15,23,42,0.16), 0 4px 16px rgba(15,23,42,0.06), 0 0 0 1px rgba(255,255,255,0.6) inset, 0 1px 0 rgba(255,255,255,0.9) inset;
+    --adm-glass-glow:     0 0 50px -10px rgba(var(--brand-rgb, 8,145,178), 0.14);
+    --adm-active-bg:      linear-gradient(135deg, rgba(var(--brand-rgb, 8,145,178), 0.14), rgba(var(--brand-rgb, 8,145,178), 0.05));
+    --adm-active-border:  rgba(var(--brand-rgb, 8,145,178), 0.26);
     --adm-active-color:   var(--brand-on-background-strong, #0e7490);
     --adm-active-dot:     var(--brand-background-strong, #0891b2);
+    --adm-active-glow:    0 4px 14px -2px rgba(var(--brand-rgb, 8,145,178), 0.22), 0 0 0 1px rgba(var(--brand-rgb, 8,145,178), 0.10) inset;
     --adm-hover-bg:       rgba(0, 0, 0, 0.04);
     --adm-text-strong:    rgba(15, 23, 42, 0.92);
     --adm-text-muted:     rgba(71, 85, 105, 0.75);
     --adm-text-label:     rgba(100, 116, 139, 0.60);
-    --adm-divider:        rgba(0, 0, 0, 0.07);
-    --adm-user-bg:        rgba(0, 0, 0, 0.03);
-    --adm-user-border:    rgba(0, 0, 0, 0.08);
+    --adm-divider:        linear-gradient(90deg, transparent, rgba(0,0,0,0.10) 50%, transparent);
+    --adm-user-bg:        linear-gradient(135deg, rgba(255,255,255,0.75), rgba(255,255,255,0.35));
+    --adm-user-border:    rgba(0, 0, 0, 0.07);
     --adm-tab-inactive:   rgba(71, 85, 105, 0.50);
-    --adm-drawer-bg:      rgba(252, 253, 255, 0.97);
+    --adm-drawer-bg:      linear-gradient(165deg, rgba(255,255,255,0.98), rgba(247,249,252,0.98));
     --adm-logout-bg:      rgba(239, 68, 68, 0.07);
     --adm-logout-border:  rgba(239, 68, 68, 0.18);
     --adm-logout-color:   rgba(185, 28, 28, 0.85);
-    --adm-dot-top-color:  rgba(255, 255, 255, 0.80);
+    --adm-dot-top-color:  rgba(255, 255, 255, 0.85);
   }
 
   /* ── Bottom mobile nav button ────────────────────────── */
@@ -246,10 +252,11 @@ const LIQUID_GLASS_CSS = `
     top: 4px;
     width: 18px; height: 2.5px;
     border-radius: 0 0 3px 3px;
-    background: var(--adm-active-dot);
+    background: linear-gradient(90deg, var(--adm-active-color), var(--adm-active-dot));
+    box-shadow: 0 1px 8px rgba(var(--brand-rgb, 6,182,212), 0.55);
     left: 50%;
     transform: translateX(-50%);
-    opacity: 0.75;
+    opacity: 0.9;
   }
 
   /* ── Drawer grid items ───────────────────────────────── */
@@ -265,7 +272,7 @@ const LIQUID_GLASS_CSS = `
     cursor: pointer;
     background: var(--adm-hover-bg);
     color: var(--adm-text-muted);
-    transition: background 0.16s, color 0.16s, border-color 0.16s, transform 0.14s;
+    transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.16s, box-shadow 0.18s;
     -webkit-tap-highlight-color: transparent;
     font-family: inherit;
     backdrop-filter: blur(10px);
@@ -275,6 +282,7 @@ const LIQUID_GLASS_CSS = `
     background: var(--adm-active-bg);
     color: var(--adm-active-color);
     border-color: var(--adm-active-border);
+    box-shadow: var(--adm-active-glow);
   }
   .adm-drawer-item:active { transform: scale(0.93); }
   .adm-drawer-label {
@@ -290,36 +298,52 @@ const LIQUID_GLASS_CSS = `
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 11px;
+    padding: 8.5px 11px;
     border-radius: 11px;
     cursor: pointer;
     background: none;
     border: 1px solid transparent;
     color: var(--adm-text-muted);
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 500;
     width: 100%;
     text-align: left;
     font-family: inherit;
-    transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.14s;
+    position: relative;
+    transition: background 0.22s cubic-bezier(0.4,0,0.2,1), color 0.18s, border-color 0.22s, transform 0.18s, box-shadow 0.22s;
     white-space: nowrap;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.005em;
+  }
+  .adm-nav-item::before {
+    content: "";
+    position: absolute;
+    left: -6px; top: 50%;
+    width: 3px; height: 0;
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(180deg, var(--adm-active-color), var(--adm-active-dot));
+    transform: translateY(-50%);
+    transition: height 0.22s cubic-bezier(0.34,1.56,0.64,1);
   }
   .adm-nav-item:hover {
     background: var(--adm-hover-bg);
     color: var(--adm-text-strong);
-    transform: translateX(1.5px);
+    transform: translateX(2px);
   }
   .adm-nav-item.active {
     background: var(--adm-active-bg) !important;
     color: var(--adm-active-color) !important;
     border-color: var(--adm-active-border) !important;
+    box-shadow: var(--adm-active-glow);
     font-weight: 600;
+  }
+  .adm-nav-item.active::before {
+    height: 16px;
   }
   .adm-nav-item.adm-logout {
     color: var(--adm-logout-color);
     border-color: transparent;
   }
+  .adm-nav-item.adm-logout::before { display: none; }
   .adm-nav-item.adm-logout:hover {
     background: var(--adm-logout-bg);
     border-color: var(--adm-logout-border);
@@ -330,17 +354,29 @@ const LIQUID_GLASS_CSS = `
   .adm-group-label {
     font-size: 9px;
     font-weight: 700;
-    letter-spacing: 0.13em;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--adm-text-label);
-    padding: 8px 11px 4px;
+    padding: 10px 11px 5px;
+  }
+
+  /* ── Frosted noise texture (adds tactile, premium grain to glass) ── */
+  .adm-noise { position: relative; }
+  .adm-noise::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    border-radius: inherit;
   }
 
   /* ── Thin scrollbar ──────────────────────────────────── */
   .adm-scroll::-webkit-scrollbar { width: 3px; }
   .adm-scroll::-webkit-scrollbar-track { background: transparent; }
   .adm-scroll::-webkit-scrollbar-thumb {
-    background: var(--adm-divider);
+    background: var(--adm-glass-border);
     border-radius: 3px;
   }
 `;
@@ -415,7 +451,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
         </div>
 
         {/* ── Top Header — floating pill, same glass model as dock/sidebar ── */}
-        <div style={{
+        <div className="adm-noise" style={{
           position: "fixed", top: 12, left: 12, right: 12, zIndex: 50,
           height: 56,
           display: "flex", alignItems: "center",
@@ -425,7 +461,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           backdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
           WebkitBackdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
           border: "1px solid var(--adm-glass-border)",
-          boxShadow: "var(--adm-glass-shadow)",
+          boxShadow: "var(--adm-glass-shadow), var(--adm-glass-glow)",
           overflow: "hidden",
         }}>
           {/* Shine */}
@@ -439,10 +475,10 @@ export function AdminShell({ children, user }: AdminShellProps) {
           <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
             <div style={{
               width: 30, height: 30, borderRadius: 9,
-              background: "var(--brand-background-strong)",
+              background: "linear-gradient(150deg, var(--brand-background-strong), var(--brand-solid-strong, var(--brand-background-strong)) 70%, rgba(0,0,0,0.15))",
               display: "flex", alignItems: "center", justifyContent: "center",
               color: "var(--brand-on-solid-strong)", flexShrink: 0,
-              boxShadow: "0 2px 12px rgba(0,0,0,0.20)",
+              boxShadow: "0 3px 14px -2px rgba(var(--brand-rgb, 6,182,212), 0.45), 0 0 0 1px rgba(255,255,255,0.12) inset",
             }}>
               {Icons.logo}
             </div>
@@ -495,7 +531,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
               }}
               onClick={() => setDrawerOpen(false)}
             />
-            <div style={{
+            <div className="adm-noise" style={{
               position: "fixed",
               bottom: 0, left: 0, right: 0,
               zIndex: 99,
@@ -506,7 +542,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
               borderTop: "1px solid var(--adm-glass-border)",
               paddingBottom: "max(env(safe-area-inset-bottom), 24px)",
               animation: "adminDrawerIn 0.26s cubic-bezier(0.16,1,0.3,1)",
-              boxShadow: "0 -16px 48px rgba(0,0,0,0.18)",
+              boxShadow: "0 -20px 60px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.05) inset",
             }}>
               {/* Shine top */}
               <div style={{
@@ -535,8 +571,9 @@ export function AdminShell({ children, user }: AdminShellProps) {
               }}>
                 <div style={{
                   width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
-                  background: "var(--brand-alpha-weak)",
+                  background: "linear-gradient(150deg, var(--brand-alpha-weak), var(--brand-alpha-medium, var(--brand-alpha-weak)))",
                   border: "1px solid var(--adm-active-border)",
+                  boxShadow: "0 0 0 3px var(--adm-hover-bg), 0 2px 8px -2px rgba(var(--brand-rgb, 6,182,212), 0.35)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "var(--adm-active-color)", fontWeight: 700, fontSize: 14,
                 }}>
@@ -630,7 +667,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
         </div>
 
         {/* ── Bottom Dock — floating rounded, same glass model as desktop sidebar ── */}
-        <nav style={{
+        <nav className="adm-noise" style={{
           position: "fixed",
           left: 12, right: 12,
           bottom: "max(env(safe-area-inset-bottom), 12px)",
@@ -641,7 +678,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           backdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
           WebkitBackdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
           border: "1px solid var(--adm-glass-border)",
-          boxShadow: "var(--adm-glass-shadow)",
+          boxShadow: "var(--adm-glass-shadow), var(--adm-glass-glow)",
           display: "flex", alignItems: "stretch",
           overflow: "hidden",
         }}>
@@ -713,14 +750,14 @@ export function AdminShell({ children, user }: AdminShellProps) {
         }}
       >
         {/* Glass surface — clips shine & scroll, rounded */}
-        <div style={{
+        <div className="adm-noise" style={{
           position: "absolute", inset: 0,
           borderRadius: 18,
           background: "var(--adm-glass-bg)",
           backdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
           WebkitBackdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
           border: "1px solid var(--adm-glass-border)",
-          boxShadow: "var(--adm-glass-shadow)",
+          boxShadow: "var(--adm-glass-shadow), var(--adm-glass-glow)",
           display: "flex", flexDirection: "column",
           overflow: "hidden",
         }}>
@@ -741,10 +778,10 @@ export function AdminShell({ children, user }: AdminShellProps) {
           }}>
             <div style={{
               width: 26, height: 26, borderRadius: 8,
-              background: "var(--brand-background-strong)",
+              background: "linear-gradient(150deg, var(--brand-background-strong), var(--brand-solid-strong, var(--brand-background-strong)) 70%, rgba(0,0,0,0.15))",
               display: "flex", alignItems: "center", justifyContent: "center",
               color: "var(--brand-on-solid-strong)", flexShrink: 0,
-              boxShadow: "0 2px 10px rgba(0,0,0,0.18)",
+              boxShadow: "0 3px 12px -2px rgba(var(--brand-rgb, 6,182,212), 0.45), 0 0 0 1px rgba(255,255,255,0.12) inset",
             }}>
               {Icons.logo}
             </div>
@@ -855,8 +892,9 @@ export function AdminShell({ children, user }: AdminShellProps) {
               }}>
                 <div style={{
                   width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
-                  background: "var(--brand-alpha-weak)",
+                  background: "linear-gradient(150deg, var(--brand-alpha-weak), var(--brand-alpha-medium, var(--brand-alpha-weak)))",
                   border: "1px solid var(--adm-active-border)",
+                  boxShadow: "0 2px 6px -1px rgba(var(--brand-rgb, 6,182,212), 0.30)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "var(--adm-active-color)", fontSize: 9, fontWeight: 700,
                 }}>
@@ -891,25 +929,29 @@ export function AdminShell({ children, user }: AdminShellProps) {
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           style={{
             position: "absolute", top: "50%", right: -13,
-            transform: "translateY(-50%)",
+            transform: "translateY(-50%) scale(1)",
             display: "flex", alignItems: "center", justifyContent: "center",
             width: 26, height: 26, borderRadius: "50%",
             background: "var(--adm-glass-bg-deep)",
             backdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
             WebkitBackdropFilter: `blur(var(--adm-glass-blur)) saturate(180%)`,
             border: "1px solid var(--adm-glass-border)",
-            boxShadow: "0 3px 14px rgba(0,0,0,0.28)",
+            boxShadow: "0 4px 16px -2px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.06) inset",
             cursor: "pointer", color: "var(--adm-text-muted)",
-            transition: "background 0.14s, color 0.14s, transform 0.14s",
+            transition: "background 0.18s, color 0.18s, transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s",
             zIndex: 101,
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = "var(--adm-active-bg)";
             e.currentTarget.style.color = "var(--adm-active-color)";
+            e.currentTarget.style.transform = "translateY(-50%) scale(1.10)";
+            e.currentTarget.style.boxShadow = "0 4px 18px -2px rgba(var(--brand-rgb, 6,182,212), 0.45), 0 0 0 1px rgba(255,255,255,0.08) inset";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = "var(--adm-glass-bg-deep)";
             e.currentTarget.style.color = "var(--adm-text-muted)";
+            e.currentTarget.style.transform = "translateY(-50%) scale(1)";
+            e.currentTarget.style.boxShadow = "0 4px 16px -2px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.06) inset";
           }}
         >
           {collapsed ? Icons.chevronRight : Icons.chevronLeft}
