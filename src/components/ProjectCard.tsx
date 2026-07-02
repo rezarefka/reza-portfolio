@@ -222,7 +222,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         /* ── Card shell ── */
         .pc-card {
           position: relative;
-          border-radius: 16px;
+          border-radius: 12px;
           border: 1px solid var(--neutral-alpha-weak);
           background: var(--neutral-background-medium);
           cursor: pointer;
@@ -236,7 +236,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           overflow: visible;
         }
         .pc-inner {
-          border-radius: 16px;
+          border-radius: 12px;
           overflow: hidden;
           display: flex; flex-direction: column; flex:1;
         }
@@ -258,7 +258,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             transparent 70%);
           opacity:0;
           transition: opacity 0.3s ease;
-          border-radius: 14px 14px 0 0;
+          border-radius: 11px 11px 0 0;
           display: flex; align-items: flex-end; padding: 16px;
         }
         .pc-card:hover .pc-overlay { opacity:1; }

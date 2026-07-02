@@ -15,6 +15,7 @@ import { HeroSection } from "@/components/cms/HeroSection";
 import { StatisticsSection } from "@/components/cms/StatisticsSection";
 import { ContactSection } from "@/components/cms/ContactSection";
 import { ScrollAnimate } from "@/components/ScrollAnimate";
+import { ParallaxLayer } from "@/components/ParallaxLayer";
 import { getSettings, getPublishedProjectsCount, getPublishedBlogsCount } from "@/lib/db";
 import { T } from "@/components/T";
 
@@ -115,12 +116,27 @@ export default async function Home() {
         .tulisan-block { padding-top: 64px; padding-bottom: 64px; }
       `}} />
 
-      <Column
-        maxWidth="m"
-        className="home-col"
-        paddingY="12"
-        horizontal="center"
-      >
+      <div style={{ position: "relative", overflow: "hidden" }}>
+        {/* ── Parallax decorative layer (khusus /home) ── */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
+          <ParallaxLayer speed={0.12} style={{ position: "absolute", top: "2%", right: "-8%" }}>
+            <div style={{ width: 340, height: 340, borderRadius: "50%", background: "var(--brand-alpha-weak)", filter: "blur(90px)", opacity: 0.8 }} />
+          </ParallaxLayer>
+          <ParallaxLayer speed={-0.10} style={{ position: "absolute", top: "42%", left: "-10%" }}>
+            <div style={{ width: 300, height: 300, borderRadius: "50%", background: "var(--brand-alpha-weak)", filter: "blur(100px)", opacity: 0.6 }} />
+          </ParallaxLayer>
+          <ParallaxLayer speed={0.16} style={{ position: "absolute", top: "82%", right: "0%" }}>
+            <div style={{ width: 260, height: 260, borderRadius: "50%", background: "var(--brand-alpha-weak)", filter: "blur(90px)", opacity: 0.5 }} />
+          </ParallaxLayer>
+        </div>
+
+        <Column
+          maxWidth="m"
+          className="home-col"
+          paddingY="12"
+          horizontal="center"
+          style={{ position: "relative", zIndex: 1 }}
+        >
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
@@ -201,6 +217,7 @@ export default async function Home() {
         </ScrollAnimate>
 
       </Column>
+      </div>
     </>
   );
 }
