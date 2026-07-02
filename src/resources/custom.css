@@ -603,7 +603,17 @@ a[href] > [class*="Card"]:hover, [class*="Card"][href]:hover {
   .gallery-masonry { column-count: 1 !important; }
 }
 
-/* ─── Prevent horizontal overflow globally ───────────────────────────────── */
+/* ─── Fix: Once UI's max-width-* utility never sets margin:auto, so any ─── */
+/* ─── Column/Row using the `maxWidth` prop only self-centers when its ──── */
+/* ─── parent happens to be a centered flex row. Force it everywhere. ───── */
+.fill-width.max-width-xs,
+.fill-width.max-width-s,
+.fill-width.max-width-m,
+.fill-width.max-width-l,
+.fill-width.max-width-xl {
+  margin-left: auto;
+  margin-right: auto;
+}
 * { box-sizing: border-box; }
 img, video, iframe, svg { max-width: 100%; }
 
@@ -612,4 +622,20 @@ img, video, iframe, svg { max-width: 100%; }
 
 
 
-/* ─── Page Transition — handled inline via GSAP in PageTransition.tsx ──── */
+/* ─── Page Transition — Liquid Glass Flash (fade in place, no slide) ────── */
+.page-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+  opacity: 0;
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  background: radial-gradient(
+    circle at 50% 42%,
+    color-mix(in srgb, var(--brand-solid-strong) 24%, transparent) 0%,
+    color-mix(in srgb, var(--brand-solid-medium) 12%, transparent) 45%,
+    transparent 75%
+  );
+  will-change: opacity;
+}
